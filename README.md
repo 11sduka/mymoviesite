@@ -1,2 +1,0 @@
-# mymoviesite
-mi personali vebisiti
