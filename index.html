@@ -842,6 +842,17 @@ main {
       </div>
     </div>
 
+    <!-- YENİ DİZİLER -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🆕 Yeni Diziler</div>
+        <button class="see-all" onclick="showPage('newreleases')">Tümünü Gör</button>
+      </div>
+      <div class="cards-grid" id="newSeriesHomeGrid">
+        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
+      </div>
+    </div>
+
     <!-- AD INLINE -->
     <div class="ad-inline">
       <!-- REKLAM BURAYA - ORTA BANNER (970x90) -->
@@ -991,6 +1002,14 @@ main {
     <div class="section">
       <div class="section-header">
         <div class="section-title">🆕 Yeni Çıkanlar</div>
+      </div>
+      <div class="genre-filters" id="newReleasesFilters">
+        <button class="genre-btn active" onclick="switchNewReleases('movies', this)">🎬 Filmler</button>
+        <button class="genre-btn" onclick="switchNewReleases('series', this)">📺 Diziler</button>
+        <button class="genre-btn" onclick="switchNewReleases('turkish', this)">🇹🇷 Türk Dizileri</button>
+        <button class="genre-btn" onclick="switchNewReleases('russian', this)">🇷🇺 Rus Dizileri</button>
+        <button class="genre-btn" onclick="switchNewReleases('cartoons', this)">🎨 Çizgi Filmler</button>
+        <button class="genre-btn" onclick="switchNewReleases('anime', this)">⛩️ Anime</button>
       </div>
       <div class="cards-grid" id="newReleasesGrid">
         <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
@@ -1192,6 +1211,10 @@ async function loadHome() {
   const popSeries = await fetchTMDB('/tv/popular');
   renderCards(document.getElementById('popularSeriesGrid'), popSeries.results?.slice(0,20), 'tv');
 
+  // New series home
+  const newSeries = await fetchTMDB('/tv/on_the_air');
+  renderCards(document.getElementById('newSeriesHomeGrid'), newSeries.results?.slice(0,20), 'tv');
+
   // Turkish series home
   const turkish = await fetchTMDB('/discover/tv', {with_origin_country:'TR', sort_by:'popularity.desc'});
   renderCards(document.getElementById('turkishHomeGrid'), turkish.results?.slice(0,20), 'tv');
@@ -1298,8 +1321,39 @@ async function loadTopRated() {
 
 // NEW RELEASES
 async function loadNewReleases() {
+  // Default: movies
   const all = await fetch100('/movie/now_playing');
   renderCards(document.getElementById('newReleasesGrid'), all.slice(0,100), 'movie');
+}
+
+async function switchNewReleases(type, btn) {
+  // Update active button
+  document.querySelectorAll('#newReleasesFilters .genre-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  const grid = document.getElementById('newReleasesGrid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
+  
+  let all = [];
+  if (type === 'movies') {
+    all = await fetch100('/movie/now_playing');
+    renderCards(grid, all.slice(0,100), 'movie');
+  } else if (type === 'series') {
+    all = await fetch100('/tv/on_the_air');
+    renderCards(grid, all.slice(0,100), 'tv');
+  } else if (type === 'turkish') {
+    all = await fetch100('/discover/tv', {with_origin_country:'TR', sort_by:'first_air_date.desc'});
+    renderCards(grid, all.slice(0,100), 'tv');
+  } else if (type === 'russian') {
+    all = await fetch100('/discover/tv', {with_origin_country:'RU', sort_by:'first_air_date.desc'});
+    renderCards(grid, all.slice(0,100), 'tv');
+  } else if (type === 'cartoons') {
+    all = await fetch100('/discover/movie', {with_genres:'16', sort_by:'release_date.desc'});
+    renderCards(grid, all.slice(0,100), 'movie');
+  } else if (type === 'anime') {
+    all = await fetch100('/discover/tv', {with_origin_country:'JP', with_genres:'16', sort_by:'first_air_date.desc'});
+    renderCards(grid, all.slice(0,100), 'tv');
+  }
 }
 
 // SEARCH
