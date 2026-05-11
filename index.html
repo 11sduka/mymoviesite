@@ -712,6 +712,63 @@ main {
 
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-text { font-size: 15px; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  nav { padding: 0 12px; gap: 8px; height: 56px; }
+  .logo { font-size: 20px; }
+  .nav-links { display: none; }
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .search-input { width: 130px; font-size: 13px; }
+  .search-input:focus { width: 160px; }
+  .ad-banner-top { margin-top: 56px; min-height: 60px; font-size: 11px; }
+  .hero { height: 360px; }
+  .hero-content { left: 16px; right: 16px; bottom: 24px; }
+  .hero-title { font-size: 24px; }
+  .hero-desc { display: none; }
+  .btn-primary { padding: 9px 16px; font-size: 13px; }
+  .btn-secondary { padding: 9px 12px; font-size: 13px; }
+  main { padding: 0 12px 40px; }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .section-title { font-size: 16px; }
+  .modal { border-radius: 12px 12px 0 0; }
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal-hero { height: 200px; }
+  .modal-body { padding: 0 14px 20px; }
+  .modal-title { font-size: 18px; }
+  .modal-poster { width: 75px; min-width: 75px; height: 112px; }
+  .genre-btn { padding: 5px 12px; font-size: 12px; }
+  .mobile-nav-drawer {
+    position: fixed;
+    top: 56px; left: 0; right: 0;
+    background: rgba(8,0,16,0.98);
+    border-bottom: 1px solid var(--border);
+    z-index: 99;
+    padding: 12px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mobile-nav-drawer.open { display: flex; }
+  .mobile-nav-drawer .nav-link { font-size: 15px; padding: 10px 16px; width: 100%; text-align: left; }
+}
+@media (min-width: 769px) {
+  .mobile-menu-btn { display: none; }
+  .mobile-nav-drawer { display: none !important; }
+}
 </style>
 </head>
 <body>
@@ -723,6 +780,8 @@ main {
     <button class="nav-link active" onclick="showPage('home')" id="nav-home">Ana Sayfa</button>
     <button class="nav-link" onclick="showPage('movies')" id="nav-movies">Filmler</button>
     <button class="nav-link" onclick="showPage('series')" id="nav-series">Diziler</button>
+    <button class="nav-link" onclick="showPage('turkish')" id="nav-turkish">Türk Dizileri</button>
+    <button class="nav-link" onclick="showPage('russian')" id="nav-russian">Rus Dizileri</button>
     <button class="nav-link" onclick="showPage('cartoons')" id="nav-cartoons">Çizgi Filmler</button>
     <button class="nav-link" onclick="showPage('anime')" id="nav-anime">Anime</button>
     <button class="nav-link" onclick="showPage('toprated')" id="nav-toprated">En İyiler</button>
@@ -732,7 +791,21 @@ main {
     <span class="search-icon">🔍</span>
     <input class="search-input" type="text" placeholder="Film, dizi ara..." id="searchInput" oninput="handleSearch(this.value)">
   </div>
+  <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
 </nav>
+
+<!-- MOBILE NAV DRAWER -->
+<div class="mobile-nav-drawer" id="mobileNavDrawer">
+  <button class="nav-link" onclick="showPage('home');closeMobileMenu()" >Ana Sayfa</button>
+  <button class="nav-link" onclick="showPage('movies');closeMobileMenu()">Filmler</button>
+  <button class="nav-link" onclick="showPage('series');closeMobileMenu()">Diziler</button>
+  <button class="nav-link" onclick="showPage('turkish');closeMobileMenu()">Türk Dizileri</button>
+  <button class="nav-link" onclick="showPage('russian');closeMobileMenu()">Rus Dizileri</button>
+  <button class="nav-link" onclick="showPage('cartoons');closeMobileMenu()">Çizgi Filmler</button>
+  <button class="nav-link" onclick="showPage('anime');closeMobileMenu()">Anime</button>
+  <button class="nav-link" onclick="showPage('toprated');closeMobileMenu()">En İyiler</button>
+  <button class="nav-link" onclick="showPage('newreleases');closeMobileMenu()">Yeni Çıkanlar</button>
+</div>
 
 <!-- TOP BANNER AD -->
 <div class="ad-banner-top" id="adBannerTop">
@@ -793,6 +866,28 @@ main {
         <button class="see-all" onclick="showPage('series')">Tümünü Gör</button>
       </div>
       <div class="cards-grid" id="popularSeriesGrid">
+        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- TURKISH SERIES -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🇹🇷 Türk Dizileri</div>
+        <button class="see-all" onclick="showPage('turkish')">Tümünü Gör</button>
+      </div>
+      <div class="cards-grid" id="turkishHomeGrid">
+        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
+      </div>
+    </div>
+
+    <!-- RUSSIAN SERIES -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🇷🇺 Rus Dizileri</div>
+        <button class="see-all" onclick="showPage('russian')">Tümünü Gör</button>
+      </div>
+      <div class="cards-grid" id="russianHomeGrid">
         <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
       </div>
     </div>
@@ -912,6 +1007,36 @@ main {
         "<span id="searchQuery"></span>" için sonuçlar
       </div>
       <div class="cards-grid" id="searchGrid">
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- TURKISH SERIES PAGE -->
+<div class="page" id="page-turkish">
+  <main style="padding-top:32px">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🇹🇷 Türk Dizileri</div>
+      </div>
+      <div class="genre-filters" id="turkishGenreFilters"></div>
+      <div class="cards-grid" id="turkishGrid">
+        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- RUSSIAN SERIES PAGE -->
+<div class="page" id="page-russian">
+  <main style="padding-top:32px">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🇷🇺 Rus Dizileri</div>
+      </div>
+      <div class="genre-filters" id="russianGenreFilters"></div>
+      <div class="cards-grid" id="russianGrid">
+        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
       </div>
     </div>
   </main>
@@ -1067,6 +1192,14 @@ async function loadHome() {
   const popSeries = await fetchTMDB('/tv/popular');
   renderCards(document.getElementById('popularSeriesGrid'), popSeries.results?.slice(0,20), 'tv');
 
+  // Turkish series home
+  const turkish = await fetchTMDB('/discover/tv', {with_origin_country:'TR', sort_by:'popularity.desc'});
+  renderCards(document.getElementById('turkishHomeGrid'), turkish.results?.slice(0,20), 'tv');
+
+  // Russian series home
+  const russian = await fetchTMDB('/discover/tv', {with_origin_country:'RU', sort_by:'popularity.desc'});
+  renderCards(document.getElementById('russianHomeGrid'), russian.results?.slice(0,20), 'tv');
+
   // Anime home
   const anime = await fetchTMDB('/discover/tv', {with_genres:'16', with_origin_country:'JP', sort_by:'popularity.desc'});
   renderCards(document.getElementById('animeHomeGrid'), anime.results?.slice(0,20), 'tv');
@@ -1137,6 +1270,26 @@ async function loadAnime(genreId=0) {
   renderCards(grid, all.slice(0,100), 'tv');
 }
 
+// TURKISH SERIES
+async function loadTurkish(genreId=0) {
+  const grid = document.getElementById('turkishGrid');
+  if(grid) { grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>'; }
+  const params = {sort_by:'popularity.desc', with_origin_country:'TR'};
+  if (genreId) params.with_genres = genreId;
+  const all = await fetch100('/discover/tv', params);
+  if(grid) renderCards(grid, all.slice(0,100), 'tv');
+}
+
+// RUSSIAN SERIES
+async function loadRussian(genreId=0) {
+  const grid = document.getElementById('russianGrid');
+  if(grid) { grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>'; }
+  const params = {sort_by:'popularity.desc', with_origin_country:'RU'};
+  if (genreId) params.with_genres = genreId;
+  const all = await fetch100('/discover/tv', params);
+  if(grid) renderCards(grid, all.slice(0,100), 'tv');
+}
+
 // TOP RATED
 async function loadTopRated() {
   const all = await fetch100('/movie/top_rated');
@@ -1201,6 +1354,14 @@ function showPage(name) {
     buildGenreFilters('animeGenreFilters', tvGenres.slice(0,8), activeAnimeGenre, (id) => { activeAnimeGenre=id; loadAnime(id); });
     loadAnime(activeAnimeGenre);
   }
+  else if (name === 'turkish') {
+    buildGenreFilters('turkishGenreFilters', tvGenres, 0, (id) => loadTurkish(id));
+    loadTurkish(0);
+  }
+  else if (name === 'russian') {
+    buildGenreFilters('russianGenreFilters', tvGenres, 0, (id) => loadRussian(id));
+    loadRussian(0);
+  }
   else if (name === 'toprated') loadTopRated();
   else if (name === 'newreleases') loadNewReleases();
 }
@@ -1234,7 +1395,7 @@ async function openModal(id, type) {
   const backdrop = imgUrl(data.backdrop_path, 'original');
 
   document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalRating').textContent = '★ ' + rating;
+  document.getElementById('modalRating').textContent = 'TMDB ★ ' + rating;
   document.getElementById('modalYear').textContent = year;
   document.getElementById('modalRuntime').textContent = runtime;
   document.getElementById('modalDesc').textContent = desc;
@@ -1302,6 +1463,14 @@ function closeModalOutside(e) {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
+
+// MOBILE MENU
+function toggleMobileMenu() {
+  document.getElementById('mobileNavDrawer').classList.toggle('open');
+}
+function closeMobileMenu() {
+  document.getElementById('mobileNavDrawer').classList.remove('open');
+}
 
 // INIT
 loadHome();
