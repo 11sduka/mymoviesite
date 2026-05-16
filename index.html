@@ -152,8 +152,6 @@ nav {
   z-index: 1;
 }
 
-/* <!-- REKLAM BURAYA - ÜST BANNER --> */
-
 /* HERO */
 .hero {
   position: relative;
@@ -362,7 +360,6 @@ main {
   letter-spacing: 1px;
   margin: 8px 0;
 }
-/* <!-- REKLAM BURAYA - FILMLER ARASI --> */
 
 /* MOVIE CARD */
 .movie-card {
@@ -443,227 +440,6 @@ main {
   letter-spacing: 0.5px;
 }
 
-/* MOVIE MODAL */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(8,0,16,0.92);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.modal-overlay.open {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  width: 100%;
-  max-width: 860px;
-  max-height: 90vh;
-  overflow-y: auto;
-  transform: translateY(20px);
-  transition: transform 0.3s;
-}
-
-.modal-overlay.open .modal { transform: translateY(0); }
-
-.modal-hero {
-  position: relative;
-  height: 320px;
-  overflow: hidden;
-  border-radius: 16px 16px 0 0;
-}
-
-.modal-bg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: brightness(0.4) saturate(0.7);
-}
-
-.modal-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--bg2) 0%, transparent 60%);
-}
-
-.modal-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(0,0,0,0.6);
-  border: 1px solid var(--border);
-  color: var(--text);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-.modal-close:hover { background: var(--purple3); }
-
-.modal-body {
-  padding: 0 28px 28px;
-  margin-top: -60px;
-  position: relative;
-}
-
-.modal-top {
-  display: flex;
-  gap: 20px;
-  align-items: flex-end;
-  margin-bottom: 20px;
-}
-
-.modal-poster {
-  width: 110px;
-  min-width: 110px;
-  height: 165px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid var(--purple3);
-  flex-shrink: 0;
-}
-
-.modal-poster-placeholder {
-  width: 110px;
-  min-width: 110px;
-  height: 165px;
-  border-radius: 8px;
-  border: 2px solid var(--purple3);
-  background: var(--bg3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  flex-shrink: 0;
-}
-
-.modal-info { flex: 1; }
-
-.modal-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 26px;
-  font-weight: 800;
-  line-height: 1.15;
-  margin-bottom: 8px;
-}
-
-.modal-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 10px;
-}
-
-.modal-tag {
-  background: rgba(124,106,247,0.15);
-  border: 1px solid rgba(124,106,247,0.3);
-  color: var(--purple2);
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.modal-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: var(--text2);
-  font-size: 13px;
-}
-
-.modal-rating-big {
-  color: var(--purple2);
-  font-size: 18px;
-  font-weight: 700;
-  font-family: 'Syne', sans-serif;
-}
-
-.modal-section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text2);
-  margin-bottom: 10px;
-  margin-top: 20px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  font-size: 12px;
-}
-
-.modal-desc {
-  color: var(--text2);
-  font-size: 14px;
-  line-height: 1.7;
-}
-
-.cast-list {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.cast-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  text-align: center;
-  width: 72px;
-}
-
-.cast-photo {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--border);
-  background: var(--bg3);
-}
-
-.cast-name {
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.3;
-}
-
-.modal-btns {
-  display: flex;
-  gap: 12px;
-  margin-top: 22px;
-  flex-wrap: wrap;
-}
-
-.trailer-wrap {
-  margin-top: 16px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #000;
-  aspect-ratio: 16/9;
-}
-
-.trailer-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
 /* SEARCH PAGE */
 .search-page { display: none; }
 .search-page.active { display: block; }
@@ -712,63 +488,6 @@ main {
 
 .empty-icon { font-size: 48px; margin-bottom: 12px; }
 .empty-text { font-size: 15px; }
-
-/* MOBILE */
-@media (max-width: 768px) {
-  nav { padding: 0 12px; gap: 8px; height: 56px; }
-  .logo { font-size: 20px; }
-  .nav-links { display: none; }
-  .mobile-menu-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    font-size: 18px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .search-input { width: 130px; font-size: 13px; }
-  .search-input:focus { width: 160px; }
-  .ad-banner-top { margin-top: 56px; min-height: 60px; font-size: 11px; }
-  .hero { height: 360px; }
-  .hero-content { left: 16px; right: 16px; bottom: 24px; }
-  .hero-title { font-size: 24px; }
-  .hero-desc { display: none; }
-  .btn-primary { padding: 9px 16px; font-size: 13px; }
-  .btn-secondary { padding: 9px 12px; font-size: 13px; }
-  main { padding: 0 12px 40px; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .section-title { font-size: 16px; }
-  .modal { border-radius: 12px 12px 0 0; }
-  .modal-overlay { align-items: flex-end; padding: 0; }
-  .modal-hero { height: 200px; }
-  .modal-body { padding: 0 14px 20px; }
-  .modal-title { font-size: 18px; }
-  .modal-poster { width: 75px; min-width: 75px; height: 112px; }
-  .genre-btn { padding: 5px 12px; font-size: 12px; }
-  .mobile-nav-drawer {
-    position: fixed;
-    top: 56px; left: 0; right: 0;
-    background: rgba(8,0,16,0.98);
-    border-bottom: 1px solid var(--border);
-    z-index: 99;
-    padding: 12px;
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .mobile-nav-drawer.open { display: flex; }
-  .mobile-nav-drawer .nav-link { font-size: 15px; padding: 10px 16px; width: 100%; text-align: left; }
-}
-@media (min-width: 769px) {
-  .mobile-menu-btn { display: none; }
-  .mobile-nav-drawer { display: none !important; }
-}
 
 /* DETAIL PAGE */
 .detail-hero {
@@ -884,7 +603,7 @@ main {
   border-radius: 2px;
 }
 
-/* PLAYER */
+/* PLAYER BUILD */
 .player-wrap {
   width: 100%;
   aspect-ratio: 16/9;
@@ -894,40 +613,15 @@ main {
   position: relative;
   border: 1px solid var(--border);
 }
-.fullscreen-btn {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  background: rgba(0,0,0,0.7);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  z-index: 5;
-}
-.fullscreen-btn:hover { background: var(--purple3); }
-
-/* TRAILER DETAIL */
-.trailer-wrap-detail {
+.player-wrap iframe {
   width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #000;
-  border: 1px solid var(--border);
+  height: 100%;
+  border: none;
 }
-.trailer-wrap-detail iframe { width: 100%; height: 100%; border: none; }
 
-/* SEASONS */
-.seasons-list { display: flex; gap: 10px; flex-wrap: wrap; }
-.season-btn {
+/* SEASONS & EPISODES */
+.seasons-list, .episodes-list { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+.season-btn, .episode-btn {
   background: var(--bg3);
   border: 1px solid var(--border);
   color: var(--text2);
@@ -939,11 +633,40 @@ main {
   font-weight: 500;
   transition: all 0.2s;
 }
-.season-btn:hover { border-color: var(--purple3); color: var(--text); }
-.season-btn.active { background: rgba(124,106,247,0.2); border-color: var(--purple); color: var(--purple2); }
+.season-btn:hover, .episode-btn:hover { border-color: var(--purple3); color: var(--text); }
+.season-btn.active, .episode-btn.active { background: rgba(124,106,247,0.2); border-color: var(--purple); color: var(--purple2); }
 
-/* MOBILE DETAIL */
+/* MOBILE */
 @media (max-width: 768px) {
+  nav { padding: 0 12px; gap: 8px; height: 56px; }
+  .logo { font-size: 20px; }
+  .nav-links { display: none; }
+  .mobile-menu-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .search-input { width: 130px; font-size: 13px; }
+  .search-input:focus { width: 160px; }
+  .ad-banner-top { margin-top: 56px; min-height: 60px; font-size: 11px; }
+  .hero { height: 360px; }
+  .hero-content { left: 16px; right: 16px; bottom: 24px; }
+  .hero-title { font-size: 24px; }
+  .hero-desc { display: none; }
+  .btn-primary { padding: 9px 16px; font-size: 13px; }
+  .btn-secondary { padding: 9px 12px; font-size: 13px; }
+  main { padding: 0 12px 40px; }
+  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .section-title { font-size: 16px; }
   .detail-hero { height: 320px; }
   .detail-back { top: 70px; left: 16px; }
   .detail-main { padding: 0 16px 40px; }
@@ -955,6 +678,23 @@ main {
   .detail-tags { justify-content: center; }
   .detail-btns { justify-content: center; }
   .detail-desc { font-size: 14px; }
+  .mobile-nav-drawer {
+    position: fixed;
+    top: 56px; left: 0; right: 0;
+    background: rgba(8,0,16,0.98);
+    border-bottom: 1px solid var(--border);
+    z-index: 99;
+    padding: 12px;
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .mobile-nav-drawer.open { display: flex; }
+  .mobile-nav-drawer .nav-link { font-size: 15px; padding: 10px 16px; width: 100%; text-align: left; }
+}
+@media (min-width: 769px) {
+  .mobile-menu-btn { display: none; }
+  .mobile-nav-drawer { display: none !important; }
 }
 </style>
 </head>
@@ -996,7 +736,6 @@ main {
 
 <!-- TOP BANNER AD -->
 <div class="ad-banner-top" id="adBannerTop">
-  <!-- REKLAM BURAYA - ÜST BANNER (728x90) -->
   <span>REKLAM ALANI · 728×90</span>
 </div>
 
@@ -1040,11 +779,7 @@ main {
       </div>
     </div>
 
-    <!-- AD INLINE -->
-    <div class="ad-inline">
-      <!-- REKLAM BURAYA - ORTA BANNER (970x90) -->
-      REKLAM ALANI · 970×90
-    </div>
+    <div class="ad-inline">REKLAM ALANI · 970×90</div>
 
     <!-- POPULAR MOVIES -->
     <div class="section">
@@ -1090,11 +825,7 @@ main {
       </div>
     </div>
 
-    <!-- AD INLINE 2 -->
-    <div class="ad-inline">
-      <!-- REKLAM BURAYA - ALT BANNER (970x90) -->
-      REKLAM ALANI · 970×90
-    </div>
+    <div class="ad-inline">REKLAM ALANI · 970×90</div>
 
     <!-- ANIME -->
     <div class="section">
@@ -1212,8 +943,7 @@ main {
       <div class="search-results-title">
         "<span id="searchQuery"></span>" için sonuçlar
       </div>
-      <div class="cards-grid" id="searchGrid">
-      </div>
+      <div class="cards-grid" id="searchGrid"></div>
     </div>
   </main>
 </div>
@@ -1248,7 +978,7 @@ main {
   </main>
 </div>
 
-<!-- DETAIL PAGE -->
+<!-- DETAIL PAGE WITH TORRENTIO PLAYER -->
 <div class="page" id="page-detail">
   <div class="detail-hero" id="detailHero">
     <div class="detail-bg" id="detailBg"></div>
@@ -1269,564 +999,312 @@ main {
         </div>
         <div class="detail-desc" id="detailDesc"></div>
         <div class="detail-btns">
-          <button class="btn-primary detail-watch-btn" id="detailWatchBtn">▶ İzle</button>
-          <button class="btn-secondary" id="detailTrailerBtn" style="display:none" onclick="scrollToTrailer()">🎬 Fragman</button>
+          <button class="btn-primary detail-watch-btn" onclick="scrollToPlayer()">▶ İzle</button>
         </div>
       </div>
     </div>
 
-    <!-- AD BANNER -->
-    <div class="ad-inline" style="margin:24px 0">
-      <!-- REKLAM BURAYA - DETAY SAYFASI -->
-      REKLAM ALANI · 970×90
-    </div>
+    <div class="ad-inline" style="margin:24px 0">REKLAM ALANI · 970×90</div>
 
-    <!-- PLAYER -->
-    <div id="playerSection" style="display:none">
-      <div class="detail-section-title">▶ İzle</div>
-      <div class="player-wrap">
-        <video id="mainPlayer" controls controlsList="nodownload" playsinline style="width:100%;height:100%;background:#000">
-          <source id="playerSource" src="" type="video/mp4">
-          Tarayıcınız video oynatmayı desteklemiyor.
-        </video>
-        <button class="fullscreen-btn" onclick="goFullscreen()">⛶</button>
-      </div>
-    </div>
-
-    <!-- TRAILER -->
-    <div id="trailerSection" style="display:none">
-      <div class="detail-section-title" id="trailerSectionLabel">🎬 Fragman</div>
-      <div class="trailer-wrap-detail">
-        <iframe id="detailTrailerFrame" allowfullscreen allow="fullscreen"></iframe>
-      </div>
-    </div>
-
-    <!-- CAST -->
-    <div id="castSection">
-      <div class="detail-section-title">👥 Oyuncular</div>
-      <div class="cast-list" id="detailCast"></div>
-    </div>
-
-    <!-- SEASONS (for TV) -->
-    <div id="seasonsSection" style="display:none">
-      <div class="detail-section-title">📺 Sezonlar</div>
+    <!-- SEASONS & EPISODES INTERFACE FOR SERIES -->
+    <div id="seriesStructureSection" style="display:none">
+      <div class="detail-section-title">Sezonlar</div>
       <div class="seasons-list" id="seasonsList"></div>
+      <div class="detail-section-title">Bölümler</div>
+      <div class="episodes-list" id="episodesList"></div>
     </div>
 
-    <!-- SIMILAR -->
-    <div class="section" style="margin-top:40px">
-      <div class="section-header">
-        <div class="section-title">Benzer İçerikler</div>
+    <!-- ACTUAL PLAYER CONTAINER -->
+    <div id="playerSection">
+      <div class="detail-section-title">Oynatıcı</div>
+      <div class="player-wrap">
+        <iframe id="torrentioPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
       </div>
-      <div class="cards-grid" id="similarGrid"></div>
     </div>
   </main>
 </div>
 
-<!-- MOVIE MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
-  <div class="modal" id="modal">
-    <div class="modal-hero">
-      <img class="modal-bg" id="modalBg" src="" alt="">
-      <div class="modal-gradient"></div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-top">
-        <img class="modal-poster" id="modalPoster" src="" alt="">
-        <div class="modal-info">
-          <div class="modal-title" id="modalTitle"></div>
-          <div class="modal-tags" id="modalTags"></div>
-          <div class="modal-meta-row">
-            <span class="modal-rating-big" id="modalRating"></span>
-            <span id="modalYear"></span>
-            <span id="modalRuntime"></span>
-          </div>
-        </div>
-      </div>
-      <div class="modal-section-title">Konu</div>
-      <div class="modal-desc" id="modalDesc"></div>
-      <div class="modal-section-title" id="castLabel">Oyuncular</div>
-      <div class="cast-list" id="modalCast"></div>
-      <div class="modal-section-title" id="trailerLabel" style="display:none">Fragman</div>
-      <div class="trailer-wrap" id="trailerWrap" style="display:none">
-        <iframe id="trailerFrame" allowfullscreen></iframe>
-      </div>
-      <div class="modal-btns">
-        <button class="btn-primary" id="modalWatchBtn">▶ İzle</button>
-        <button class="btn-secondary" onclick="closeModal()">Kapat</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 <script>
-const API_KEY = '857939c942111c26b3838e4ceabb040e';
-const BASE = 'https://api.themoviedb.org/3';
-const IMG = 'https://image.tmdb.org/t/p/';
-const LANG = 'tr-TR';
+// CONFIG & PERSISTENT DATA
+const TMDB_API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6'; // Интегрированный API Ключ TMDB
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
+const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
 
-const movieGenres = [
-  {id:0,name:'Tümü'},{id:28,name:'Aksiyon'},{id:35,name:'Komedi'},{id:27,name:'Korku'},
-  {id:18,name:'Drama'},{id:878,name:'Bilim Kurgu'},{id:10749,name:'Romantik'},
-  {id:53,name:'Gerilim'},{id:12,name:'Macera'},{id:14,name:'Fantezi'},
-  {id:80,name:'Suç'},{id:99,name:'Belgesel'},{id:10402,name:'Müzik'}
-];
+// Ссылка Torrentio + RealDebrid без хвоста manifest.json для генерации стримов
+const TORRENTIO_BASE = "https://torrentio.strem.fun/sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
 
-const tvGenres = [
-  {id:0,name:'Tümü'},{id:10759,name:'Aksiyon'},{id:35,name:'Komedi'},{id:18,name:'Drama'},
-  {id:10765,name:'Bilim Kurgu'},{id:9648,name:'Gizem'},{id:10768,name:'Savaş'},
-  {id:10762,name:'Çocuk'},{id:10767,name:'Talk Show'}
-];
+let currentItem = null; 
+let historyStack = ['home'];
 
-let currentHeroMovie = null;
-let searchTimeout = null;
-let activeMovieGenre = 0;
-let activeSeriesGenre = 0;
-let activeCartoonGenre = 0;
-let activeAnimeGenre = 0;
+// INITIALIZATION
+document.addEventListener('DOMContentLoaded', () => {
+    loadHomePageData();
+    setupGenreFilters();
+});
 
-async function fetchTMDB(endpoint, params = {}) {
-  const url = new URL(BASE + endpoint);
-  url.searchParams.set('api_key', API_KEY);
-  url.searchParams.set('language', LANG);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-  const res = await fetch(url);
-  return res.json();
-}
+// NAVIGATION LOGIC
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const targetPage = document.getElementById(`page-${pageId}`);
+    if(targetPage) targetPage.classList.add('active');
+    
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+    const activeNav = document.getElementById(`nav-${pageId}`);
+    if(activeNav) activeNav.classList.add('active');
 
-function imgUrl(path, size='w500') {
-  return path ? IMG + size + path : null;
-}
-
-function createCard(item, type='movie') {
-  const title = item.title || item.name || 'Başlık Yok';
-  const year = (item.release_date || item.first_air_date || '').slice(0,4);
-  const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
-  const poster = imgUrl(item.poster_path);
-
-  const card = document.createElement('div');
-  card.className = 'movie-card';
-  card.onclick = () => openDetail(item.id, type);
-
-  card.innerHTML = `
-    ${poster
-      ? `<img class="card-poster" src="${poster}" alt="${title}" loading="lazy">`
-      : `<div class="card-poster-placeholder">🎬</div>`
+    if(historyStack[historyStack.length - 1] !== pageId) {
+        historyStack.push(pageId);
     }
-    <div class="card-info">
-      <div class="card-title">${title}</div>
-      <div class="card-meta">
-        <span>${year || '—'}</span>
-        <span class="card-rating">★ ${rating}</span>
-      </div>
-    </div>
-  `;
-  return card;
-}
-
-function renderCards(grid, items, type='movie', insertAdAt=8) {
-  grid.innerHTML = '';
-  if (!items || items.length === 0) {
-    grid.innerHTML = '<div class="empty"><div class="empty-icon">🎬</div><div class="empty-text">Sonuç bulunamadı</div></div>';
-    return;
-  }
-  items.forEach((item, i) => {
-    if (i === insertAdAt) {
-      const ad = document.createElement('div');
-      ad.className = 'ad-inline';
-      ad.innerHTML = '<!-- REKLAM BURAYA --> REKLAM ALANI · 970×90';
-      grid.appendChild(ad);
-    }
-    grid.appendChild(createCard(item, type));
-  });
-}
-
-// HOME
-async function loadHome() {
-  // Hero
-  const trending = await fetchTMDB('/trending/movie/week');
-  if (trending.results && trending.results.length > 0) {
-    const movie = trending.results[Math.floor(Math.random() * 5)];
-    currentHeroMovie = movie;
-    const bg = imgUrl(movie.backdrop_path, 'original');
-    if (bg) document.getElementById('heroBg').style.backgroundImage = `url(${bg})`;
-    document.getElementById('heroTitle').textContent = movie.title || movie.name;
-    document.getElementById('heroDesc').textContent = movie.overview || '';
-    document.getElementById('heroMeta').innerHTML = `
-      <span class="hero-rating">★ ${movie.vote_average?.toFixed(1) || 'N/A'}</span>
-      <span>${(movie.release_date||'').slice(0,4)}</span>
-    `;
-    document.getElementById('heroInfoBtn').onclick = () => openDetail(movie.id, 'movie');
-    document.getElementById('heroWatchBtn').onclick = () => openDetail(movie.id, 'movie');
-  }
-
-  // Trending
-  const tGrid = document.getElementById('trendingGrid');
-  renderCards(tGrid, trending.results?.slice(0,20), 'movie');
-
-  // Popular Movies
-  const popMovies = await fetchTMDB('/movie/popular');
-  renderCards(document.getElementById('popularMoviesGrid'), popMovies.results?.slice(0,20), 'movie');
-
-  // Popular Series
-  const popSeries = await fetchTMDB('/tv/popular');
-  renderCards(document.getElementById('popularSeriesGrid'), popSeries.results?.slice(0,20), 'tv');
-
-  // New series home
-  const newSeries = await fetchTMDB('/tv/on_the_air');
-  renderCards(document.getElementById('newSeriesHomeGrid'), newSeries.results?.slice(0,20), 'tv');
-
-  // Turkish series home
-  const turkish = await fetchTMDB('/discover/tv', {with_origin_country:'TR', sort_by:'popularity.desc'});
-  renderCards(document.getElementById('turkishHomeGrid'), turkish.results?.slice(0,20), 'tv');
-
-  // Russian series home
-  const russian = await fetchTMDB('/discover/tv', {with_origin_country:'RU', sort_by:'popularity.desc'});
-  renderCards(document.getElementById('russianHomeGrid'), russian.results?.slice(0,20), 'tv');
-
-  // Anime home
-  const anime = await fetchTMDB('/discover/tv', {with_genres:'16', with_origin_country:'JP', sort_by:'popularity.desc'});
-  renderCards(document.getElementById('animeHomeGrid'), anime.results?.slice(0,20), 'tv');
-}
-
-// MOVIES
-async function fetch100(endpoint, params={}) {
-  const [p1,p2,p3,p4,p5] = await Promise.all([
-    fetchTMDB(endpoint, {...params, page:1}),
-    fetchTMDB(endpoint, {...params, page:2}),
-    fetchTMDB(endpoint, {...params, page:3}),
-    fetchTMDB(endpoint, {...params, page:4}),
-    fetchTMDB(endpoint, {...params, page:5}),
-  ]);
-  return [...(p1.results||[]),...(p2.results||[]),...(p3.results||[]),...(p4.results||[]),...(p5.results||[])];
-}
-
-async function loadMovies(genreId=0) {
-  const grid = document.getElementById('moviesGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/movie', params);
-  renderCards(grid, all.slice(0,100), 'movie');
-}
-
-function buildGenreFilters(containerId, genres, activeId, onClickFn) {
-  const c = document.getElementById(containerId);
-  c.innerHTML = '';
-  genres.forEach(g => {
-    const btn = document.createElement('button');
-    btn.className = 'genre-btn' + (g.id === activeId ? ' active' : '');
-    btn.textContent = g.name;
-    btn.onclick = () => {
-      c.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      onClickFn(g.id);
-    };
-    c.appendChild(btn);
-  });
-}
-
-// SERIES
-async function loadSeries(genreId=0) {
-  const grid = document.getElementById('seriesGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/tv', params);
-  renderCards(grid, all.slice(0,100), 'tv');
-}
-
-// CARTOONS
-async function loadCartoons(genreId=0) {
-  const grid = document.getElementById('cartoonsGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc', with_genres: genreId ? `16,${genreId}` : '16'};
-  const all = await fetch100('/discover/movie', params);
-  renderCards(grid, all.slice(0,100), 'movie');
-}
-
-// ANIME
-async function loadAnime(genreId=0) {
-  const grid = document.getElementById('animeGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc', with_origin_country:'JP', with_genres: genreId ? `16,${genreId}` : '16'};
-  const all = await fetch100('/discover/tv', params);
-  renderCards(grid, all.slice(0,100), 'tv');
-}
-
-// TURKISH SERIES
-async function loadTurkish(genreId=0) {
-  const grid = document.getElementById('turkishGrid');
-  if(grid) { grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>'; }
-  const params = {sort_by:'popularity.desc', with_origin_country:'TR'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/tv', params);
-  if(grid) renderCards(grid, all.slice(0,100), 'tv');
-}
-
-// RUSSIAN SERIES
-async function loadRussian(genreId=0) {
-  const grid = document.getElementById('russianGrid');
-  if(grid) { grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>'; }
-  const params = {sort_by:'popularity.desc', with_origin_country:'RU'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/tv', params);
-  if(grid) renderCards(grid, all.slice(0,100), 'tv');
-}
-
-// TOP RATED
-async function loadTopRated() {
-  const all = await fetch100('/movie/top_rated');
-  renderCards(document.getElementById('topRatedGrid'), all.slice(0,100), 'movie');
-}
-
-// NEW RELEASES
-async function loadNewReleases() {
-  // Default: movies
-  const all = await fetch100('/movie/now_playing');
-  renderCards(document.getElementById('newReleasesGrid'), all.slice(0,100), 'movie');
-}
-
-async function switchNewReleases(type, btn) {
-  // Update active button
-  document.querySelectorAll('#newReleasesFilters .genre-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  const grid = document.getElementById('newReleasesGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  
-  let all = [];
-  if (type === 'movies') {
-    all = await fetch100('/movie/now_playing');
-    renderCards(grid, all.slice(0,100), 'movie');
-  } else if (type === 'series') {
-    all = await fetch100('/tv/on_the_air');
-    renderCards(grid, all.slice(0,100), 'tv');
-  } else if (type === 'turkish') {
-    all = await fetch100('/discover/tv', {with_origin_country:'TR', sort_by:'first_air_date.desc'});
-    renderCards(grid, all.slice(0,100), 'tv');
-  } else if (type === 'russian') {
-    all = await fetch100('/discover/tv', {with_origin_country:'RU', sort_by:'first_air_date.desc'});
-    renderCards(grid, all.slice(0,100), 'tv');
-  } else if (type === 'cartoons') {
-    all = await fetch100('/discover/movie', {with_genres:'16', sort_by:'release_date.desc'});
-    renderCards(grid, all.slice(0,100), 'movie');
-  } else if (type === 'anime') {
-    all = await fetch100('/discover/tv', {with_origin_country:'JP', with_genres:'16', sort_by:'first_air_date.desc'});
-    renderCards(grid, all.slice(0,100), 'tv');
-  }
-}
-
-// SEARCH
-function handleSearch(val) {
-  clearTimeout(searchTimeout);
-  if (!val.trim()) {
-    if (document.getElementById('page-search').classList.contains('active')) {
-      showPage('home');
-    }
-    return;
-  }
-  searchTimeout = setTimeout(() => doSearch(val.trim()), 400);
-}
-
-async function doSearch(q) {
-  showPageRaw('search');
-  document.getElementById('searchQuery').textContent = q;
-  const grid = document.getElementById('searchGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Aranıyor...</div>';
-  const data = await fetchTMDB('/search/multi', {query: q});
-  const results = (data.results||[]).filter(r => r.media_type !== 'person');
-  renderCards(grid, results, 'auto');
-}
-
-// PAGE NAVIGATION
-function showPageRaw(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-'+name)?.classList.add('active');
-  document.getElementById('nav-'+name)?.classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function showPage(name) {
-  document.getElementById('searchInput').value = '';
-  showPageRaw(name);
-
-  if (name === 'home') loadHome();
-  else if (name === 'movies') {
-    buildGenreFilters('movieGenreFilters', movieGenres, activeMovieGenre, (id) => { activeMovieGenre=id; loadMovies(id); });
-    loadMovies(activeMovieGenre);
-  }
-  else if (name === 'series') {
-    buildGenreFilters('seriesGenreFilters', tvGenres, activeSeriesGenre, (id) => { activeSeriesGenre=id; loadSeries(id); });
-    loadSeries(activeSeriesGenre);
-  }
-  else if (name === 'cartoons') {
-    buildGenreFilters('cartoonGenreFilters', movieGenres.slice(0,8), activeCartoonGenre, (id) => { activeCartoonGenre=id; loadCartoons(id); });
-    loadCartoons(activeCartoonGenre);
-  }
-  else if (name === 'anime') {
-    buildGenreFilters('animeGenreFilters', tvGenres.slice(0,8), activeAnimeGenre, (id) => { activeAnimeGenre=id; loadAnime(id); });
-    loadAnime(activeAnimeGenre);
-  }
-  else if (name === 'turkish') {
-    buildGenreFilters('turkishGenreFilters', tvGenres, 0, (id) => loadTurkish(id));
-    loadTurkish(0);
-  }
-  else if (name === 'russian') {
-    buildGenreFilters('russianGenreFilters', tvGenres, 0, (id) => loadRussian(id));
-    loadRussian(0);
-  }
-  else if (name === 'toprated') loadTopRated();
-  else if (name === 'newreleases') loadNewReleases();
-}
-
-// DETAIL PAGE
-let previousPage = 'home';
-
-async function openDetail(id, type) {
-  if (type === 'auto') type = 'movie';
-  
-  // Remember where we came from
-  const activePage = document.querySelector('.page.active');
-  if (activePage && activePage.id !== 'page-detail') {
-    previousPage = activePage.id.replace('page-', '');
-  }
-
-  showPageRaw('detail');
-
-  // Reset
-  document.getElementById('detailTitle').textContent = 'Yükleniyor...';
-  document.getElementById('detailDesc').textContent = '';
-  document.getElementById('detailTags').innerHTML = '';
-  document.getElementById('detailCast').innerHTML = '';
-  document.getElementById('detailTrailerFrame').src = '';
-  document.getElementById('trailerSection').style.display = 'none';
-  document.getElementById('playerSection').style.display = 'none';
-  document.getElementById('seasonsSection').style.display = 'none';
-  document.getElementById('similarGrid').innerHTML = '';
-  document.getElementById('detailPoster').src = '';
-  document.getElementById('detailBg').style.backgroundImage = '';
-  document.getElementById('detailTrailerBtn').style.display = 'none';
-
-  const endpoint = type === 'tv' ? `/tv/${id}` : `/movie/${id}`;
-  const data = await fetchTMDB(endpoint, {append_to_response:'credits,videos,similar'});
-
-  const title = data.title || data.name || '';
-  const year = (data.release_date || data.first_air_date || '').slice(0,4);
-  const rating = data.vote_average?.toFixed(1) || 'N/A';
-  const runtime = data.runtime ? `${data.runtime} dk` : (data.episode_run_time?.[0] ? `${data.episode_run_time[0]} dk/bölüm` : '');
-  const desc = data.overview || 'Açıklama mevcut değil.';
-  const genres = data.genres || [];
-  const country = data.origin_country?.[0] || data.production_countries?.[0]?.iso_3166_1 || '';
-  const poster = imgUrl(data.poster_path, 'w500');
-  const backdrop = imgUrl(data.backdrop_path, 'original');
-
-  document.getElementById('detailTitle').textContent = title;
-  document.getElementById('detailRating').textContent = '★ ' + rating;
-  document.getElementById('detailYear').textContent = year;
-  document.getElementById('detailRuntime').textContent = runtime;
-  document.getElementById('detailCountry').textContent = country;
-  document.getElementById('detailDesc').textContent = desc;
-
-  if (backdrop) document.getElementById('detailBg').style.backgroundImage = `url(${backdrop})`;
-  if (poster) document.getElementById('detailPoster').src = poster;
-
-  // Genres
-  const tagsEl = document.getElementById('detailTags');
-  genres.forEach(g => {
-    const tag = document.createElement('span');
-    tag.className = 'detail-tag';
-    tag.textContent = g.name;
-    tagsEl.appendChild(tag);
-  });
-
-  // Cast
-  const cast = data.credits?.cast?.slice(0,10) || [];
-  const castEl = document.getElementById('detailCast');
-  cast.forEach(actor => {
-    const photo = imgUrl(actor.profile_path, 'w185');
-    const item = document.createElement('div');
-    item.className = 'cast-item';
-    item.innerHTML = `
-      <img class="cast-photo" src="${photo || ''}" alt="${actor.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><rect width=%2252%22 height=%2252%22 fill=%22%231e1035%22/><text x=%2226%22 y=%2234%22 font-size=%2224%22 text-anchor=%22middle%22>👤</text></svg>'">
-      <div class="cast-name">${actor.name}</div>
-      <div class="cast-name" style="color:var(--text3);font-size:10px">${actor.character||''}</div>
-    `;
-    castEl.appendChild(item);
-  });
-
-  // Trailer
-  const videos = data.videos?.results || [];
-  const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos.find(v => v.site === 'YouTube');
-  if (trailer) {
-    document.getElementById('trailerSection').style.display = 'block';
-    document.getElementById('detailTrailerFrame').src = `https://www.youtube.com/embed/${trailer.key}?autoplay=0`;
-    document.getElementById('detailTrailerBtn').style.display = 'inline-flex';
-  }
-
-  // Seasons for TV
-  if (type === 'tv' && data.seasons?.length > 0) {
-    document.getElementById('seasonsSection').style.display = 'block';
-    const seasonsList = document.getElementById('seasonsList');
-    seasonsList.innerHTML = '';
-    data.seasons.filter(s => s.season_number > 0).forEach((s, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'season-btn' + (i === 0 ? ' active' : '');
-      btn.textContent = `${s.name} (${s.episode_count} Bölüm)`;
-      btn.onclick = () => {
-        seasonsList.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      };
-      seasonsList.appendChild(btn);
-    });
-  }
-
-  // Similar
-  const similar = data.similar?.results?.slice(0,12) || [];
-  renderCards(document.getElementById('similarGrid'), similar, type);
-
-  // Watch button
-  document.getElementById('detailWatchBtn').onclick = () => {
-    // BURAYA İZLEME LİNKİNİ EKLE
-    const playerSection = document.getElementById('playerSection');
-    playerSection.style.display = 'block';
-    playerSection.scrollIntoView({behavior: 'smooth'});
-    // Placeholder - lisans aldıktan sonra gerçek link ekle:
-    // document.getElementById('playerSource').src = 'VIDEO_URL_BURAYA';
-    // document.getElementById('mainPlayer').load();
-    // document.getElementById('mainPlayer').play();
-  };
+    window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function goBack() {
-  document.getElementById('detailTrailerFrame').src = '';
-  document.getElementById('playerSection').style.display = 'none';
-  showPage(previousPage);
+    if(historyStack.length > 1) {
+        historyStack.pop();
+        const prevPage = historyStack[historyStack.length - 1];
+        showPage(prevPage);
+    } else {
+        showPage('home');
+    }
 }
 
-function scrollToTrailer() {
-  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
-}
-
-function goFullscreen() {
-  const video = document.getElementById('mainPlayer');
-  if (video.requestFullscreen) video.requestFullscreen();
-  else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-  else if (video.mozRequestFullScreen) video.mozRequestFullScreen();
-}
-
-// MOBILE MENU
 function toggleMobileMenu() {
-  document.getElementById('mobileNavDrawer').classList.toggle('open');
+    document.getElementById('mobileNavDrawer').classList.toggle('open');
 }
 function closeMobileMenu() {
-  document.getElementById('mobileNavDrawer').classList.remove('open');
+    document.getElementById('mobileNavDrawer').classList.remove('open');
 }
 
-// INIT
-loadHome();
+// FETCH HOME CONTENT
+async function loadHomePageData() {
+    try {
+        // Hero Content
+        const trending = await fetch(`${BASE_URL}/trending/all/week?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
+        if(trending.results && trending.results.length > 0) {
+            setupHero(trending.results[0]);
+            renderGrid(trending.results.slice(0, 12), 'trendingGrid');
+        }
+        
+        // Popular Movies
+        const movies = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
+        renderGrid(movies.results.slice(0, 12), 'popularMoviesGrid');
+
+        // Popular Series
+        const series = await fetch(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
+        renderGrid(series.results.slice(0, 12), 'popularSeriesGrid');
+
+        // Categories placeholders
+        renderGrid(series.results.slice(2, 14), 'newSeriesHomeGrid');
+        renderGrid(series.results.slice(5, 17), 'turkishHomeGrid');
+        renderGrid(series.results.slice(8, 20), 'russianHomeGrid');
+        renderGrid(series.results.slice(1, 13), 'animeHomeGrid');
+
+    } catch(err) {
+        console.error("Home loading error: ", err);
+    }
+}
+
+function setupHero(item) {
+    const bg = document.getElementById('heroBg');
+    const title = document.getElementById('heroTitle');
+    const desc = document.getElementById('heroDesc');
+    const meta = document.getElementById('heroMeta');
+    
+    bg.style.backgroundImage = `url('${BACKDROP_URL}${item.backdrop_path}')`;
+    title.innerText = item.title || item.name;
+    desc.innerText = item.overview || "İçerik açıklaması bulunmuyor.";
+    meta.innerHTML = `<span class="hero-rating">⭐ ${item.vote_average.toFixed(1)}</span> — ${item.release_date || item.first_air_date || ''}`;
+    
+    document.getElementById('heroWatchBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
+    document.getElementById('heroInfoBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
+}
+
+function renderGrid(items, targetId) {
+    const container = document.getElementById(targetId);
+    if(!container) return;
+    container.innerHTML = '';
+    
+    if(!items || items.length === 0) {
+        container.innerHTML = '<div class="empty"><div class="empty-icon">📺</div><div class="empty-text">İçerik bulunamadı.</div></div>';
+        return;
+    }
+
+    items.forEach(item => {
+        const type = item.media_type || (item.title ? 'movie' : 'tv');
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        card.onclick = () => openDetailPage(item.id, type);
+        
+        const posterSrc = item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '';
+        const imgBlock = posterSrc ? `<img class="card-poster" src="${posterSrc}" alt="${item.title || item.name}">` : `<div class="card-poster-placeholder">🎬</div>`;
+        
+        card.innerHTML = `
+            ${imgBlock}
+            <div class="card-badge">${type === 'movie' ? 'Film' : 'Dizi'}</div>
+            <div class="card-info">
+                <div class="card-title">${item.title || item.name}</div>
+                <div class="card-meta">
+                    <span>${item.release_date ? item.release_date.substring(0,4) : (item.first_air_date ? item.first_air_date.substring(0,4) : '')}</span>
+                    <span class="card-rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// GENRES SETUP
+function setupGenreFilters() {
+    const list = ["Aksiyon", "Macera", "Komedi", "Dram", "Korku", "Bilim Kurgu"];
+    ['movieGenreFilters', 'seriesGenreFilters', 'cartoonGenreFilters', 'animeGenreFilters'].forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.innerHTML = '<button class="genre-btn active">Tümü</button>';
+        list.forEach(g => {
+            el.innerHTML += `<button class="genre-btn">${g}</button>`;
+        });
+    });
+}
+
+// SEARCH FUNCTIONALITY
+async function handleSearch(query) {
+    if(!query || query.trim() === '') return;
+    showPage('search');
+    document.getElementById('searchQuery').innerText = query;
+    const grid = document.getElementById('searchGrid');
+    grid.innerHTML = '<div class="loading"><div class="spinner"></div> Aranıyor...</div>';
+    
+    try {
+        const res = await fetch(`${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=tr-TR`).then(r => r.json());
+        renderGrid(res.results, 'searchGrid');
+    } catch(e) {
+        grid.innerHTML = '<div class="empty">Bir hata oluştu.</div>';
+    }
+}
+
+// DETAIL PAGE & PLAYER INTERACTION (TORRENTIO INTEGRATION)
+async function openDetailPage(id, type) {
+    showPage('detail');
+    currentItem = { id, type };
+    
+    // Reset Views
+    document.getElementById('seriesStructureSection').style.display = 'none';
+    document.getElementById('torrentioPlayer').src = '';
+    
+    try {
+        const details = await fetch(`${BASE_URL}/${type}/${id}?api_key=${TMDB_API_KEY}&language=tr-TR&append_to_response=external_ids`).then(r => r.json());
+        
+        // Get IMDb ID or Fallback to TMDB
+        const imdbId = details.external_ids?.imdb_id || details.imdb_id || id;
+        currentItem.imdbId = imdbId;
+
+        // Fill Page Details
+        document.getElementById('detailBg').style.backgroundImage = `url('${BACKDROP_URL}${details.backdrop_path}')`;
+        document.getElementById('detailPoster').src = details.poster_path ? `${IMAGE_URL}${details.poster_path}` : '';
+        document.getElementById('detailTitle').innerText = details.title || details.name;
+        document.getElementById('detailDesc').innerText = details.overview || 'Açıklama mevcut değil.';
+        document.getElementById('detailRating').innerText = `⭐ ${details.vote_average.toFixed(1)}`;
+        document.getElementById('detailYear').innerText = details.release_date || details.first_air_date || '';
+        document.getElementById('detailRuntime').innerText = details.runtime ? `${details.runtime} dk` : (details.episode_run_time ? `${details.episode_run_time[0]} dk` : '');
+        
+        // Setup tags
+        const tags = document.getElementById('detailTags');
+        tags.innerHTML = '';
+        if(details.genres) {
+            details.genres.forEach(g => {
+                tags.innerHTML += `<span class="detail-tag">${g.name}</span>`;
+            });
+        }
+
+        if(type === 'movie') {
+            // Для фильмов стримим напрямую через Stremio Embed плеер по IMDb ID
+            const playerUrl = `https://stremio-embed.netlify.app/#/player?streamurl=${encodeURIComponent(TORRENTIO_BASE + '/stream/movie/' + imdbId + '.json')}`;
+            document.getElementById('torrentioPlayer').src = playerUrl;
+        } else {
+            // Для сериалов разворачиваем структуру сезонов
+            document.getElementById('seriesStructureSection').style.display = 'block';
+            setupSeasonsAndEpisodes(details);
+        }
+
+    } catch(err) {
+        console.error("Detail load failed: ", err);
+    }
+}
+
+function setupSeasonsAndEpisodes(seriesDetails) {
+    const seasonsContainer = document.getElementById('seasonsList');
+    seasonsContainer.innerHTML = '';
+    
+    if(!seriesDetails.seasons || seriesDetails.seasons.length === 0) return;
+
+    // Фильтруем спецвыпуски (Сезон 0), если нужно
+    const validSeasons = seriesDetails.seasons.filter(s => s.season_number > 0);
+    
+    validSeasons.forEach((season, index) => {
+        const btn = document.createElement('button');
+        btn.className = `season-btn ${index === 0 ? 'active' : ''}`;
+        btn.innerText = `${season.season_number}. Sezon`;
+        btn.onclick = () => {
+            document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadEpisodes(seriesDetails.id, season.season_number);
+        };
+        seasonsContainer.appendChild(btn);
+    });
+
+    // Загружаем первый сезон по умолчанию
+    if(validSeasons.length > 0) {
+        loadEpisodes(seriesDetails.id, validSeasons[0].season_number);
+    }
+}
+
+async function loadEpisodes(seriesId, seasonNumber) {
+    const episodesContainer = document.getElementById('episodesList');
+    episodesContainer.innerHTML = '<div class="loading"><div class="spinner"></div> Bölümler Yükleniyor...</div>';
+    
+    try {
+        const res = await fetch(`${BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
+        episodesContainer.innerHTML = '';
+        
+        res.episodes.forEach((ep, index) => {
+            const btn = document.createElement('button');
+            btn.className = `episode-btn ${index === 0 ? 'active' : ''}`;
+            btn.innerText = `${ep.episode_number}. Bölüm`;
+            btn.onclick = () => {
+                document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                playEpisode(seasonNumber, ep.episode_number);
+            };
+            episodesContainer.appendChild(btn);
+        });
+
+        if(res.episodes.length > 0) {
+            playEpisode(seasonNumber, res.episodes[0].episode_number);
+        }
+    } catch(e) {
+        episodesContainer.innerHTML = '<div class="empty">Bölümler yüklenemedi.</div>';
+    }
+}
+
+function playEpisode(season, episode) {
+    // Формируем стрим-ссылку Stremio Torrentio для конкретной серии сериала
+    const streamTarget = `${TORRENTIO_BASE}/stream/series/${currentItem.imdbId}:${season}:${episode}.json`;
+    const playerUrl = `https://stremio-embed.netlify.app/#/player?streamurl=${encodeURIComponent(streamTarget)}`;
+    document.getElementById('torrentioPlayer').src = playerUrl;
+}
+
+function scrollToPlayer() {
+    document.getElementById('playerSection').scrollIntoView({ behavior: 'smooth' });
+}
+
+// SWITCH NEW RELEASES SUBPAGES
+function switchNewReleases(type, btn) {
+    document.querySelectorAll('#newReleasesFilters .genre-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mockData = type === 'movies' ? 'popularMoviesGrid' : 'trendingGrid';
+    document.getElementById('newReleasesGrid').innerHTML = document.getElementById(mockData).innerHTML;
+}
 </script>
 </body>
 </html>
