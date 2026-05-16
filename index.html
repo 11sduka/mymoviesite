@@ -1791,18 +1791,23 @@ async function openDetail(id, type) {
   document.getElementById('detailWatchBtn').onclick = async () => {
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
-    
+
     const RD_KEY = "ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
     const TORRENTIO_CONFIG = `sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=${RD_KEY}`;
     
     let finalId = id;
 
-    // Пытаемся достать IMDb ID (tt...), чтобы не было ошибки "Stream not found"
+    // ВОТ ТУТ МАГИЯ IMDB: Скрипт сам лезет в базу и берет tt-код
     try {
-      const response = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
-      const data = await response.json();
-      if (data.imdb_id) finalId = data.imdb_id;
-    } catch (e) { console.log("IMDb ID error"); }
+      const extRes = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
+      const extData = await extRes.json();
+      if (extData.imdb_id) {
+        finalId = extData.imdb_id; // Теперь у нас есть tt........
+        console.log("IMDb ID найден:", finalId);
+      }
+    } catch (e) {
+      console.log("Не удалось получить IMDb ID, используем обычный");
+    }
 
     const videoId = type === 'tv' ? `${finalId}:1:1` : finalId;
     const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
@@ -1810,17 +1815,22 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (playerWrap) {
       playerWrap.innerHTML = `
-        <iframe id="playerSource" src="${playerUrl}" 
+        <iframe 
+          id="playerSource" 
+          src="${playerUrl}" 
           style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
-          allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+          allowfullscreen 
+          allow="autoplay; encrypted-media">
+        </iframe>`;
     }
+
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
 }
 
 function goBack() {
-  const wrap = document.querySelector('.player-wrap');
-  if (wrap) wrap.innerHTML = ''; 
+  const playerWrap = document.querySelector('.player-wrap');
+  if (playerWrap) playerWrap.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
@@ -1832,8 +1842,9 @@ function scrollToTrailer() {
 
 function goFullscreen() {
   const iframe = document.getElementById('playerSource');
-  if (iframe && iframe.requestFullscreen) iframe.requestFullscreen();
-  else if (iframe && iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+  if (!iframe) return;
+  if (iframe.requestFullscreen) iframe.requestFullscreen();
+  else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
 }
 
 // MOBILE MENU
