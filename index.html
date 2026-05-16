@@ -1361,87 +1361,101 @@ main {
 </div>
 
 <script>
-const API_KEY = '857939c942111c26b3838e4ceabb040e';
-const BASE = 'https://api.themoviedb.org/3';
-const IMG = 'https://image.tmdb.org/t/p/';
-const LANG = 'tr-TR';
+const API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6';
+const BASE_URL = 'https://api.themoviedb.org/3';
+const IMG = 'https://image.tmdb.org/t/p/w500';
+const BG_IMG = 'https://image.tmdb.org/t/p/original';
+const RD_KEY = "ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
+const TORRENTIO_CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=" + RD_KEY;
 
-const movieGenres = [
-  {id:0,name:'Tümü'},{id:28,name:'Aksiyon'},{id:35,name:'Komedi'},{id:27,name:'Korku'},
-  {id:18,name:'Drama'},{id:878,name:'Bilim Kurgu'},{id:10749,name:'Romantik'},
-  {id:53,name:'Gerilim'},{id:12,name:'Macera'},{id:14,name:'Fantezi'},
-  {id:80,name:'Suç'},{id:99,name:'Belgesel'},{id:10402,name:'Müzik'}
-];
+let currentId = null;
+let currentType = null;
+let previousPage = 'home';
 
-const tvGenres = [
-  {id:0,name:'Tümü'},{id:10759,name:'Aksiyon'},{id:35,name:'Komedi'},{id:18,name:'Drama'},
-  {id:10765,name:'Bilim Kurgu'},{id:9648,name:'Gizem'},{id:10768,name:'Savaş'},
-  {id:10762,name:'Çocuk'},{id:10767,name:'Talk Show'}
-];
-
-let currentHeroMovie = null;
-let searchTimeout = null;
-let activeMovieGenre = 0;
-let activeSeriesGenre = 0;
-let activeCartoonGenre = 0;
-let activeAnimeGenre = 0;
-
-async function fetchTMDB(endpoint, params = {}) {
-  const url = new URL(BASE + endpoint);
-  url.searchParams.set('api_key', API_KEY);
-  url.searchParams.set('language', LANG);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
-  const res = await fetch(url);
-  return res.json();
-}
-
-function imgUrl(path, size='w500') {
-  return path ? IMG + size + path : null;
-}
-
-function createCard(item, type='movie') {
-  const title = item.title || item.name || 'Başlık Yok';
-  const year = (item.release_date || item.first_air_date || '').slice(0,4);
-  const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
-  const poster = imgUrl(item.poster_path);
-
-  const card = document.createElement('div');
-  card.className = 'movie-card';
-  card.onclick = () => openDetail(item.id, type);
-
-  card.innerHTML = `
-    ${poster
-      ? `<img class="card-poster" src="${poster}" alt="${title}" loading="lazy">`
-      : `<div class="card-poster-placeholder">🎬</div>`
+async function loadHome() {
+  try {
+    const res = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}&language=tr-TR`);
+    const data = await res.json();
+    if(data.results) {
+      updateHero(data.results[0]);
+      renderGrid('trendingGrid', data.results.slice(0,12));
     }
-    <div class="card-info">
-      <div class="card-title">${title}</div>
-      <div class="card-meta">
-        <span>${year || '—'}</span>
-        <span class="card-rating">★ ${rating}</span>
+    const movRes = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=tr-TR`);
+    const movData = await movRes.json();
+    renderGrid('popularMoviesGrid', movData.results.slice(0,12));
+  } catch(e) { console.error("TMDB Load Error"); }
+}
+
+function updateHero(item) {
+  const heroBg = document.getElementById('heroBg');
+  if(heroBg) heroBg.style.backgroundImage = `url(${BG_IMG}${item.backdrop_path})`;
+  document.getElementById('heroTitle').innerText = item.title || item.name;
+  document.getElementById('heroDesc').innerText = item.overview;
+  document.getElementById('heroWatchBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
+}
+
+function renderGrid(gridId, items) {
+  const grid = document.getElementById(gridId);
+  if(!grid) return;
+  grid.innerHTML = items.map(item => `
+    <div class="movie-card" onclick="openDetailPage(${item.id}, '${item.title ? 'movie' : 'tv'}')">
+      <img class="card-poster" src="${IMG}${item.poster_path}" loading="lazy">
+      <div class="card-info">
+        <div class="card-title">${item.title || item.name}</div>
+        <div class="card-meta"><span>⭐ ${item.vote_average.toFixed(1)}</span></div>
       </div>
     </div>
-  `;
-  return card;
+  `).join('');
 }
 
-function renderCards(grid, items, type='movie', insertAdAt=8) {
-  grid.innerHTML = '';
-  if (!items || items.length === 0) {
-    grid.innerHTML = '<div class="empty"><div class="empty-icon">🎬</div><div class="empty-text">Sonuç bulunamadı</div></div>';
-    return;
-  }
-  items.forEach((item, i) => {
-    if (i === insertAdAt) {
-      const ad = document.createElement('div');
-      ad.className = 'ad-inline';
-      ad.innerHTML = '<!-- REKLAM BURAYA --> REKLAM ALANI · 970×90';
-      grid.appendChild(ad);
-    }
-    grid.appendChild(createCard(item, type));
-  });
+async function openDetailPage(id, type) {
+  currentId = id; currentType = type;
+  showPage('detail');
+  const res = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=tr-TR`);
+  const data = await res.json();
+  
+  document.getElementById('detailBg').style.backgroundImage = `url(${BG_IMG}${data.backdrop_path})`;
+  document.getElementById('detailPoster').src = IMG + data.poster_path;
+  document.getElementById('detailTitle').innerText = data.title || data.name;
+  document.getElementById('detailDesc').innerText = data.overview;
+
+  document.getElementById('detailWatchBtn').onclick = async () => {
+    document.getElementById('playerSection').style.display = 'block';
+    let finalId = id;
+    try {
+      const ext = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
+      const extD = await ext.json();
+      if(extD.imdb_id) finalId = extD.imdb_id;
+    } catch(e) {}
+    const videoId = type === 'tv' ? `${finalId}:1:1` : finalId;
+    const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
+    const playerWrap = document.querySelector('.player-wrap');
+    if(playerWrap) playerWrap.innerHTML = `<iframe id="playerSource" src="${playerUrl}" style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" allowfullscreen></iframe>`;
+    document.getElementById('playerSection').scrollIntoView({behavior: 'smooth'});
+  };
 }
 
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
+  const target = document.getElementById('page-' + pageId);
+  if(target) { target.style.display = 'block'; target.classList.add('active'); }
+  window.scrollTo(0,0);
+}
+
+function goBack() {
+  const wrap = document.querySelector('.player-wrap');
+  if(wrap) wrap.innerHTML = '';
+  document.getElementById('playerSection').style.display = 'none';
+  showPage('home');
+}
+
+function toggleMobileMenu() { document.getElementById('mobileNavDrawer').classList.toggle('open'); }
+function closeMobileMenu() { document.getElementById('mobileNavDrawer').classList.remove('open'); }
+
+loadHome();
+</script>
+</body>
+</html>
 // HOME
 async function loadHome() {
   // Hero
