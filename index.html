@@ -1361,134 +1361,86 @@ main {
 </div>
 
 <script>
-<script>
-const API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6';
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMG = 'https://image.tmdb.org/t/p/w500';
-const BG_IMG = 'https://image.tmdb.org/t/p/original';
-const TORRENTIO = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
+const API_KEY = '857939c942111c26b3838e4ceabb040e';
+const BASE = 'https://api.themoviedb.org/3';
+const IMG = 'https://image.tmdb.org/t/p/';
+const LANG = 'tr-TR';
 
-// Функция-поисковик: ищет элемент по списку возможных ID из твоего дизайна
-const getEl = (ids) => {
-    for (let id of ids) {
-        let el = document.getElementById(id);
-        if (el) return el;
+const movieGenres = [
+  {id:0,name:'Tümü'},{id:28,name:'Aksiyon'},{id:35,name:'Komedi'},{id:27,name:'Korku'},
+  {id:18,name:'Drama'},{id:878,name:'Bilim Kurgu'},{id:10749,name:'Romantik'},
+  {id:53,name:'Gerilim'},{id:12,name:'Macera'},{id:14,name:'Fantezi'},
+  {id:80,name:'Suç'},{id:99,name:'Belgesel'},{id:10402,name:'Müzik'}
+];
+
+const tvGenres = [
+  {id:0,name:'Tümü'},{id:10759,name:'Aksiyon'},{id:35,name:'Komedi'},{id:18,name:'Drama'},
+  {id:10765,name:'Bilim Kurgu'},{id:9648,name:'Gizem'},{id:10768,name:'Savaş'},
+  {id:10762,name:'Çocuk'},{id:10767,name:'Talk Show'}
+];
+
+let currentHeroMovie = null;
+let searchTimeout = null;
+let activeMovieGenre = 0;
+let activeSeriesGenre = 0;
+let activeCartoonGenre = 0;
+let activeAnimeGenre = 0;
+
+async function fetchTMDB(endpoint, params = {}) {
+  const url = new URL(BASE + endpoint);
+  url.searchParams.set('api_key', API_KEY);
+  url.searchParams.set('language', LANG);
+  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k,v));
+  const res = await fetch(url);
+  return res.json();
+}
+
+function imgUrl(path, size='w500') {
+  return path ? IMG + size + path : null;
+}
+
+function createCard(item, type='movie') {
+  const title = item.title || item.name || 'Başlık Yok';
+  const year = (item.release_date || item.first_air_date || '').slice(0,4);
+  const rating = item.vote_average ? item.vote_average.toFixed(1) : 'N/A';
+  const poster = imgUrl(item.poster_path);
+
+  const card = document.createElement('div');
+  card.className = 'movie-card';
+  card.onclick = () => openDetail(item.id, type);
+
+  card.innerHTML = `
+    ${poster
+      ? `<img class="card-poster" src="${poster}" alt="${title}" loading="lazy">`
+      : `<div class="card-poster-placeholder">🎬</div>`
     }
-    return null;
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadContent();
-    setupSearch();
-});
-
-async function loadContent() {
-    try {
-        const res = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}&language=tr-TR`);
-        const data = await res.json();
-        if(!data.results) return;
-
-        // 1. Обновляем Главный баннер (Hero)
-        const item = data.results[0];
-        const title = getEl(['heroTitle', 'mainTitle', 'detTitle']);
-        const desc = getEl(['heroDesc', 'mainDesc', 'detDesc']);
-        const bg = getEl(['heroBg', 'mainBg', 'featured']);
-        const btn = getEl(['heroWatchBtn', 'heroPlayBtn', 'play-btn']);
-
-        if(title) title.innerText = item.title || item.name;
-        if(desc) desc.innerText = item.overview;
-        if(bg) bg.style.backgroundImage = `url(${BG_IMG}${item.backdrop_path})`;
-        if(btn) btn.onclick = () => openDetail(item.id, item.media_type || 'movie');
-
-        // 2. Заполняем сетки (Grid)
-        // Ищем любую сетку, которая есть в твоих 1800 строках
-        const grids = ['trendingGrid', 'popularMoviesGrid', 'homeMoviesGrid', 'movies-grid', 'grid-container'];
-        grids.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) render(el, data.results.slice(0, 12));
-        });
-
-    } catch(e) { console.error("Ошибка TMDB: ", e); }
+    <div class="card-info">
+      <div class="card-title">${title}</div>
+      <div class="card-meta">
+        <span>${year || '—'}</span>
+        <span class="card-rating">★ ${rating}</span>
+      </div>
+    </div>
+  `;
+  return card;
 }
 
-function render(container, items) {
-    if(!container) return;
-    container.innerHTML = items.map(item => `
-        <div class="movie-card" onclick="openDetail(${item.id}, '${item.media_type || (item.title?'movie':'tv')}')" style="cursor:pointer">
-            <img class="card-poster" src="${IMG}${item.poster_path}" style="width:100%; border-radius:10px;">
-            <div class="card-info">
-                <div class="card-title" style="font-weight:bold; margin-top:5px;">${item.title || item.name}</div>
-                <div class="card-meta">⭐ ${item.vote_average.toFixed(1)}</div>
-            </div>
-        </div>`).join('');
-}
-
-async function openDetail(id, type) {
-    // Пытаемся найти страницу деталей и показать её
-    const detailPage = getEl(['page-detail', 'detail', 'movie-detail']);
-    const homePage = getEl(['page-home', 'home', 'main-content']);
-    
-    if(detailPage) {
-        if(homePage) homePage.style.display = 'none';
-        detailPage.style.display = 'block';
-        detailPage.classList.add('active');
+function renderCards(grid, items, type='movie', insertAdAt=8) {
+  grid.innerHTML = '';
+  if (!items || items.length === 0) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">🎬</div><div class="empty-text">Sonuç bulunamadı</div></div>';
+    return;
+  }
+  items.forEach((item, i) => {
+    if (i === insertAdAt) {
+      const ad = document.createElement('div');
+      ad.className = 'ad-inline';
+      ad.innerHTML = '<!-- REKLAM BURAYA --> REKLAM ALANI · 970×90';
+      grid.appendChild(ad);
     }
-
-    const res = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=tr-TR`);
-    const data = await res.json();
-
-    // Заполняем инфо в детализации
-    const dTitle = getEl(['detailTitle', 'det-title']);
-    const dDesc = getEl(['detailDesc', 'det-desc']);
-    const dPoster = getEl(['detailPoster', 'det-poster']);
-    
-    if(dTitle) dTitle.innerText = data.title || data.name;
-    if(dDesc) dDesc.innerText = data.overview;
-    if(dPoster) dPoster.src = IMG + data.poster_path;
-
-    // Запуск плеера
-    const player = getEl(['torrentioPlayer', 'player', 'main-player', 'video-iframe']);
-    if(player) {
-        const vId = type === 'tv' ? `${id}:1:1` : id;
-        player.src = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${vId}&config=${encodeURIComponent(TORRENTIO)}`;
-    }
-    window.scrollTo(0,0);
+    grid.appendChild(createCard(item, type));
+  });
 }
-
-function setupSearch() {
-    const sInput = getEl(['searchInput', 'search-input', 'q']);
-    if(!sInput) return;
-    sInput.onkeypress = async (e) => {
-        if(e.key === 'Enter') {
-            const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${e.target.value}&language=tr-TR`);
-            const data = await res.json();
-            const movieGrid = getEl(['moviesGrid', 'categoryGrid', 'search-results']);
-            if(movieGrid) {
-                // Показываем страницу с результатами
-                const moviePage = getEl(['page-movies', 'movies', 'search-page']);
-                const homePage = getEl(['page-home', 'home']);
-                if(moviePage) {
-                    if(homePage) homePage.style.display = 'none';
-                    moviePage.style.display = 'block';
-                    render(movieGrid, data.results.filter(i => i.poster_path));
-                }
-            }
-        }
-    };
-}
-
-function goBack() {
-    const pages = ['page-detail', 'page-movies', 'detail', 'movies'];
-    const home = getEl(['page-home', 'home']);
-    pages.forEach(p => {
-        const el = document.getElementById(p);
-        if(el) el.style.display = 'none';
-    });
-    if(home) home.style.display = 'block';
-}
-</script>
-</body>
-</html>
 
 // HOME
 async function loadHome() {
@@ -1798,7 +1750,7 @@ async function openDetail(id, type) {
     const item = document.createElement('div');
     item.className = 'cast-item';
     item.innerHTML = `
-      <img class="cast-photo" src="${photo || ''}" alt="${actor.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><rect width=%2252%22 height=%2252%22 fill=%22%231e1035%22/><text x=%2226%22 y=%2234%22 font-size=%2224%22 text-anchor=%22middle%22>👤</text></svg>'">
+      <img class="cast-photo" src="${photo || ''}" alt="${actor.name}" onerror="this.style.display='none'">
       <div class="cast-name">${actor.name}</div>
       <div class="cast-name" style="color:var(--text3);font-size:10px">${actor.character||''}</div>
     `;
