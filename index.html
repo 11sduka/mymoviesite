@@ -152,8 +152,6 @@ nav {
   z-index: 1;
 }
 
-/* <!-- REKLAM BURAYA - ÜST BANNER --> */
-
 /* HERO */
 .hero {
   position: relative;
@@ -362,7 +360,6 @@ main {
   letter-spacing: 1px;
   margin: 8px 0;
 }
-/* <!-- REKLAM BURAYA - FILMLER ARASI --> */
 
 /* MOVIE CARD */
 .movie-card {
@@ -597,9 +594,7 @@ main {
 
 .modal-section-title {
   font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text2);
+  font-color: var(--text2);
   margin-bottom: 10px;
   margin-top: 20px;
   letter-spacing: 0.5px;
@@ -809,7 +804,6 @@ main {
 
 <!-- TOP BANNER AD -->
 <div class="ad-banner-top" id="adBannerTop">
-  <!-- REKLAM BURAYA - ÜST BANNER (728x90) -->
   <span>REKLAM ALANI · 728×90</span>
 </div>
 
@@ -855,7 +849,6 @@ main {
 
     <!-- AD INLINE -->
     <div class="ad-inline">
-      <!-- REKLAM BURAYA - ORTA BANNER (970x90) -->
       REKLAM ALANI · 970×90
     </div>
 
@@ -905,7 +898,6 @@ main {
 
     <!-- AD INLINE 2 -->
     <div class="ad-inline">
-      <!-- REKLAM BURAYA - ALT BANNER (970x90) -->
       REKLAM ALANI · 970×90
     </div>
 
@@ -1123,6 +1115,8 @@ let activeMovieGenre = 0;
 let activeSeriesGenre = 0;
 let activeCartoonGenre = 0;
 let activeAnimeGenre = 0;
+let activeTurkishGenre = 0;
+let activeRussianGenre = 0;
 
 async function fetchTMDB(endpoint, params = {}) {
   const url = new URL(BASE + endpoint);
@@ -1173,7 +1167,7 @@ function renderCards(grid, items, type='movie', insertAdAt=8) {
     if (i === insertAdAt) {
       const ad = document.createElement('div');
       ad.className = 'ad-inline';
-      ad.innerHTML = '<!-- REKLAM BURAYA --> REKLAM ALANI · 970×90';
+      ad.innerHTML = 'REKLAM ALANI · 970×90';
       grid.appendChild(ad);
     }
     grid.appendChild(createCard(item, type));
@@ -1182,7 +1176,6 @@ function renderCards(grid, items, type='movie', insertAdAt=8) {
 
 // HOME
 async function loadHome() {
-  // Hero
   const trending = await fetchTMDB('/trending/movie/week');
   if (trending.results && trending.results.length > 0) {
     const movie = trending.results[Math.floor(Math.random() * 5)];
@@ -1199,307 +1192,240 @@ async function loadHome() {
     document.getElementById('heroWatchBtn').onclick = () => openModal(movie.id, 'movie');
   }
 
-  // Trending
-  const tGrid = document.getElementById('trendingGrid');
-  renderCards(tGrid, trending.results?.slice(0,20), 'movie');
+  renderCards(document.getElementById('trendingGrid'), trending.results?.slice(0,20), 'movie');
 
-  // Popular Movies
   const popMovies = await fetchTMDB('/movie/popular');
   renderCards(document.getElementById('popularMoviesGrid'), popMovies.results?.slice(0,20), 'movie');
 
-  // Popular Series
   const popSeries = await fetchTMDB('/tv/popular');
   renderCards(document.getElementById('popularSeriesGrid'), popSeries.results?.slice(0,20), 'tv');
 
-  // New series home
   const newSeries = await fetchTMDB('/tv/on_the_air');
   renderCards(document.getElementById('newSeriesHomeGrid'), newSeries.results?.slice(0,20), 'tv');
 
-  // Turkish series home
   const turkish = await fetchTMDB('/discover/tv', {with_origin_country:'TR', sort_by:'popularity.desc'});
   renderCards(document.getElementById('turkishHomeGrid'), turkish.results?.slice(0,20), 'tv');
 
-  // Russian series home
   const russian = await fetchTMDB('/discover/tv', {with_origin_country:'RU', sort_by:'popularity.desc'});
   renderCards(document.getElementById('russianHomeGrid'), russian.results?.slice(0,20), 'tv');
 
-  // Anime home
-  const anime = await fetchTMDB('/discover/tv', {with_genres:'16', with_origin_country:'JP', sort_by:'popularity.desc'});
+  const anime = await fetchTMDB('/discover/tv', {with_genres:'16', with_keywords:'210024', sort_by:'popularity.desc'});
   renderCards(document.getElementById('animeHomeGrid'), anime.results?.slice(0,20), 'tv');
 }
 
-// MOVIES
-async function fetch100(endpoint, params={}) {
-  const [p1,p2,p3,p4,p5] = await Promise.all([
-    fetchTMDB(endpoint, {...params, page:1}),
-    fetchTMDB(endpoint, {...params, page:2}),
-    fetchTMDB(endpoint, {...params, page:3}),
-    fetchTMDB(endpoint, {...params, page:4}),
-    fetchTMDB(endpoint, {...params, page:5}),
-  ]);
-  return [...(p1.results||[]),...(p2.results||[]),...(p3.results||[]),...(p4.results||[]),...(p5.results||[])];
+// PAGE MANAGEMENT
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  
+  const targetPage = document.getElementById(`page-${pageId}`);
+  if (targetPage) targetPage.classList.add('active');
+  
+  const targetNav = document.getElementById(`nav-${pageId}`);
+  if (targetNav) targetNav.classList.add('active');
+
+  window.scrollTo({top: 0, behavior: 'smooth'});
+
+  if (pageId === 'movies') loadMoviesPage();
+  if (pageId === 'series') loadSeriesPage();
+  if (pageId === 'cartoons') loadCartoonsPage();
+  if (pageId === 'anime') loadAnimePage();
+  if (pageId === 'toprated') loadTopRatedPage();
+  if (pageId === 'newreleases') loadNewReleasesPage();
+  if (pageId === 'turkish') loadTurkishPage();
+  if (pageId === 'russian') loadRussianPage();
 }
 
-async function loadMovies(genreId=0) {
-  const grid = document.getElementById('moviesGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/movie', params);
-  renderCards(grid, all.slice(0,100), 'movie');
-}
-
-function buildGenreFilters(containerId, genres, activeId, onClickFn) {
-  const c = document.getElementById(containerId);
-  c.innerHTML = '';
-  genres.forEach(g => {
-    const btn = document.createElement('button');
-    btn.className = 'genre-btn' + (g.id === activeId ? ' active' : '');
-    btn.textContent = g.name;
-    btn.onclick = () => {
-      c.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      onClickFn(g.id);
-    };
-    c.appendChild(btn);
+// DYNAMIC LOADING & FILTERS
+async function loadMoviesPage() {
+  renderFilters('movieGenreFilters', movieGenres, activeMovieGenre, async (id) => {
+    activeMovieGenre = id;
+    const params = id ? {with_genres: id} : {};
+    const data = await fetchTMDB('/discover/movie', params);
+    renderCards(document.getElementById('moviesGrid'), data.results, 'movie');
   });
 }
 
-// SERIES
-async function loadSeries(genreId=0) {
-  const grid = document.getElementById('seriesGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/tv', params);
-  renderCards(grid, all.slice(0,100), 'tv');
+async function loadSeriesPage() {
+  renderFilters('seriesGenreFilters', tvGenres, activeSeriesGenre, async (id) => {
+    activeSeriesGenre = id;
+    const params = id ? {with_genres: id} : {};
+    const data = await fetchTMDB('/discover/tv', params);
+    renderCards(document.getElementById('seriesGrid'), data.results, 'tv');
+  });
 }
 
-// CARTOONS
-async function loadCartoons(genreId=0) {
-  const grid = document.getElementById('cartoonsGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc', with_genres: genreId ? `16,${genreId}` : '16'};
-  const all = await fetch100('/discover/movie', params);
-  renderCards(grid, all.slice(0,100), 'movie');
+async function loadCartoonsPage() {
+  renderFilters('cartoonGenreFilters', tvGenres, activeCartoonGenre, async (id) => {
+    activeCartoonGenre = id;
+    const params = {with_genres: id ? `16,${id}` : '16'};
+    const data = await fetchTMDB('/discover/tv', params);
+    renderCards(document.getElementById('cartoonsGrid'), data.results, 'tv');
+  });
 }
 
-// ANIME
-async function loadAnime(genreId=0) {
-  const grid = document.getElementById('animeGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  const params = {sort_by:'popularity.desc', with_origin_country:'JP', with_genres: genreId ? `16,${genreId}` : '16'};
-  const all = await fetch100('/discover/tv', params);
-  renderCards(grid, all.slice(0,100), 'tv');
+async function loadAnimePage() {
+  renderFilters('animeGenreFilters', tvGenres, activeAnimeGenre, async (id) => {
+    activeAnimeGenre = id;
+    const params = {with_genres: id ? `16,${id}` : '16', with_keywords: '210024'};
+    const data = await fetchTMDB('/discover/tv', params);
+    renderCards(document.getElementById('animeGrid'), data.results, 'tv');
+  });
 }
 
-// TURKISH SERIES
-async function loadTurkish(genreId=0) {
-  const grid = document.getElementById('turkishGrid');
-  if(grid) { grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>'; }
-  const params = {sort_by:'popularity.desc', with_origin_country:'TR'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/tv', params);
-  if(grid) renderCards(grid, all.slice(0,100), 'tv');
+async function loadTurkishPage() {
+  renderFilters('turkishGenreFilters', tvGenres, activeTurkishGenre, async (id) => {
+    activeTurkishGenre = id;
+    const params = {with_origin_country: 'TR', sort_by: 'popularity.desc'};
+    if (id) params.with_genres = id;
+    const data = await fetchTMDB('/discover/tv', params);
+    renderCards(document.getElementById('turkishGrid'), data.results, 'tv');
+  });
 }
 
-// RUSSIAN SERIES
-async function loadRussian(genreId=0) {
-  const grid = document.getElementById('russianGrid');
-  if(grid) { grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>'; }
-  const params = {sort_by:'popularity.desc', with_origin_country:'RU'};
-  if (genreId) params.with_genres = genreId;
-  const all = await fetch100('/discover/tv', params);
-  if(grid) renderCards(grid, all.slice(0,100), 'tv');
+async function loadRussianPage() {
+  renderFilters('russianGenreFilters', tvGenres, activeRussianGenre, async (id) => {
+    activeRussianGenre = id;
+    const params = {with_origin_country: 'RU', sort_by: 'popularity.desc'};
+    if (id) params.with_genres = id;
+    const data = await fetchTMDB('/discover/tv', params);
+    renderCards(document.getElementById('russianGrid'), data.results, 'tv');
+  });
 }
 
-// TOP RATED
-async function loadTopRated() {
-  const all = await fetch100('/movie/top_rated');
-  renderCards(document.getElementById('topRatedGrid'), all.slice(0,100), 'movie');
+async function loadTopRatedPage() {
+  const data = await fetchTMDB('/movie/top_rated');
+  renderCards(document.getElementById('topRatedGrid'), data.results, 'movie');
 }
 
-// NEW RELEASES
-async function loadNewReleases() {
-  // Default: movies
-  const all = await fetch100('/movie/now_playing');
-  renderCards(document.getElementById('newReleasesGrid'), all.slice(0,100), 'movie');
+let currentNewReleasesType = 'movies';
+async function loadNewReleasesPage() {
+  switchNewReleases(currentNewReleasesType, document.querySelector(`#newReleasesFilters .genre-btn`));
 }
 
 async function switchNewReleases(type, btn) {
-  // Update active button
+  currentNewReleasesType = type;
   document.querySelectorAll('#newReleasesFilters .genre-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  
-  const grid = document.getElementById('newReleasesGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Yükleniyor...</div>';
-  
-  let all = [];
-  if (type === 'movies') {
-    all = await fetch100('/movie/now_playing');
-    renderCards(grid, all.slice(0,100), 'movie');
-  } else if (type === 'series') {
-    all = await fetch100('/tv/on_the_air');
-    renderCards(grid, all.slice(0,100), 'tv');
-  } else if (type === 'turkish') {
-    all = await fetch100('/discover/tv', {with_origin_country:'TR', sort_by:'first_air_date.desc'});
-    renderCards(grid, all.slice(0,100), 'tv');
-  } else if (type === 'russian') {
-    all = await fetch100('/discover/tv', {with_origin_country:'RU', sort_by:'first_air_date.desc'});
-    renderCards(grid, all.slice(0,100), 'tv');
-  } else if (type === 'cartoons') {
-    all = await fetch100('/discover/movie', {with_genres:'16', sort_by:'release_date.desc'});
-    renderCards(grid, all.slice(0,100), 'movie');
-  } else if (type === 'anime') {
-    all = await fetch100('/discover/tv', {with_origin_country:'JP', with_genres:'16', sort_by:'first_air_date.desc'});
-    renderCards(grid, all.slice(0,100), 'tv');
+  if(btn) btn.classList.add('active');
+
+  let data;
+  if (type === 'movies') data = await fetchTMDB('/movie/now_playing');
+  else if (type === 'series') data = await fetchTMDB('/tv/on_the_air');
+  else if (type === 'turkish') data = await fetchTMDB('/discover/tv', {with_origin_country:'TR', sort_by:'first_air_date.desc'});
+  else if (type === 'russian') data = await fetchTMDB('/discover/tv', {with_origin_country:'RU', sort_by:'first_air_date.desc'});
+  else if (type === 'cartoons') data = await fetchTMDB('/discover/tv', {with_genres:'16', sort_by:'first_air_date.desc'});
+  else if (type === 'anime') data = await fetchTMDB('/discover/tv', {with_genres:'16', with_keywords:'210024', sort_by:'first_air_date.desc'});
+
+  renderCards(document.getElementById('newReleasesGrid'), data.results, type === 'movies' ? 'movie' : 'tv');
+}
+
+function renderFilters(containerId, genres, activeId, callback) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  genres.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = `genre-btn ${g.id === activeId ? 'active' : ''}`;
+    btn.textContent = g.name;
+    btn.onclick = () => {
+      container.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      callback(g.id);
+    };
+    container.appendChild(btn);
+  });
+  if (container.children.length > 0 && !activeId) {
+    container.children[0].click();
   }
 }
 
 // SEARCH
-function handleSearch(val) {
+function handleSearch(q) {
   clearTimeout(searchTimeout);
-  if (!val.trim()) {
-    if (document.getElementById('page-search').classList.contains('active')) {
-      showPage('home');
-    }
+  if (!q.trim()) {
+    showPage('home');
     return;
   }
-  searchTimeout = setTimeout(() => doSearch(val.trim()), 400);
+  searchTimeout = setTimeout(async () => {
+    showPage('search');
+    document.getElementById('searchQuery').textContent = q;
+    const data = await fetchTMDB('/search/multi', {query: q});
+    const filtered = data.results?.filter(i => i.media_type === 'movie' || i.media_type === 'tv');
+    
+    const grid = document.getElementById('searchGrid');
+    grid.innerHTML = '';
+    if(!filtered || filtered.length === 0) {
+      grid.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">Sonuç bulunamadı</div></div>';
+      return;
+    }
+    filtered.forEach(item => grid.appendChild(createCard(item, item.media_type)));
+  }, 500);
 }
 
-async function doSearch(q) {
-  showPageRaw('search');
-  document.getElementById('searchQuery').textContent = q;
-  const grid = document.getElementById('searchGrid');
-  grid.innerHTML = '<div class="loading"><div class="spinner"></div> Aranıyor...</div>';
-  const data = await fetchTMDB('/search/multi', {query: q});
-  const results = (data.results||[]).filter(r => r.media_type !== 'person');
-  renderCards(grid, results, 'auto');
-}
-
-// PAGE NAVIGATION
-function showPageRaw(name) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  document.getElementById('page-'+name)?.classList.add('active');
-  document.getElementById('nav-'+name)?.classList.add('active');
-  window.scrollTo(0,0);
-}
-
-function showPage(name) {
-  document.getElementById('searchInput').value = '';
-  showPageRaw(name);
-
-  if (name === 'home') loadHome();
-  else if (name === 'movies') {
-    buildGenreFilters('movieGenreFilters', movieGenres, activeMovieGenre, (id) => { activeMovieGenre=id; loadMovies(id); });
-    loadMovies(activeMovieGenre);
-  }
-  else if (name === 'series') {
-    buildGenreFilters('seriesGenreFilters', tvGenres, activeSeriesGenre, (id) => { activeSeriesGenre=id; loadSeries(id); });
-    loadSeries(activeSeriesGenre);
-  }
-  else if (name === 'cartoons') {
-    buildGenreFilters('cartoonGenreFilters', movieGenres.slice(0,8), activeCartoonGenre, (id) => { activeCartoonGenre=id; loadCartoons(id); });
-    loadCartoons(activeCartoonGenre);
-  }
-  else if (name === 'anime') {
-    buildGenreFilters('animeGenreFilters', tvGenres.slice(0,8), activeAnimeGenre, (id) => { activeAnimeGenre=id; loadAnime(id); });
-    loadAnime(activeAnimeGenre);
-  }
-  else if (name === 'turkish') {
-    buildGenreFilters('turkishGenreFilters', tvGenres, 0, (id) => loadTurkish(id));
-    loadTurkish(0);
-  }
-  else if (name === 'russian') {
-    buildGenreFilters('russianGenreFilters', tvGenres, 0, (id) => loadRussian(id));
-    loadRussian(0);
-  }
-  else if (name === 'toprated') loadTopRated();
-  else if (name === 'newreleases') loadNewReleases();
-}
-
-// MODAL
+// MODAL SYSTEM
 async function openModal(id, type) {
-  if (type === 'auto') type = 'movie';
   const overlay = document.getElementById('modalOverlay');
   overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Reset
-  document.getElementById('modalTitle').textContent = 'Yükleniyor...';
-  document.getElementById('modalDesc').textContent = '';
-  document.getElementById('modalTags').innerHTML = '';
-  document.getElementById('modalCast').innerHTML = '';
-  document.getElementById('trailerWrap').style.display = 'none';
-  document.getElementById('trailerLabel').style.display = 'none';
-  document.getElementById('trailerFrame').src = '';
+  const item = await fetchTMDB(`/${type}/${id}`, {append_to_response: 'credits,videos'});
+  
+  const bg = imgUrl(item.backdrop_path, 'original');
+  document.getElementById('modalBg').src = bg || '';
+  document.getElementById('modalPoster').src = imgUrl(item.poster_path) || '';
+  document.getElementById('modalTitle').textContent = item.title || item.name;
+  document.getElementById('modalRating').textContent = item.vote_average ? `★ ${item.vote_average.toFixed(1)}` : 'N/A';
+  document.getElementById('modalYear').textContent = (item.release_date || item.first_air_date || '').slice(0,4) || '—';
+  document.getElementById('modalRuntime').textContent = type === 'movie' ? (item.runtime ? `${item.runtime} dk` : '') : (item.number_of_seasons ? `${item.number_of_seasons} Sezon` : '');
+  document.getElementById('modalDesc').textContent = item.overview || 'Konu açıklaması bulunmuyor.';
 
-  const endpoint = type === 'tv' ? `/tv/${id}` : `/movie/${id}`;
-  const data = await fetchTMDB(endpoint, {append_to_response:'credits,videos'});
-
-  const title = data.title || data.name || '';
-  const year = (data.release_date || data.first_air_date || '').slice(0,4);
-  const rating = data.vote_average?.toFixed(1) || 'N/A';
-  const runtime = data.runtime ? `${data.runtime} dk` : (data.episode_run_time?.[0] ? `${data.episode_run_time[0]} dk/bölüm` : '');
-  const desc = data.overview || 'Açıklama mevcut değil.';
-  const genres = data.genres || [];
-  const poster = imgUrl(data.poster_path);
-  const backdrop = imgUrl(data.backdrop_path, 'original');
-
-  document.getElementById('modalTitle').textContent = title;
-  document.getElementById('modalRating').textContent = 'TMDB ★ ' + rating;
-  document.getElementById('modalYear').textContent = year;
-  document.getElementById('modalRuntime').textContent = runtime;
-  document.getElementById('modalDesc').textContent = desc;
-
-  if (backdrop) {
-    document.getElementById('modalBg').src = backdrop;
-  }
-  if (poster) {
-    document.getElementById('modalPoster').src = poster;
-    document.getElementById('modalPoster').style.display = 'block';
-  }
-
-  const tagsEl = document.getElementById('modalTags');
-  genres.forEach(g => {
-    const tag = document.createElement('span');
-    tag.className = 'modal-tag';
-    tag.textContent = g.name;
-    tagsEl.appendChild(tag);
+  // Tags
+  const tags = document.getElementById('modalTags');
+  tags.innerHTML = '';
+  item.genres?.forEach(g => {
+    const t = document.createElement('span');
+    t.className = 'modal-tag';
+    t.textContent = g.name;
+    tags.appendChild(t);
   });
 
   // Cast
-  const cast = data.credits?.cast?.slice(0,8) || [];
-  const castEl = document.getElementById('modalCast');
-  if (cast.length > 0) {
+  const cast = document.getElementById('modalCast');
+  cast.innerHTML = '';
+  const topCast = item.credits?.cast?.slice(0, 6) || [];
+  if(topCast.length === 0) {
+    document.getElementById('castLabel').style.display = 'none';
+  } else {
     document.getElementById('castLabel').style.display = 'block';
-    cast.forEach(actor => {
-      const photo = imgUrl(actor.profile_path, 'w185');
-      const item = document.createElement('div');
-      item.className = 'cast-item';
-      item.innerHTML = `
-        <img class="cast-photo" src="${photo || 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 52 52%22><rect width=%2252%22 height=%2252%22 fill=%22%231e1035%22/><text x=%2226%22 y=%2234%22 font-size=%2224%22 text-anchor=%22middle%22>👤</text></svg>'}" alt="${actor.name}">
-        <div class="cast-name">${actor.name}</div>
+    topCast.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'cast-item';
+      div.innerHTML = `
+        <img class="cast-photo" src="${imgUrl(c.profile_path) || 'https://via.placeholder.com/150'}" alt="${c.name}">
+        <span class="cast-name">${c.name}</span>
       `;
-      castEl.appendChild(item);
+      cast.appendChild(div);
     });
   }
 
   // Trailer
-  const videos = data.videos?.results || [];
-  const trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube') || videos[0];
+  const trailer = item.videos?.results?.find(v => v.type === 'Trailer' && v.site === 'YouTube');
+  const label = document.getElementById('trailerLabel');
+  const wrap = document.getElementById('trailerWrap');
+  const frame = document.getElementById('trailerFrame');
+  
   if (trailer) {
-    document.getElementById('trailerLabel').style.display = 'block';
-    document.getElementById('trailerWrap').style.display = 'block';
-    document.getElementById('trailerFrame').src = `https://www.youtube.com/embed/${trailer.key}`;
+    label.style.display = 'block';
+    wrap.style.display = 'block';
+    frame.src = `https://www.youtube.com/embed/${trailer.key}`;
+  } else {
+    label.style.display = 'none';
+    wrap.style.display = 'none';
+    frame.src = '';
   }
 
-  // Watch button
+  // Player link mock
   document.getElementById('modalWatchBtn').onclick = () => {
-    // BURAYA İZLEME LİNKİNİ EKLE - Watch Now
-    alert('İzleme linki yakında eklenecek!');
+    alert('Oynatıcı yükleniyor... Bu alan entegrasyona hazırdır.');
   };
 }
 
@@ -1510,15 +1436,10 @@ function closeModal() {
 }
 
 function closeModalOutside(e) {
-  if (e.target === document.getElementById('modalOverlay')) closeModal();
+  if (e.target.id === 'modalOverlay') closeModal();
 }
 
-// ESC key
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeModal();
-});
-
-// MOBILE MENU
+// MENU MOBILE
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
 }
@@ -1527,7 +1448,9 @@ function closeMobileMenu() {
 }
 
 // INIT
-loadHome();
+window.onload = () => {
+  loadHome();
+};
 </script>
 </body>
 </html>
