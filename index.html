@@ -1792,62 +1792,40 @@ async function openDetail(id, type) {
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
 
+    // 1. Твой токен Real-Debrid
     const RD_KEY = "ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
     const TORRENTIO_CONFIG = `sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=${RD_KEY}`;
     
-    let finalId = id;
+    let imdbId = "";
 
-    // ШАГ 1: Получаем правильный ID (IMDb), чтобы не было "Stream not found"
+    // 2. ГЛАВНОЕ ИСПРАВЛЕНИЕ: Получаем tt-номер (IMDb)
     try {
-      const extRes = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
-      const extData = await extRes.json();
-      if (extData.imdb_id) {
-        finalId = extData.imdb_id;
-      }
-    } catch (e) {
-      console.log("IMDb ID not found");
-    }
+      const response = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
+      const data = await response.json();
+      imdbId = data.imdb_id; // Теперь Torrentio увидит фильм
+    } catch (e) { console.log("ID error"); }
 
-    // ШАГ 2: Формируем ссылку
+    const finalId = imdbId || id;
     const videoId = type === 'tv' ? `${finalId}:1:1` : finalId;
     const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
     
-    // ШАГ 3: Вставляем плеер в твой блок .player-wrap
+    // 3. Вставляем плеер (твои старые функции его не видели)
     const playerWrap = document.querySelector('.player-wrap');
     if (playerWrap) {
-      playerWrap.innerHTML = `
-        <iframe 
-          id="playerSource" 
-          src="${playerUrl}" 
-          style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
-          allowfullscreen 
-          allow="autoplay; encrypted-media">
-        </iframe>`;
+      playerWrap.innerHTML = `<iframe src="${playerUrl}" style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" allowfullscreen></iframe>`;
     }
-
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
-}
+} // Тут закрывается openDetailPage
 
+// ФИКС КНОПКИ НАЗАД (чтобы музыка из плеера не орала после выхода)
 function goBack() {
-  const playerWrap = document.querySelector('.player-wrap');
-  if (playerWrap) playerWrap.innerHTML = ''; // Останавливаем звук при выходе
+  const wrap = document.querySelector('.player-wrap');
+  if (wrap) wrap.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
 }
-
-function scrollToTrailer() {
-  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
-}
-
-function goFullscreen() {
-  const iframe = document.getElementById('playerSource');
-  if (!iframe) return;
-  if (iframe.requestFullscreen) iframe.requestFullscreen();
-  else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
-}
-
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
