@@ -1797,21 +1797,22 @@ async function openDetail(id, type) {
     
     let finalId = id;
 
-    // ВОТ ТУТ МАГИЯ IMDB: Скрипт сам лезет в базу и берет tt-код
+    // ШАГ 1: Получаем правильный ID (IMDb), чтобы не было "Stream not found"
     try {
       const extRes = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
       const extData = await extRes.json();
       if (extData.imdb_id) {
-        finalId = extData.imdb_id; // Теперь у нас есть tt........
-        console.log("IMDb ID найден:", finalId);
+        finalId = extData.imdb_id;
       }
     } catch (e) {
-      console.log("Не удалось получить IMDb ID, используем обычный");
+      console.log("IMDb ID not found");
     }
 
+    // ШАГ 2: Формируем ссылку
     const videoId = type === 'tv' ? `${finalId}:1:1` : finalId;
     const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
     
+    // ШАГ 3: Вставляем плеер в твой блок .player-wrap
     const playerWrap = document.querySelector('.player-wrap');
     if (playerWrap) {
       playerWrap.innerHTML = `
@@ -1830,7 +1831,7 @@ async function openDetail(id, type) {
 
 function goBack() {
   const playerWrap = document.querySelector('.player-wrap');
-  if (playerWrap) playerWrap.innerHTML = ''; 
+  if (playerWrap) playerWrap.innerHTML = ''; // Останавливаем звук при выходе
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
