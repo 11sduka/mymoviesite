@@ -1792,28 +1792,53 @@ async function openDetail(id, type) {
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
     
-    // Твой ключ Real-Debrid уже внутри ссылки
+    // ТВОЙ КОНФИГ С REAL-DEBRID
     const TORRENTIO_CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
     
-    // Авто-определение: фильм или сериал
+    // ID для фильма или сериала (1 сезон 1 серия по умолчанию)
     const videoId = type === 'tv' ? `${id}:1:1` : id;
     
-    // Готовая ссылка на плеер
+    // Ссылка на плеер
     const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
     
-    // Эта строчка сама находит твой черный плеер и заменяет его на рабочее кино
+    // ЭТА ЧАСТЬ УДАЛЯЕТ СТАРЫЙ ПЛЕЕР И СТАВИТ РАБОЧИЙ
     const playerWrap = document.querySelector('.player-wrap');
-    playerWrap.innerHTML = `
-      <iframe 
-        id="playerSource" 
-        src="${playerUrl}" 
-        style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
-        allowfullscreen 
-        allow="autoplay; encrypted-media">
-      </iframe>`;
-
+    if (playerWrap) {
+      playerWrap.innerHTML = `
+        <iframe 
+          id="playerSource" 
+          src="${playerUrl}" 
+          style="width:100%; height:100%; min-height:500px; border:none; border-radius:12px; background:#000;" 
+          allowfullscreen 
+          allow="autoplay; encrypted-media">
+        </iframe>`;
+    }
+    
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
+}
+
+function goBack() {
+  // Выключаем плеер полностью при выходе
+  const playerWrap = document.querySelector('.player-wrap');
+  if (playerWrap) playerWrap.innerHTML = ''; 
+  
+  document.getElementById('detailTrailerFrame').src = '';
+  document.getElementById('playerSection').style.display = 'none';
+  showPage(previousPage);
+}
+
+function scrollToTrailer() {
+  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
+}
+
+function goFullscreen() {
+  const iframe = document.getElementById('playerSource');
+  if (!iframe) return;
+  if (iframe.requestFullscreen) iframe.requestFullscreen();
+  else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+}
+
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
