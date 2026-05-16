@@ -1792,39 +1792,60 @@ async function openDetail(id, type) {
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
 
-    // 1. Твой токен Real-Debrid
     const RD_KEY = "ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
-    const TORRENTIO_CONFIG = `sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=${RD_KEY}`;
     
     let imdbId = "";
-
-    // 2. ГЛАВНОЕ ИСПРАВЛЕНИЕ: Получаем tt-номер (IMDb)
+    // Пытаемся получить IMDb ID
     try {
       const response = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
       const data = await response.json();
-      imdbId = data.imdb_id; // Теперь Torrentio увидит фильм
-    } catch (e) { console.log("ID error"); }
+      imdbId = data.imdb_id;
+    } catch (e) { console.error("ID Error"); }
 
     const finalId = imdbId || id;
-    const videoId = type === 'tv' ? `${finalId}:1:1` : finalId;
-    const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
     
-    // 3. Вставляем плеер (твои старые функции его не видели)
+    // МЕНЯЕМ ПЛЕЕР: Используем официальный веб-интерфейс Stremio (или альтернативу)
+    // Это решит проблему с "Broken link" на Netlify
+    const playerUrl = type === 'tv' 
+      ? `https://web.stremio.com/#/player?type=tv&id=${finalId}:1:1`
+      : `https://web.stremio.com/#/player?type=movie&id=${finalId}`;
+    
+    // ВАЖНО: Если ты хочешь именно через Torrentio + RealDebrid в браузере, 
+    // попробуй этот формат (он самый стабильный):
+    const torrentioUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${type === 'tv' ? finalId + ':1:1' : finalId}&config=sort=seeders|realdebrid=${RD_KEY}`;
+
     const playerWrap = document.querySelector('.player-wrap');
     if (playerWrap) {
-      playerWrap.innerHTML = `<iframe src="${playerUrl}" style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" allowfullscreen></iframe>`;
+      // Если Netlify сдох, мы используем прямой эмбед Stremio
+      playerWrap.innerHTML = `
+        <iframe 
+          src="${playerUrl}" 
+          style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
+          allowfullscreen>
+        </iframe>`;
     }
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
-} // Тут закрывается openDetailPage
+}
 
-// ФИКС КНОПКИ НАЗАД (чтобы музыка из плеера не орала после выхода)
 function goBack() {
   const wrap = document.querySelector('.player-wrap');
   if (wrap) wrap.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
+}
+
+function scrollToTrailer() {
+  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
+}
+
+function goFullscreen() {
+  const iframe = document.querySelector('.player-wrap iframe');
+  if (iframe) {
+    if (iframe.requestFullscreen) iframe.requestFullscreen();
+    else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+  }
 }
 // MOBILE MENU
 function toggleMobileMenu() {
