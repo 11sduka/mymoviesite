@@ -1361,122 +1361,130 @@ main {
 </div>
 
 <script>
-// --- ТВОИ НАСТРОЙКИ ---
+<script>
 const API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6';
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMG = 'https://image.tmdb.org/t/p/w500';
 const BG_IMG = 'https://image.tmdb.org/t/p/original';
-const TORRENTIO_CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
+const TORRENTIO = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
 
-let currentId = null;
-let currentType = null;
+// Функция-поисковик: ищет элемент по списку возможных ID из твоего дизайна
+const getEl = (ids) => {
+    for (let id of ids) {
+        let el = document.getElementById(id);
+        if (el) return el;
+    }
+    return null;
+};
 
-// Инициализация при загрузке
 document.addEventListener('DOMContentLoaded', () => {
-    loadHome();
+    loadContent();
     setupSearch();
 });
 
-async function loadHome() {
+async function loadContent() {
     try {
         const res = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}&language=tr-TR`);
         const data = await res.json();
-        if(data.results) {
-            updateHero(data.results[0]);
-            renderGrid(data.results.slice(0,12), 'trendingGrid');
-            // Пробуем заполнить другие сетки, если они есть в твоем HTML
-            const movieGrid = document.getElementById('popularMoviesGrid') || document.getElementById('homeMoviesGrid');
-            if(movieGrid) renderGrid(data.results.filter(i=>i.media_type==='movie').slice(0,12), movieGrid.id);
-            
-            const tvGrid = document.getElementById('popularSeriesGrid') || document.getElementById('homeSeriesGrid');
-            if(tvGrid) renderGrid(data.results.filter(i=>i.media_type==='tv').slice(0,12), tvGrid.id);
-        }
-    } catch(e) { console.error("TMDB Load Error", e); }
+        if(!data.results) return;
+
+        // 1. Обновляем Главный баннер (Hero)
+        const item = data.results[0];
+        const title = getEl(['heroTitle', 'mainTitle', 'detTitle']);
+        const desc = getEl(['heroDesc', 'mainDesc', 'detDesc']);
+        const bg = getEl(['heroBg', 'mainBg', 'featured']);
+        const btn = getEl(['heroWatchBtn', 'heroPlayBtn', 'play-btn']);
+
+        if(title) title.innerText = item.title || item.name;
+        if(desc) desc.innerText = item.overview;
+        if(bg) bg.style.backgroundImage = `url(${BG_IMG}${item.backdrop_path})`;
+        if(btn) btn.onclick = () => openDetail(item.id, item.media_type || 'movie');
+
+        // 2. Заполняем сетки (Grid)
+        // Ищем любую сетку, которая есть в твоих 1800 строках
+        const grids = ['trendingGrid', 'popularMoviesGrid', 'homeMoviesGrid', 'movies-grid', 'grid-container'];
+        grids.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) render(el, data.results.slice(0, 12));
+        });
+
+    } catch(e) { console.error("Ошибка TMDB: ", e); }
 }
 
-function updateHero(item) {
-    const title = document.getElementById('heroTitle');
-    const desc = document.getElementById('heroDesc');
-    const bg = document.getElementById('heroBg');
-    const btn = document.getElementById('heroWatchBtn') || document.getElementById('heroPlayBtn');
-
-    if(title) title.innerText = item.title || item.name;
-    if(desc) desc.innerText = item.overview;
-    if(bg) bg.style.backgroundImage = `url(${BG_IMG}${item.backdrop_path})`;
-    if(btn) btn.onclick = () => openDetailPage(item.id, item.media_type || 'movie');
-}
-
-function renderGrid(items, gridId, type = null) {
-    const grid = document.getElementById(gridId);
-    if(!grid) return;
-    grid.innerHTML = items.map(item => `
-        <div class="movie-card" onclick="openDetailPage(${item.id}, '${type || item.media_type || (item.title?'movie':'tv')}')">
-            <img class="card-poster" src="${IMG}${item.poster_path}" loading="lazy">
+function render(container, items) {
+    if(!container) return;
+    container.innerHTML = items.map(item => `
+        <div class="movie-card" onclick="openDetail(${item.id}, '${item.media_type || (item.title?'movie':'tv')}')" style="cursor:pointer">
+            <img class="card-poster" src="${IMG}${item.poster_path}" style="width:100%; border-radius:10px;">
             <div class="card-info">
-                <div class="card-title">${item.title || item.name}</div>
-                <div class="card-meta"><span>⭐ ${item.vote_average.toFixed(1)}</span></div>
+                <div class="card-title" style="font-weight:bold; margin-top:5px;">${item.title || item.name}</div>
+                <div class="card-meta">⭐ ${item.vote_average.toFixed(1)}</div>
             </div>
         </div>`).join('');
 }
 
-async function openDetailPage(id, type) {
-    currentId = id; currentType = type;
+async function openDetail(id, type) {
+    // Пытаемся найти страницу деталей и показать её
+    const detailPage = getEl(['page-detail', 'detail', 'movie-detail']);
+    const homePage = getEl(['page-home', 'home', 'main-content']);
     
-    // Переключение страниц (скрываем все, показываем детальную)
-    document.querySelectorAll('.page').forEach(p => {
-        p.style.display = 'none';
-        p.classList.remove('active');
-    });
-    const detailPage = document.getElementById('page-detail') || document.getElementById('detail');
     if(detailPage) {
+        if(homePage) homePage.style.display = 'none';
         detailPage.style.display = 'block';
         detailPage.classList.add('active');
     }
 
     const res = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=tr-TR`);
     const data = await res.json();
+
+    // Заполняем инфо в детализации
+    const dTitle = getEl(['detailTitle', 'det-title']);
+    const dDesc = getEl(['detailDesc', 'det-desc']);
+    const dPoster = getEl(['detailPoster', 'det-poster']);
     
-    if(document.getElementById('detailTitle')) document.getElementById('detailTitle').innerText = data.title || data.name;
-    if(document.getElementById('detailDesc')) document.getElementById('detailDesc').innerText = data.overview;
-    if(document.getElementById('detailPoster')) document.getElementById('detailPoster').src = IMG + data.poster_path;
-    if(document.getElementById('detailBg')) document.getElementById('detailBg').style.backgroundImage = `url(${BG_IMG}${data.backdrop_path})`;
-    
-    // Плеер
-    const player = document.getElementById('torrentioPlayer') || document.getElementById('player');
+    if(dTitle) dTitle.innerText = data.title || data.name;
+    if(dDesc) dDesc.innerText = data.overview;
+    if(dPoster) dPoster.src = IMG + data.poster_path;
+
+    // Запуск плеера
+    const player = getEl(['torrentioPlayer', 'player', 'main-player', 'video-iframe']);
     if(player) {
-        // Для сериалов по умолчанию 1 сезон 1 серия
-        const videoId = type === 'tv' ? `${id}:1:1` : id;
-        player.src = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
+        const vId = type === 'tv' ? `${id}:1:1` : id;
+        player.src = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${vId}&config=${encodeURIComponent(TORRENTIO)}`;
     }
     window.scrollTo(0,0);
 }
 
 function setupSearch() {
-    const searchInput = document.getElementById('searchInput');
-    if(!searchInput) return;
-    searchInput.onkeypress = async (e) => {
+    const sInput = getEl(['searchInput', 'search-input', 'q']);
+    if(!sInput) return;
+    sInput.onkeypress = async (e) => {
         if(e.key === 'Enter') {
             const res = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${e.target.value}&language=tr-TR`);
             const data = await res.json();
-            
-            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-            const moviePage = document.getElementById('page-movies') || document.getElementById('movies');
-            if(moviePage) {
-                moviePage.style.display = 'block';
-                moviePage.classList.add('active');
-                renderGrid(data.results.filter(i=>i.poster_path), 'moviesGrid');
+            const movieGrid = getEl(['moviesGrid', 'categoryGrid', 'search-results']);
+            if(movieGrid) {
+                // Показываем страницу с результатами
+                const moviePage = getEl(['page-movies', 'movies', 'search-page']);
+                const homePage = getEl(['page-home', 'home']);
+                if(moviePage) {
+                    if(homePage) homePage.style.display = 'none';
+                    moviePage.style.display = 'block';
+                    render(movieGrid, data.results.filter(i => i.poster_path));
+                }
             }
         }
     };
 }
 
 function goBack() {
-    document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
-    const homePage = document.getElementById('page-home') || document.getElementById('home');
-    if(homePage) {
-        homePage.style.display = 'block';
-        homePage.classList.add('active');
-    }
+    const pages = ['page-detail', 'page-movies', 'detail', 'movies'];
+    const home = getEl(['page-home', 'home']);
+    pages.forEach(p => {
+        const el = document.getElementById(p);
+        if(el) el.style.display = 'none';
+    });
+    if(home) home.style.display = 'block';
 }
 </script>
 </body>
