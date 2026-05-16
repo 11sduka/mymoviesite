@@ -314,30 +314,6 @@ main {
 }
 .see-all:hover { color: var(--pink); }
 
-/* GENRE FILTERS */
-.genre-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.genre-btn {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.genre-btn:hover { border-color: var(--purple3); color: var(--text); }
-.genre-btn.active { background: rgba(124,106,247,0.2); border-color: var(--purple); color: var(--purple2); }
-
 /* CARDS GRID */
 .cards-grid {
   display: grid;
@@ -345,7 +321,6 @@ main {
   gap: 16px;
 }
 
-/* REKLAM - FILMLER ARASI */
 .ad-inline {
   grid-column: 1 / -1;
   min-height: 100px;
@@ -361,7 +336,6 @@ main {
   margin: 8px 0;
 }
 
-/* MOVIE CARD */
 .movie-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -386,315 +360,45 @@ main {
   background: var(--bg3);
 }
 
-.card-poster-placeholder {
-  width: 100%;
-  aspect-ratio: 2/3;
-  background: linear-gradient(135deg, var(--bg3), var(--bg2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text3);
-  font-size: 40px;
-}
+.card-info { padding: 10px 12px 12px; }
+.card-title { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; line-height: 1.3; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.card-meta { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--text3); }
+.card-rating { color: var(--purple2); font-weight: 600; font-size: 12px; }
 
-.card-info {
-  padding: 10px 12px 12px;
-}
-
-.card-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-  margin-bottom: 5px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--text3);
-}
-
-.card-rating {
-  color: var(--purple2);
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.card-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(124,106,247,0.85);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
-}
-
-/* SEARCH PAGE */
-.search-page { display: none; }
-.search-page.active { display: block; }
-
-.search-results-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 24px;
-}
-
-.search-results-title span { color: var(--purple2); }
-
-/* LOADING */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px;
-  color: var(--text3);
-  font-size: 14px;
-  gap: 10px;
-}
-
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border);
-  border-top-color: var(--purple);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
+/* LOADING & EMPTY */
+.loading { display: flex; align-items: center; justify-content: center; padding: 60px; color: var(--text3); font-size: 14px; gap: 10px; }
+.spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* PAGES */
 .page { display: none; }
 .page.active { display: block; }
 
-/* EMPTY */
-.empty {
-  text-align: center;
-  padding: 60px;
-  color: var(--text3);
-}
-
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-text { font-size: 15px; }
-
 /* DETAIL PAGE */
-.detail-hero {
-  position: relative;
-  height: 500px;
-  overflow: hidden;
-}
-.detail-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-  filter: brightness(0.3) saturate(0.7);
-}
-.detail-hero-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--bg) 0%, transparent 60%),
-    linear-gradient(to right, var(--bg) 0%, transparent 50%);
-}
-.detail-back {
-  position: absolute;
-  top: 80px;
-  left: 32px;
-  background: rgba(124,106,247,0.2);
-  border: 1px solid var(--purple3);
-  color: var(--text);
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-  z-index: 10;
-}
-.detail-back:hover { background: rgba(124,106,247,0.4); }
+.detail-hero { position: relative; height: 500px; overflow: hidden; }
+.detail-bg { position: absolute; inset: 0; background-size: cover; background-position: center top; filter: brightness(0.3) saturate(0.7); }
+.detail-hero-gradient { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg) 0%, transparent 60%); }
+.detail-back { position: absolute; top: 80px; left: 32px; background: rgba(124,106,247,0.2); border: 1px solid var(--purple3); color: var(--text); padding: 8px 18px; border-radius: 8px; cursor: pointer; z-index: 10; }
 .detail-main { padding: 0 40px 60px; position: relative; z-index: 1; }
-.detail-top {
-  display: flex;
-  gap: 32px;
-  margin-top: -140px;
-  align-items: flex-end;
-  margin-bottom: 32px;
-}
-.detail-poster {
-  width: 200px;
-  min-width: 200px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 3px solid var(--purple3);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  flex-shrink: 0;
-}
-.detail-info { flex: 1; padding-bottom: 8px; }
-.detail-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 12px;
-  letter-spacing: -0.5px;
-}
-.detail-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.detail-tag {
-  background: rgba(124,106,247,0.15);
-  border: 1px solid rgba(124,106,247,0.3);
-  color: var(--purple2);
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-.detail-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  color: var(--text2);
-  font-size: 14px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.detail-rating {
-  color: var(--purple2);
-  font-size: 20px;
-  font-weight: 700;
-  font-family: 'Syne', sans-serif;
-}
-.detail-desc {
-  color: var(--text2);
-  font-size: 15px;
-  line-height: 1.7;
-  margin-bottom: 24px;
-  max-width: 700px;
-}
-.detail-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-.detail-watch-btn { font-size: 16px; padding: 14px 32px; }
-.detail-section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  margin-top: 36px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.detail-section-title::before {
-  content: '';
-  width: 4px;
-  height: 18px;
-  background: var(--purple);
-  border-radius: 2px;
-}
+.detail-top { display: flex; gap: 32px; margin-top: -140px; align-items: flex-end; margin-bottom: 32px; }
+.detail-poster { width: 200px; height: 300px; object-fit: cover; border-radius: 12px; border: 3px solid var(--purple3); flex-shrink: 0; }
+.detail-info { flex: 1; }
+.detail-title { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+.detail-desc { color: var(--text2); font-size: 15px; line-height: 1.7; margin-bottom: 24px; max-width: 700px; }
 
-/* PLAYER BUILD */
-.player-wrap {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid var(--border);
-}
-.player-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-/* SEASONS & EPISODES */
-.seasons-list, .episodes-list { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-.season-btn, .episode-btn {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-.season-btn:hover, .episode-btn:hover { border-color: var(--purple3); color: var(--text); }
+/* PLAYER */
+.player-wrap { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.player-wrap iframe { width: 100%; height: 100%; border: none; }
+.seasons-list, .episodes-list { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; margin-top: 10px; }
+.season-btn, .episode-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; transition: 0.2s; }
 .season-btn.active, .episode-btn.active { background: rgba(124,106,247,0.2); border-color: var(--purple); color: var(--purple2); }
 
-/* MOBILE */
 @media (max-width: 768px) {
-  nav { padding: 0 12px; gap: 8px; height: 56px; }
-  .logo { font-size: 20px; }
+  nav { padding: 0 12px; gap: 8px; }
   .nav-links { display: none; }
-  .mobile-menu-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    font-size: 18px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .search-input { width: 130px; font-size: 13px; }
-  .search-input:focus { width: 160px; }
-  .ad-banner-top { margin-top: 56px; min-height: 60px; font-size: 11px; }
-  .hero { height: 360px; }
-  .hero-content { left: 16px; right: 16px; bottom: 24px; }
-  .hero-title { font-size: 24px; }
-  .hero-desc { display: none; }
-  .btn-primary { padding: 9px 16px; font-size: 13px; }
-  .btn-secondary { padding: 9px 12px; font-size: 13px; }
-  main { padding: 0 12px 40px; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .section-title { font-size: 16px; }
-  .detail-hero { height: 320px; }
-  .detail-back { top: 70px; left: 16px; }
-  .detail-main { padding: 0 16px 40px; }
-  .detail-top { flex-direction: column; align-items: center; margin-top: -80px; gap: 16px; }
-  .detail-poster { width: 130px; min-width: 130px; height: 195px; }
-  .detail-info { text-align: center; width: 100%; }
-  .detail-title { font-size: 22px; }
-  .detail-meta-row { justify-content: center; }
-  .detail-tags { justify-content: center; }
-  .detail-btns { justify-content: center; }
-  .detail-desc { font-size: 14px; }
-  .mobile-nav-drawer {
-    position: fixed;
-    top: 56px; left: 0; right: 0;
-    background: rgba(8,0,16,0.98);
-    border-bottom: 1px solid var(--border);
-    z-index: 99;
-    padding: 12px;
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .mobile-nav-drawer.open { display: flex; }
-  .mobile-nav-drawer .nav-link { font-size: 15px; padding: 10px 16px; width: 100%; text-align: left; }
-}
-@media (min-width: 769px) {
-  .mobile-menu-btn { display: none; }
-  .mobile-nav-drawer { display: none !important; }
+  .search-input { width: 140px; }
+  .hero { height: 400px; }
+  .detail-top { flex-direction: column; align-items: center; text-align: center; margin-top: -100px; }
 }
 </style>
 </head>
@@ -708,328 +412,182 @@ main {
     <button class="nav-link" onclick="showPage('series')" id="nav-series">Diziler</button>
     <button class="nav-link" onclick="showPage('turkish')" id="nav-turkish">Türk Dizileri</button>
     <button class="nav-link" onclick="showPage('russian')" id="nav-russian">Rus Dizileri</button>
-    <button class="nav-link" onclick="showPage('cartoons')" id="nav-cartoons">Çizgi Filmler</button>
-    <button class="nav-link" onclick="showPage('anime')" id="nav-anime">Anime</button>
-    <button class="nav-link" onclick="showPage('toprated')" id="nav-toprated">En İyiler</button>
-    <button class="nav-link" onclick="showPage('newreleases')" id="nav-newreleases">Yeni Çıkanlar</button>
   </div>
   <div class="search-wrap">
     <span class="search-icon">🔍</span>
-    <input class="search-input" type="text" placeholder="Film, dizi ara..." id="searchInput" oninput="handleSearch(this.value)">
+    <input class="search-input" type="text" placeholder="Film, dizi ara..." id="searchInput">
   </div>
-  <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
 </nav>
 
-<div class="mobile-nav-drawer" id="mobileNavDrawer">
-  <button class="nav-link" onclick="showPage('home');closeMobileMenu()" >Ana Sayfa</button>
-  <button class="nav-link" onclick="showPage('movies');closeMobileMenu()">Filmler</button>
-  <button class="nav-link" onclick="showPage('series');closeMobileMenu()">Diziler</button>
-  <button class="nav-link" onclick="showPage('turkish');closeMobileMenu()">Türk Dizileri</button>
-  <button class="nav-link" onclick="showPage('russian');closeMobileMenu()">Rus Dizileri</button>
-  <button class="nav-link" onclick="showPage('cartoons');closeMobileMenu()">Çizgi Filmler</button>
-  <button class="nav-link" onclick="showPage('anime');closeMobileMenu()">Anime</button>
-  <button class="nav-link" onclick="showPage('toprated');closeMobileMenu()">En İyiler</button>
-  <button class="nav-link" onclick="showPage('newreleases');closeMobileMenu()">Yeni Çıkanlar</button>
-</div>
-
-<div class="ad-banner-top" id="adBannerTop">
-  <span>REKLAM ALANI · 728×90</span>
-</div>
+<div class="ad-banner-top">REKLAM ALANI · 728×90</div>
 
 <div class="page active" id="page-home">
   <div class="hero" id="hero">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-gradient"></div>
     <div class="hero-content">
-      <div class="hero-badge">⭐ Haftanın Önerisi</div>
+      <div class="hero-badge">⭐ Popüler</div>
       <div class="hero-title" id="heroTitle">Yükleniyor...</div>
       <div class="hero-meta" id="heroMeta"></div>
       <div class="hero-desc" id="heroDesc"></div>
       <div class="hero-btns">
         <button class="btn-primary" id="heroWatchBtn">▶ İzle</button>
-        <button class="btn-secondary" id="heroInfoBtn">Detaylar</button>
       </div>
     </div>
   </div>
-
   <main>
     <div class="section">
-      <div class="section-header">
-        <div class="section-title">🔥 Trend</div>
-        <button class="see-all" onclick="showPage('movies')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="trendingGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
+      <div class="section-title">🔥 Trend</div>
+      <div class="cards-grid" id="trendingGrid"></div>
     </div>
-
     <div class="section">
-      <div class="section-header">
-        <div class="section-title">🆕 Yeni Diziler</div>
-        <button class="see-all" onclick="showPage('newreleases')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="newSeriesHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
+      <div class="section-title">🎬 Filmler</div>
+      <div class="cards-grid" id="homeMoviesGrid"></div>
     </div>
-
     <div class="ad-inline">REKLAM ALANI · 970×90</div>
-
     <div class="section">
-      <div class="section-header">
-        <div class="section-title">🎬 Popüler Filmler</div>
-        <button class="see-all" onclick="showPage('movies')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="popularMoviesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">📺 Popüler Diziler</div>
-        <button class="see-all" onclick="showPage('series')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="popularSeriesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🇹🇷 Türk Dizileri</div>
-        <button class="see-all" onclick="showPage('turkish')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="turkishHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🇷🇺 Rus Dizileri</div>
-        <button class="see-all" onclick="showPage('russian')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="russianHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <div class="ad-inline">REKLAM ALANI · 970×90</div>
-
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">⛩️ Anime</div>
-        <button class="see-all" onclick="showPage('anime')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="animeHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
+      <div class="section-title">📺 Diziler</div>
+      <div class="cards-grid" id="homeSeriesGrid"></div>
     </div>
   </main>
 </div>
 
-<div class="page" id="page-movies"><main style="padding-top:32px"><div class="section"><div class="section-title">🎬 Filmler</div><div class="genre-filters" id="movieGenreFilters"></div><div class="cards-grid" id="moviesGrid"></div></div></main></div>
-<div class="page" id="page-series"><main style="padding-top:32px"><div class="section"><div class="section-title">📺 Diziler</div><div class="genre-filters" id="seriesGenreFilters"></div><div class="cards-grid" id="seriesGrid"></div></div></main></div>
-<div class="page" id="page-cartoons"><main style="padding-top:32px"><div class="section"><div class="section-title">🎨 Çizgi Filmler</div><div class="genre-filters" id="cartoonGenreFilters"></div><div class="cards-grid" id="cartoonsGrid"></div></div></main></div>
-<div class="page" id="page-anime"><main style="padding-top:32px"><div class="section"><div class="section-title">⛩️ Anime</div><div class="genre-filters" id="animeGenreFilters"></div><div class="cards-grid" id="animeGrid"></div></div></main></div>
-<div class="page" id="page-toprated"><main style="padding-top:32px"><div class="section"><div class="section-title">⭐ En İyi Filmler</div><div class="cards-grid" id="topRatedGrid"></div></div></main></div>
-<div class="page" id="page-newreleases"><main style="padding-top:32px"><div class="section"><div class="section-title">🆕 Yeni Çıkanlar</div><div class="cards-grid" id="newReleasesGrid"></div></div></main></div>
-<div class="page" id="page-search"><main style="padding-top:32px"><div class="section"><div class="search-results-title">"<span id="searchQuery"></span>" için sonuçlar</div><div class="cards-grid" id="searchGrid"></div></div></main></div>
-<div class="page" id="page-turkish"><main style="padding-top:32px"><div class="section"><div class="section-title">🇹🇷 Türk Dizileri</div><div class="cards-grid" id="turkishGrid"></div></div></main></div>
-<div class="page" id="page-russian"><main style="padding-top:32px"><div class="section"><div class="section-title">🇷🇺 Rus Dizileri</div><div class="cards-grid" id="russianGrid"></div></div></main></div>
+<div class="page" id="page-movies"><main><div class="section"><div class="section-title">Filmler</div><div class="cards-grid" id="moviesGrid"></div></div></main></div>
+<div class="page" id="page-series"><main><div class="section"><div class="section-title">Diziler</div><div class="cards-grid" id="seriesGrid"></div></div></main></div>
+<div class="page" id="page-turkish"><main><div class="section"><div class="section-title">Türk Dizileri</div><div class="cards-grid" id="turkishGrid"></div></div></main></div>
+<div class="page" id="page-russian"><main><div class="section"><div class="section-title">Rus Dizileri</div><div class="cards-grid" id="russianGrid"></div></div></main></div>
 
 <div class="page" id="page-detail">
-  <div class="detail-hero" id="detailHero">
+  <div class="detail-hero">
     <div class="detail-bg" id="detailBg"></div>
     <div class="detail-hero-gradient"></div>
     <button class="detail-back" onclick="goBack()">← Geri</button>
   </div>
   <main class="detail-main">
     <div class="detail-top">
-      <img class="detail-poster" id="detailPoster" src="" alt="">
+      <img class="detail-poster" id="detailPoster">
       <div class="detail-info">
-        <div class="detail-title" id="detailTitle"></div>
-        <div class="detail-tags" id="detailTags"></div>
+        <h1 class="detail-title" id="detailTitle"></h1>
         <div class="detail-meta-row">
-          <span class="detail-rating" id="detailRating"></span>
-          <span id="detailYear"></span>
-          <span id="detailRuntime"></span>
-          <span id="detailCountry"></span>
+            <span id="detailRating" style="color:var(--purple2); font-weight:700;"></span>
+            <span id="detailYear"></span>
         </div>
-        <div class="detail-desc" id="detailDesc"></div>
-        <div class="detail-btns">
-          <button class="btn-primary detail-watch-btn" onclick="scrollToPlayer()">▶ İzle</button>
-        </div>
+        <p class="detail-desc" id="detailDesc"></p>
+        <button class="btn-primary" onclick="document.getElementById('playerSection').scrollIntoView({behavior:'smooth'})">▶ İzle</button>
       </div>
     </div>
 
-    <div class="ad-inline" style="margin:24px 0">REKLAM ALANI · 970×90</div>
-
     <div id="seriesStructureSection" style="display:none">
-      <div class="detail-section-title">Sezonlar</div>
+      <h3>Sezon Seç</h3>
       <div class="seasons-list" id="seasonsList"></div>
-      <div class="detail-section-title">Bölümler</div>
+      <h3>Bölüm Seç</h3>
       <div class="episodes-list" id="episodesList"></div>
     </div>
 
-    <div id="playerSection">
-      <div class="detail-section-title">Oynatıcı</div>
+    <div id="playerSection" style="margin-top:40px">
       <div class="player-wrap">
-        <iframe id="torrentioPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        <iframe id="torrentioPlayer" allowfullscreen allow="autoplay; encrypted-media"></iframe>
       </div>
     </div>
   </main>
 </div>
 
 <script>
-// CONFIG & PERSISTENT DATA
-const TMDB_API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6';
+const API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6';
 const BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
+const IMG = 'https://image.tmdb.org/t/p/w500';
+const BG_IMG = 'https://image.tmdb.org/t/p/original';
 
-// ТВОЯ ССЫЛКА Torrentio + RealDebrid
-const TORRENTIO_CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
+// ТВОЯ ССЫЛКА TORRENTIO
+const CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
 
-let currentItem = null; 
-let historyStack = ['home'];
+let curId = null;
+let curType = null;
+let history = ['home'];
 
-// INITIALIZATION
-document.addEventListener('DOMContentLoaded', () => {
-    loadHomePageData();
-    setupGenreFilters();
-});
+window.onload = () => {
+    initHome();
+    setupSearch();
+};
 
-// NAVIGATION LOGIC
+async function initHome() {
+    try {
+        const trending = await fetch(`${BASE_URL}/trending/all/week?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
+        if(trending.results) {
+            updateHero(trending.results[0]);
+            renderGrid(trending.results.slice(0,12), 'trendingGrid');
+        }
+        const movies = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
+        renderGrid(movies.results.slice(0,12), 'homeMoviesGrid');
+        
+        const series = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
+        renderGrid(series.results.slice(0,12), 'homeSeriesGrid');
+    } catch(e) { console.error("TMDB Error", e); }
+}
+
+function updateHero(item) {
+    document.getElementById('heroBg').style.backgroundImage = `url(${BG_IMG}${item.backdrop_path})`;
+    document.getElementById('heroTitle').innerText = item.title || item.name;
+    document.getElementById('heroDesc').innerText = item.overview;
+    document.getElementById('heroMeta').innerText = `⭐ ${item.vote_average.toFixed(1)} | ${item.release_date || item.first_air_date}`;
+    document.getElementById('heroWatchBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
+}
+
 function showPage(pageId) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const targetPage = document.getElementById(`page-${pageId}`);
-    if(targetPage) targetPage.classList.add('active');
-    
+    document.getElementById('page-' + pageId).classList.add('active');
     document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    const activeNav = document.getElementById(`nav-${pageId}`);
-    if(activeNav) activeNav.classList.add('active');
-
-    if(historyStack[historyStack.length - 1] !== pageId) {
-        historyStack.push(pageId);
-    }
-
-    // Load category data if needed
-    if(['movies','series','turkish','russian','anime','cartoons','toprated','newreleases'].includes(pageId)) {
-        loadCategoryPage(pageId);
-    }
-
-    window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function goBack() {
-    if(historyStack.length > 1) {
-        historyStack.pop();
-        const prevPage = historyStack[historyStack.length - 1];
-        showPage(prevPage);
-    } else {
-        showPage('home');
-    }
-}
-
-function toggleMobileMenu() { document.getElementById('mobileNavDrawer').classList.toggle('open'); }
-function closeMobileMenu() { document.getElementById('mobileNavDrawer').classList.remove('open'); }
-
-// FETCH HOME CONTENT
-async function loadHomePageData() {
-    try {
-        const trending = await fetch(`${BASE_URL}/trending/all/week?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        if(trending.results && trending.results.length > 0) {
-            setupHero(trending.results[0]);
-            renderGrid(trending.results.slice(0, 12), 'trendingGrid');
-        }
-        
-        const movies = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        renderGrid(movies.results.slice(0, 12), 'popularMoviesGrid');
-
-        const series = await fetch(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        renderGrid(series.results.slice(0, 12), 'popularSeriesGrid');
-
-        const trSeries = await fetch(`${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_origin_country=TR&language=tr-TR`).then(r => r.json());
-        renderGrid(trSeries.results.slice(0, 12), 'turkishHomeGrid');
-
-        const ruSeries = await fetch(`${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_origin_country=RU&language=tr-TR`).then(r => r.json());
-        renderGrid(ruSeries.results.slice(0, 12), 'russianHomeGrid');
-
-        const anime = await fetch(`${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=16&with_origin_country=JP&language=tr-TR`).then(r => r.json());
-        renderGrid(anime.results.slice(0, 12), 'animeHomeGrid');
-
-    } catch(err) { console.error("Home loading error: ", err); }
-}
-
-function setupHero(item) {
-    const bg = document.getElementById('heroBg');
-    const title = document.getElementById('heroTitle');
-    const desc = document.getElementById('heroDesc');
-    const meta = document.getElementById('heroMeta');
+    if(document.getElementById('nav-'+pageId)) document.getElementById('nav-'+pageId).classList.add('active');
     
-    bg.style.backgroundImage = `url('${BACKDROP_URL}${item.backdrop_path}')`;
-    title.innerText = item.title || item.name;
-    desc.innerText = item.overview || "İçerik açıklaması bulunmuyor.";
-    meta.innerHTML = `<span class="hero-rating">⭐ ${item.vote_average.toFixed(1)}</span> — ${item.release_date || item.first_air_date || ''}`;
-    
-    document.getElementById('heroWatchBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
-    document.getElementById('heroInfoBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
+    if(pageId === 'movies') loadCat('movie', 'moviesGrid');
+    if(pageId === 'series') loadCat('tv', 'seriesGrid');
+    if(pageId === 'turkish') loadCat('tv', 'turkishGrid', '&with_origin_country=TR');
+    if(pageId === 'russian') loadCat('tv', 'russianGrid', '&with_origin_country=RU');
 }
 
-function renderGrid(items, targetId) {
-    const container = document.getElementById(targetId);
-    if(!container) return;
-    container.innerHTML = '';
-    
-    if(!items || items.length === 0) {
-        container.innerHTML = '<div class="empty">İçerik bulunamadı.</div>';
-        return;
-    }
+async function loadCat(type, gridId, extra = '') {
+    const data = await fetch(`${BASE_URL}/discover/${type}?api_key=${API_KEY}${extra}&language=tr-TR`).then(r => r.json());
+    renderGrid(data.results, gridId, type);
+}
 
+function renderGrid(items, gridId, forceType = null) {
+    const grid = document.getElementById(gridId);
+    if(!grid) return;
+    grid.innerHTML = '';
     items.forEach(item => {
-        const type = item.media_type || (item.title ? 'movie' : 'tv');
+        const type = forceType || item.media_type || (item.title ? 'movie' : 'tv');
         const card = document.createElement('div');
         card.className = 'movie-card';
         card.onclick = () => openDetailPage(item.id, type);
-        
-        const posterSrc = item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '';
         card.innerHTML = `
-            ${posterSrc ? `<img class="card-poster" src="${posterSrc}">` : `<div class="card-poster-placeholder">?</div>`}
+            <img class="card-poster" src="${IMG}${item.poster_path}">
             <div class="card-info">
                 <div class="card-title">${item.title || item.name}</div>
-                <div class="card-meta">
-                    <span class="card-rating">⭐ ${item.vote_average.toFixed(1)}</span>
-                    <span>${(item.release_date || item.first_air_date || '').split('-')[0]}</span>
-                </div>
+                <div class="card-meta"><span>⭐ ${item.vote_average.toFixed(1)}</span></div>
             </div>
         `;
-        container.appendChild(card);
+        grid.appendChild(card);
     });
 }
 
-// LOGIC FOR DETAIL PAGE & PLAYER
 async function openDetailPage(id, type) {
-    currentItem = { id, type };
+    curId = id; curType = type;
     showPage('detail');
+    const data = await fetch(`${BASE_URL}/${type}/${id}?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
     
-    const data = await fetch(`${BASE_URL}/${type}/${id}?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-    
-    document.getElementById('detailBg').style.backgroundImage = `url(${BACKDROP_URL}${data.backdrop_path})`;
-    document.getElementById('detailPoster').src = IMAGE_URL + data.poster_path;
+    document.getElementById('detailBg').style.backgroundImage = `url(${BG_IMG}${data.backdrop_path})`;
+    document.getElementById('detailPoster').src = IMG + data.poster_path;
     document.getElementById('detailTitle').innerText = data.title || data.name;
     document.getElementById('detailDesc').innerText = data.overview;
     document.getElementById('detailRating').innerText = `⭐ ${data.vote_average.toFixed(1)}`;
-    document.getElementById('detailYear').innerText = (data.release_date || data.first_air_date || '').split('-')[0];
-
+    
     const seriesSection = document.getElementById('seriesStructureSection');
     if(type === 'tv') {
         seriesSection.style.display = 'block';
         setupSeasons(data.number_of_seasons);
     } else {
         seriesSection.style.display = 'none';
-        initStreaming(1, 1);
+        setPlayer(1, 1);
     }
 }
 
@@ -1039,7 +597,7 @@ function setupSeasons(count) {
     for(let i=1; i<=count; i++) {
         const btn = document.createElement('button');
         btn.className = 'season-btn' + (i===1 ? ' active' : '');
-        btn.innerText = `${i}. Sezon`;
+        btn.innerText = i + '. Sezon';
         btn.onclick = (e) => {
             document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
@@ -1051,69 +609,45 @@ function setupSeasons(count) {
 }
 
 async function loadEpisodes(sNum) {
-    const data = await fetch(`${BASE_URL}/tv/${currentItem.id}/season/${sNum}?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
+    const data = await fetch(`${BASE_URL}/tv/${curId}/season/${sNum}?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
     const list = document.getElementById('episodesList');
     list.innerHTML = '';
     data.episodes.forEach(ep => {
         const btn = document.createElement('button');
         btn.className = 'episode-btn';
-        btn.innerText = `${ep.episode_number}. Bölüm`;
+        btn.innerText = ep.episode_number + '. Bölüm';
         btn.onclick = (e) => {
             document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
-            initStreaming(sNum, ep.episode_number);
+            setPlayer(sNum, ep.episode_number);
         };
         list.appendChild(btn);
     });
-    initStreaming(sNum, 1);
+    setPlayer(sNum, 1);
 }
 
-function initStreaming(s = 1, e = 1) {
+function setPlayer(s, e) {
     const iframe = document.getElementById('torrentioPlayer');
-    let streamId = currentItem.id;
-    if(currentItem.type === 'tv') streamId = `${currentItem.id}:${s}:${e}`;
+    let id = curId;
+    if(curType === 'tv') id = `${curId}:${s}:${e}`;
     
-    // Используем стрэмио-эмбед плеер для твоей Torrentio ссылки
-    const finalUrl = `https://stremio-embed.netlify.app/#/player?type=${currentItem.type}&id=${streamId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
-    
-    iframe.src = finalUrl;
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-presentation');
-    iframe.setAttribute('referrerpolicy', 'no-referrer');
+    const url = `https://stremio-embed.netlify.app/#/player?type=${curType}&id=${id}&config=${encodeURIComponent(CONFIG)}`;
+    iframe.src = url;
 }
 
-function scrollToPlayer() {
-    document.getElementById('playerSection').scrollIntoView({behavior: 'smooth'});
+function goBack() { showPage('home'); }
+
+function setupSearch() {
+    const input = document.getElementById('searchInput');
+    input.onkeypress = async (e) => {
+        if(e.key === 'Enter') {
+            const val = input.value;
+            const data = await fetch(`${BASE_URL}/search/multi?api_key=${API_KEY}&query=${val}&language=tr-TR`).then(r => r.json());
+            showPage('movies');
+            renderGrid(data.results.filter(i => i.poster_path), 'moviesGrid');
+        }
+    };
 }
-
-// SEARCH
-async function handleSearch(query) {
-    if(query.length < 2) return;
-    document.getElementById('searchQuery').innerText = query;
-    showPage('search');
-    const data = await fetch(`${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${query}&language=tr-TR`).then(r => r.json());
-    renderGrid(data.results.filter(i => i.poster_path), 'searchGrid');
-}
-
-// OTHER CATEGORIES LOADER
-async function loadCategoryPage(pageId) {
-    let url = "";
-    let gridId = `${pageId}Grid`;
-    if(pageId === 'movies') url = `${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=tr-TR`;
-    if(pageId === 'series') url = `${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=tr-TR`;
-    if(pageId === 'turkish') url = `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_origin_country=TR&language=tr-TR`;
-    if(pageId === 'russian') url = `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_origin_country=RU&language=tr-TR`;
-    if(pageId === 'anime') url = `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=16&language=tr-TR`;
-    if(pageId === 'cartoons') url = `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=16&language=tr-TR`;
-    if(pageId === 'toprated') url = `${BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&language=tr-TR`;
-    if(pageId === 'newreleases') url = `${BASE_URL}/movie/now_playing?api_key=${TMDB_API_KEY}&language=tr-TR`;
-
-    if(url) {
-        const data = await fetch(url).then(r => r.json());
-        renderGrid(data.results, gridId);
-    }
-}
-
-function setupGenreFilters() { /* Optional logic if needed */ }
 </script>
 </body>
 </html>
