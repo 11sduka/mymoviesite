@@ -1795,17 +1795,17 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (!playerWrap) return;
 
-    playerWrap.innerHTML = '<div style="color:white; text-align:center; padding:30px;">📡 Подключаемся к серверу Stremio...</div>';
+    playerWrap.innerHTML = '<div style="color:white; text-align:center; padding:30px;">🚀 Подготовка потока для Chrome...</div>';
 
-    // Получаем IMDb ID
+    // Получаем IMDb ID (tt...) через TMDB API
     fetch(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
       .then(res => res.json())
       .then(data => {
         const imdbId = data.imdb_id || id;
         const videoId = type === 'tv' ? `${imdbId}:1:1` : imdbId;
         
-        // Используем прямую ссылку на плеер
-        // Добавляем параметр, который помогает браузеру "увидеть" локальный сервер
+        // Ссылка на официальный веб-плеер Stremio.
+        // В Chrome он увидит твой запущенный Stremio Desktop или Service.
         const playerUrl = `https://web.stremio.com/#/player?type=${type}&id=${videoId}`;
         
         playerWrap.innerHTML = `
@@ -1813,11 +1813,12 @@ async function openDetail(id, type) {
             src="${playerUrl}" 
             style="width:100%; height:600px; border:none; border-radius:12px; background:#000;" 
             allowfullscreen 
-            allow="autoplay; encrypted-media; clipboard-write; microphone; camera">
+            allow="autoplay; encrypted-media; clipboard-write">
           </iframe>`;
       })
       .catch(err => {
-        playerWrap.innerHTML = '<div style="color:red; text-align:center;">Ошибка: проверьте Streaming Server в Stremio.</div>';
+        console.error(err);
+        playerWrap.innerHTML = '<div style="color:red; text-align:center;">Ошибка! Проверьте, запущен ли Stremio на компе.</div>';
       });
 
     playerSection.scrollIntoView({behavior: 'smooth'});
