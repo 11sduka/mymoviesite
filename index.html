@@ -1,1310 +1,254 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dizyon — Film & Dizi Platformu</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #080010;
-  --bg2: #0d0018;
-  --bg3: #120020;
-  --purple: #7c6af7;
-  --purple2: #9d8fff;
-  --purple3: #5a4fd4;
-  --pink: #c084fc;
-  --text: #f0eaff;
-  --text2: #a094c0;
-  --text3: #6a5f8a;
-  --border: #1e1035;
-  --card: #0f0018;
-  --radius: 10px;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SineMet | Film ve Dizi Portalı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #e50914;
+            --bg: #0a0a0a;
+            --card-bg: #141414;
+            --text: #ffffff;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; }
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            overflow-x: hidden; 
+        }
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+        /* Шапка сайта */
+        header {
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+            padding: 20px 5%;
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            transition: 0.5s;
+        }
+        header.scrolled { background: #000; padding: 15px 5%; }
+        .logo { color: var(--primary); font-size: 28px; font-weight: 700; text-decoration: none; letter-spacing: 1px; }
 
-/* SCROLLBAR */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--purple3); border-radius: 3px; }
+        /* Главный баннер */
+        .hero {
+            height: 85vh;
+            position: relative;
+            display: flex; align-items: center;
+            padding: 0 5%;
+            background-size: cover; background-position: center;
+        }
+        .hero::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to right, rgba(0,0,0,0.9) 20%, rgba(0,0,0,0.4) 50%, transparent 100%),
+                        linear-gradient(to top, var(--bg) 5%, transparent 30%);
+        }
+        .hero-content { position: relative; z-index: 10; max-width: 700px; }
+        .hero-title { font-size: 3.5rem; margin-bottom: 15px; line-height: 1.1; }
+        .hero-desc { font-size: 1.1rem; color: #ccc; margin-bottom: 25px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        .btn-play {
+            background: var(--primary); color: white; border: none;
+            padding: 12px 35px; font-size: 18px; font-weight: 600;
+            border-radius: 5px; cursor: pointer; transition: var(--transition);
+            display: inline-flex; align-items: center; gap: 10px;
+        }
+        .btn-play:hover { background: #ff0a16; transform: scale(1.05); }
 
-/* BG GRID */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: linear-gradient(var(--purple)08 1px, transparent 1px),
-    linear-gradient(90deg, var(--purple)08 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
+        /* Сетки контента */
+        .main-container { padding: 0 5% 50px 5%; margin-top: -100px; position: relative; z-index: 20; }
+        .section-title { font-size: 22px; margin: 30px 0 15px 0; display: flex; align-items: center; gap: 10px; }
+        .section-title i { color: var(--primary); font-size: 18px; }
 
-/* NAV */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
-  background: rgba(8,0,16,0.92);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 15px;
+        }
 
-.logo {
-  font-family: 'Syne', sans-serif;
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text);
-  letter-spacing: -0.5px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
+        .card {
+            background: var(--card-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .card img { width: 100%; height: 250px; object-fit: cover; }
+        .card-body { padding: 10px; }
+        .card-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-top: 5px; }
+        .rating { color: #ffad1f; font-weight: bold; }
 
-.logo span { color: var(--purple); }
+        /* Плеер */
+        #player-modal {
+            position: fixed; inset: 0; background: #000; z-index: 2000;
+            display: none; flex-direction: column;
+        }
+        .player-header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: #111; }
+        .close-btn { font-size: 24px; cursor: pointer; color: #fff; }
+        iframe { width: 100%; height: 100%; border: none; }
 
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
+        /* Загрузчик */
+        .loading-screen {
+            position: fixed; inset: 0; background: var(--bg);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999;
+        }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-.nav-link {
-  color: var(--text2);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-  border: none;
-  background: none;
-}
-
-.nav-link:hover { color: var(--text); background: var(--border); }
-.nav-link.active { color: var(--purple2); background: rgba(124,106,247,0.12); }
-
-.search-wrap {
-  position: relative;
-  flex-shrink: 0;
-}
-
-.search-input {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 16px 8px 38px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  width: 220px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.search-input:focus {
-  border-color: var(--purple3);
-  width: 280px;
-  background: var(--bg2);
-}
-
-.search-input::placeholder { color: var(--text3); }
-
-.search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text3);
-  font-size: 15px;
-  pointer-events: none;
-}
-
-/* REKLAM ALANI - NAV ALTI */
-.ad-banner-top {
-  margin-top: 64px;
-  width: 100%;
-  min-height: 90px;
-  background: rgba(124,106,247,0.04);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text3);
-  font-size: 13px;
-  letter-spacing: 1px;
-  position: relative;
-  z-index: 1;
-}
-
-/* HERO */
-.hero {
-  position: relative;
-  height: 560px;
-  overflow: hidden;
-  z-index: 1;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-  filter: brightness(0.35) saturate(0.8);
-  transition: all 0.6s;
-}
-
-.hero-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to right, var(--bg) 30%, transparent 70%),
-    linear-gradient(to top, var(--bg) 0%, transparent 50%);
-}
-
-.hero-content {
-  position: absolute;
-  bottom: 60px;
-  left: 40px;
-  max-width: 500px;
-}
-
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(124,106,247,0.2);
-  border: 1px solid rgba(124,106,247,0.4);
-  color: var(--purple2);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 12px;
-  border-radius: 20px;
-  margin-bottom: 14px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.hero-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 48px;
-  font-weight: 800;
-  line-height: 1.05;
-  margin-bottom: 12px;
-  letter-spacing: -1px;
-}
-
-.hero-meta {
-  color: var(--text2);
-  font-size: 14px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.hero-rating {
-  color: var(--purple2);
-  font-weight: 600;
-}
-
-.hero-desc {
-  color: var(--text2);
-  font-size: 15px;
-  line-height: 1.6;
-  margin-bottom: 24px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.hero-btns { display: flex; gap: 12px; }
-
-.btn-primary {
-  background: var(--purple);
-  color: #fff;
-  border: none;
-  padding: 12px 28px;
-  border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.btn-primary:hover { background: var(--purple2); transform: translateY(-1px); }
-
-.btn-secondary {
-  background: rgba(255,255,255,0.08);
-  color: var(--text);
-  border: 1px solid rgba(255,255,255,0.15);
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover { background: rgba(255,255,255,0.12); }
-
-/* MAIN CONTENT */
-main {
-  position: relative;
-  z-index: 1;
-  padding: 0 32px 60px;
-}
-
-/* SECTION */
-.section { margin-bottom: 48px; }
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 20px;
-  background: var(--purple);
-  border-radius: 2px;
-  display: inline-block;
-}
-
-.see-all {
-  color: var(--purple2);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  background: none;
-  border: none;
-  transition: color 0.2s;
-}
-.see-all:hover { color: var(--pink); }
-
-/* GENRE FILTERS */
-.genre-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
-}
-
-.genre-btn {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: 'DM Sans', sans-serif;
-}
-
-.genre-btn:hover { border-color: var(--purple3); color: var(--text); }
-.genre-btn.active { background: rgba(124,106,247,0.2); border-color: var(--purple); color: var(--purple2); }
-
-/* CARDS GRID */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 16px;
-}
-
-/* REKLAM - FILMLER ARASI */
-.ad-inline {
-  grid-column: 1 / -1;
-  min-height: 100px;
-  background: rgba(124,106,247,0.04);
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text3);
-  font-size: 13px;
-  letter-spacing: 1px;
-  margin: 8px 0;
-}
-
-/* MOVIE CARD */
-.movie-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.25s;
-  position: relative;
-}
-
-.movie-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--purple3);
-  box-shadow: 0 12px 32px rgba(124,106,247,0.2);
-}
-
-.card-poster {
-  width: 100%;
-  aspect-ratio: 2/3;
-  object-fit: cover;
-  display: block;
-  background: var(--bg3);
-}
-
-.card-poster-placeholder {
-  width: 100%;
-  aspect-ratio: 2/3;
-  background: linear-gradient(135deg, var(--bg3), var(--bg2));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text3);
-  font-size: 40px;
-}
-
-.card-info {
-  padding: 10px 12px 12px;
-}
-
-.card-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.3;
-  margin-bottom: 5px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--text3);
-}
-
-.card-rating {
-  color: var(--purple2);
-  font-weight: 600;
-  font-size: 12px;
-}
-
-.card-badge {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(124,106,247,0.85);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
-}
-
-/* SEARCH PAGE */
-.search-page { display: none; }
-.search-page.active { display: block; }
-
-.search-results-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 24px;
-}
-
-.search-results-title span { color: var(--purple2); }
-
-/* LOADING */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px;
-  color: var(--text3);
-  font-size: 14px;
-  gap: 10px;
-}
-
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--border);
-  border-top-color: var(--purple);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* PAGES */
-.page { display: none; }
-.page.active { display: block; }
-
-/* EMPTY */
-.empty {
-  text-align: center;
-  padding: 60px;
-  color: var(--text3);
-}
-
-.empty-icon { font-size: 48px; margin-bottom: 12px; }
-.empty-text { font-size: 15px; }
-
-/* DETAIL PAGE */
-.detail-hero {
-  position: relative;
-  height: 500px;
-  overflow: hidden;
-}
-.detail-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center top;
-  filter: brightness(0.3) saturate(0.7);
-}
-.detail-hero-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, var(--bg) 0%, transparent 60%),
-    linear-gradient(to right, var(--bg) 0%, transparent 50%);
-}
-.detail-back {
-  position: absolute;
-  top: 80px;
-  left: 32px;
-  background: rgba(124,106,247,0.2);
-  border: 1px solid var(--purple3);
-  color: var(--text);
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-  z-index: 10;
-}
-.detail-back:hover { background: rgba(124,106,247,0.4); }
-.detail-main { padding: 0 40px 60px; position: relative; z-index: 1; }
-.detail-top {
-  display: flex;
-  gap: 32px;
-  margin-top: -140px;
-  align-items: flex-end;
-  margin-bottom: 32px;
-}
-.detail-poster {
-  width: 200px;
-  min-width: 200px;
-  height: 300px;
-  object-fit: cover;
-  border-radius: 12px;
-  border: 3px solid var(--purple3);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  flex-shrink: 0;
-}
-.detail-info { flex: 1; padding-bottom: 8px; }
-.detail-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 36px;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 12px;
-  letter-spacing: -0.5px;
-}
-.detail-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.detail-tag {
-  background: rgba(124,106,247,0.15);
-  border: 1px solid rgba(124,106,247,0.3);
-  color: var(--purple2);
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: 20px;
-}
-.detail-meta-row {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  color: var(--text2);
-  font-size: 14px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
-.detail-rating {
-  color: var(--purple2);
-  font-size: 20px;
-  font-weight: 700;
-  font-family: 'Syne', sans-serif;
-}
-.detail-desc {
-  color: var(--text2);
-  font-size: 15px;
-  line-height: 1.7;
-  margin-bottom: 24px;
-  max-width: 700px;
-}
-.detail-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-.detail-watch-btn { font-size: 16px; padding: 14px 32px; }
-.detail-section-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  margin-top: 36px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.detail-section-title::before {
-  content: '';
-  width: 4px;
-  height: 18px;
-  background: var(--purple);
-  border-radius: 2px;
-}
-
-/* PLAYER BUILD */
-.player-wrap {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid var(--border);
-}
-.player-wrap iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-/* SEASONS & EPISODES */
-.seasons-list, .episodes-list { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-.season-btn, .episode-btn {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text2);
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-.season-btn:hover, .episode-btn:hover { border-color: var(--purple3); color: var(--text); }
-.season-btn.active, .episode-btn.active { background: rgba(124,106,247,0.2); border-color: var(--purple); color: var(--purple2); }
-
-/* MOBILE */
-@media (max-width: 768px) {
-  nav { padding: 0 12px; gap: 8px; height: 56px; }
-  .logo { font-size: 20px; }
-  .nav-links { display: none; }
-  .mobile-menu-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text);
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    font-size: 18px;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-  .search-input { width: 130px; font-size: 13px; }
-  .search-input:focus { width: 160px; }
-  .ad-banner-top { margin-top: 56px; min-height: 60px; font-size: 11px; }
-  .hero { height: 360px; }
-  .hero-content { left: 16px; right: 16px; bottom: 24px; }
-  .hero-title { font-size: 24px; }
-  .hero-desc { display: none; }
-  .btn-primary { padding: 9px 16px; font-size: 13px; }
-  .btn-secondary { padding: 9px 12px; font-size: 13px; }
-  main { padding: 0 12px 40px; }
-  .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .section-title { font-size: 16px; }
-  .detail-hero { height: 320px; }
-  .detail-back { top: 70px; left: 16px; }
-  .detail-main { padding: 0 16px 40px; }
-  .detail-top { flex-direction: column; align-items: center; margin-top: -80px; gap: 16px; }
-  .detail-poster { width: 130px; min-width: 130px; height: 195px; }
-  .detail-info { text-align: center; width: 100%; }
-  .detail-title { font-size: 22px; }
-  .detail-meta-row { justify-content: center; }
-  .detail-tags { justify-content: center; }
-  .detail-btns { justify-content: center; }
-  .detail-desc { font-size: 14px; }
-  .mobile-nav-drawer {
-    position: fixed;
-    top: 56px; left: 0; right: 0;
-    background: rgba(8,0,16,0.98);
-    border-bottom: 1px solid var(--border);
-    z-index: 99;
-    padding: 12px;
-    display: none;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .mobile-nav-drawer.open { display: flex; }
-  .mobile-nav-drawer .nav-link { font-size: 15px; padding: 10px 16px; width: 100%; text-align: left; }
-}
-@media (min-width: 769px) {
-  .mobile-menu-btn { display: none; }
-  .mobile-nav-drawer { display: none !important; }
-}
-</style>
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.2rem; }
+            .cards-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+            .card img { height: 190px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo" onclick="showPage('home')">Di<span>z</span>yon</div>
-  <div class="nav-links">
-    <button class="nav-link active" onclick="showPage('home')" id="nav-home">Ana Sayfa</button>
-    <button class="nav-link" onclick="showPage('movies')" id="nav-movies">Filmler</button>
-    <button class="nav-link" onclick="showPage('series')" id="nav-series">Diziler</button>
-    <button class="nav-link" onclick="showPage('turkish')" id="nav-turkish">Türk Dizileri</button>
-    <button class="nav-link" onclick="showPage('russian')" id="nav-russian">Rus Dizileri</button>
-    <button class="nav-link" onclick="showPage('cartoons')" id="nav-cartoons">Çizgi Filmler</button>
-    <button class="nav-link" onclick="showPage('anime')" id="nav-anime">Anime</button>
-    <button class="nav-link" onclick="showPage('toprated')" id="nav-toprated">En İyiler</button>
-    <button class="nav-link" onclick="showPage('newreleases')" id="nav-newreleases">Yeni Çıkanlar</button>
-  </div>
-  <div class="search-wrap">
-    <span class="search-icon">🔍</span>
-    <input class="search-input" type="text" placeholder="Film, dizi ara..." id="searchInput" oninput="handleSearch(this.value)">
-  </div>
-  <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
-</nav>
-
-<!-- MOBILE NAV DRAWER -->
-<div class="mobile-nav-drawer" id="mobileNavDrawer">
-  <button class="nav-link" onclick="showPage('home');closeMobileMenu()" >Ana Sayfa</button>
-  <button class="nav-link" onclick="showPage('movies');closeMobileMenu()">Filmler</button>
-  <button class="nav-link" onclick="showPage('series');closeMobileMenu()">Diziler</button>
-  <button class="nav-link" onclick="showPage('turkish');closeMobileMenu()">Türk Dizileri</button>
-  <button class="nav-link" onclick="showPage('russian');closeMobileMenu()">Rus Dizileri</button>
-  <button class="nav-link" onclick="showPage('cartoons');closeMobileMenu()">Çizgi Filmler</button>
-  <button class="nav-link" onclick="showPage('anime');closeMobileMenu()">Anime</button>
-  <button class="nav-link" onclick="showPage('toprated');closeMobileMenu()">En İyiler</button>
-  <button class="nav-link" onclick="showPage('newreleases');closeMobileMenu()">Yeni Çıkanlar</button>
-</div>
-
-<!-- TOP BANNER AD -->
-<div class="ad-banner-top" id="adBannerTop">
-  <span>REKLAM ALANI · 728×90</span>
-</div>
-
-<!-- HOME PAGE -->
-<div class="page active" id="page-home">
-  <div class="hero" id="hero">
-    <div class="hero-bg" id="heroBg"></div>
-    <div class="hero-gradient"></div>
-    <div class="hero-content">
-      <div class="hero-badge">⭐ Haftanın Önerisi</div>
-      <div class="hero-title" id="heroTitle">Yükleniyor...</div>
-      <div class="hero-meta" id="heroMeta"></div>
-      <div class="hero-desc" id="heroDesc"></div>
-      <div class="hero-btns">
-        <button class="btn-primary" id="heroWatchBtn">▶ İzle</button>
-        <button class="btn-secondary" id="heroInfoBtn">Detaylar</button>
-      </div>
-    </div>
-  </div>
-
-  <main>
-    <!-- TRENDING -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🔥 Trend</div>
-        <button class="see-all" onclick="showPage('movies')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="trendingGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
+    <div id="loader" class="loading-screen">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; letter-spacing: 2px;">SINEMET YÜKLENİYOR...</p>
     </div>
 
-    <!-- YENİ DİZİLER -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🆕 Yeni Diziler</div>
-        <button class="see-all" onclick="showPage('newreleases')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="newSeriesHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
+    <header id="navbar">
+        <a href="#" class="logo">SINEMET</a>
+        <div class="search-box" style="color: #ccc;"><i class="fas fa-search"></i></div>
+    </header>
+
+    <div id="hero-area"></div>
+
+    <div class="main-container">
+        <div class="section-title"><i class="fas fa-fire"></i> Haftalık Popüler</div>
+        <div id="trendingGrid" class="cards-grid"></div>
+
+        <div class="section-title"><i class="fas fa-film"></i> Aksiyon Filmleri</div>
+        <div id="actionGrid" class="cards-grid"></div>
+
+        <div class="section-title"><i class="fas fa-tv"></i> Popüler Diziler</div>
+        <div id="seriesGrid" class="cards-grid"></div>
+
+        <div class="section-title"><i class="fas fa-ghost"></i> Korku & Gerilim</div>
+        <div id="horrorGrid" class="cards-grid"></div>
     </div>
 
-    <div class="ad-inline">REKLAM ALANI · 970×90</div>
-
-    <!-- POPULAR MOVIES -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🎬 Popüler Filmler</div>
-        <button class="see-all" onclick="showPage('movies')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="popularMoviesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <!-- POPULAR SERIES -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">📺 Popüler Diziler</div>
-        <button class="see-all" onclick="showPage('series')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="popularSeriesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <!-- TURKISH SERIES -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🇹🇷 Türk Dizileri</div>
-        <button class="see-all" onclick="showPage('turkish')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="turkishHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <!-- RUSSIAN SERIES -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🇷🇺 Rus Dizileri</div>
-        <button class="see-all" onclick="showPage('russian')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="russianHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-
-    <div class="ad-inline">REKLAM ALANI · 970×90</div>
-
-    <!-- ANIME -->
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">⛩️ Anime</div>
-        <button class="see-all" onclick="showPage('anime')">Tümünü Gör</button>
-      </div>
-      <div class="cards-grid" id="animeHomeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- MOVIES PAGE -->
-<div class="page" id="page-movies">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🎬 Filmler</div>
-      </div>
-      <div class="genre-filters" id="movieGenreFilters"></div>
-      <div class="cards-grid" id="moviesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- SERIES PAGE -->
-<div class="page" id="page-series">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">📺 Diziler</div>
-      </div>
-      <div class="genre-filters" id="seriesGenreFilters"></div>
-      <div class="cards-grid" id="seriesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- CARTOONS PAGE -->
-<div class="page" id="page-cartoons">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🎨 Çizgi Filmler</div>
-      </div>
-      <div class="genre-filters" id="cartoonGenreFilters"></div>
-      <div class="cards-grid" id="cartoonsGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- ANIME PAGE -->
-<div class="page" id="page-anime">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">⛩️ Anime</div>
-      </div>
-      <div class="genre-filters" id="animeGenreFilters"></div>
-      <div class="cards-grid" id="animeGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- TOP RATED PAGE -->
-<div class="page" id="page-toprated">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">⭐ En İyi Filmler</div>
-      </div>
-      <div class="cards-grid" id="topRatedGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- NEW RELEASES PAGE -->
-<div class="page" id="page-newreleases">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🆕 Yeni Çıkanlar</div>
-      </div>
-      <div class="genre-filters" id="newReleasesFilters">
-        <button class="genre-btn active" onclick="switchNewReleases('movies', this)">🎬 Filmler</button>
-        <button class="genre-btn" onclick="switchNewReleases('series', this)">📺 Diziler</button>
-        <button class="genre-btn" onclick="switchNewReleases('turkish', this)">🇹🇷 Türk Dizileri</button>
-        <button class="genre-btn" onclick="switchNewReleases('russian', this)">🇷🇺 Rus Dizileri</button>
-        <button class="genre-btn" onclick="switchNewReleases('cartoons', this)">🎨 Çizgi Filmler</button>
-        <button class="genre-btn" onclick="switchNewReleases('anime', this)">⛩️ Anime</button>
-      </div>
-      <div class="cards-grid" id="newReleasesGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- SEARCH PAGE -->
-<div class="page" id="page-search">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="search-results-title">
-        "<span id="searchQuery"></span>" için sonuçlar
-      </div>
-      <div class="cards-grid" id="searchGrid"></div>
-    </div>
-  </main>
-</div>
-
-<!-- TURKISH SERIES PAGE -->
-<div class="page" id="page-turkish">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🇹🇷 Türk Dizileri</div>
-      </div>
-      <div class="genre-filters" id="turkishGenreFilters"></div>
-      <div class="cards-grid" id="turkishGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- RUSSIAN SERIES PAGE -->
-<div class="page" id="page-russian">
-  <main style="padding-top:32px">
-    <div class="section">
-      <div class="section-header">
-        <div class="section-title">🇷🇺 Rus Dizileri</div>
-      </div>
-      <div class="genre-filters" id="russianGenreFilters"></div>
-      <div class="cards-grid" id="russianGrid">
-        <div class="loading"><div class="spinner"></div> Yükleniyor...</div>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- DETAIL PAGE WITH TORRENTIO PLAYER -->
-<div class="page" id="page-detail">
-  <div class="detail-hero" id="detailHero">
-    <div class="detail-bg" id="detailBg"></div>
-    <div class="detail-hero-gradient"></div>
-    <button class="detail-back" onclick="goBack()">← Geri</button>
-  </div>
-  <main class="detail-main">
-    <div class="detail-top">
-      <img class="detail-poster" id="detailPoster" src="" alt="">
-      <div class="detail-info">
-        <div class="detail-title" id="detailTitle"></div>
-        <div class="detail-tags" id="detailTags"></div>
-        <div class="detail-meta-row">
-          <span class="detail-rating" id="detailRating"></span>
-          <span id="detailYear"></span>
-          <span id="detailRuntime"></span>
-          <span id="detailCountry"></span>
+    <div id="player-modal">
+        <div class="player-header">
+            <div id="player-title" style="font-weight: bold;">Film İzle</div>
+            <div class="close-btn" onclick="closePlayer()"><i class="fas fa-times"></i></div>
         </div>
-        <div class="detail-desc" id="detailDesc"></div>
-        <div class="detail-btns">
-          <button class="btn-primary detail-watch-btn" onclick="scrollToPlayer()">▶ İzle</button>
-        </div>
-      </div>
+        <div id="player-frame-holder" style="flex-grow: 1;"></div>
     </div>
 
-    <div class="ad-inline" style="margin:24px 0">REKLAM ALANI · 970×90</div>
+    <script>
+        const API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6';
+        const BASE_URL = 'https://api.themoviedb.org/3';
+        const IMG_PATH = 'https://image.tmdb.org/t/p/w500';
+        const HD_PATH = 'https://image.tmdb.org/t/p/original';
 
-    <!-- SEASONS & EPISODES INTERFACE FOR SERIES -->
-    <div id="seriesStructureSection" style="display:none">
-      <div class="detail-section-title">Sezonlar</div>
-      <div class="seasons-list" id="seasonsList"></div>
-      <div class="detail-section-title">Bölümler</div>
-      <div class="episodes-list" id="episodesList"></div>
-    </div>
+        // При скролле меняем фон шапки
+        window.onscroll = () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) nav.classList.add('scrolled');
+            else nav.classList.remove('scrolled');
+        };
 
-    <!-- ACTUAL PLAYER CONTAINER -->
-    <div id="playerSection">
-      <div class="detail-section-title">Oynatıcı</div>
-      <div class="player-wrap">
-        <iframe id="torrentioPlayer" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-      </div>
-    </div>
-  </main>
-</div>
+        async function initSite() {
+            try {
+                // 1. Тренды (для баннера и первой сетки)
+                const trending = await fetch(`${BASE_URL}/trending/all/day?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
+                setupHero(trending.results[0]);
+                renderList(trending.results, 'trendingGrid');
 
-<script>
-// CONFIG & PERSISTENT DATA
-const TMDB_API_KEY = 'a21c1729b19e87ec3e690f05566cf2c6'; // Интегрированный API Ключ TMDB
-const BASE_URL = 'https://api.themoviedb.org/3';
-const IMAGE_URL = 'https://image.tmdb.org/t/p/w500';
-const BACKDROP_URL = 'https://image.tmdb.org/t/p/original';
+                // 2. Акшн (Жанр 28)
+                const action = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=28&language=tr-TR`).then(r => r.json());
+                renderList(action.results, 'actionGrid');
 
-// Ссылка Torrentio + RealDebrid без хвоста manifest.json для генерации стримов
-const TORRENTIO_BASE = "https://torrentio.strem.fun/sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=2BAICHVH3JZSCIJN7CANPHP7R7OVHKP6FNHWUSLXATQEFUTDVOZQ";
+                // 3. Сериалы
+                const series = await fetch(`${BASE_URL}/tv/popular?api_key=${API_KEY}&language=tr-TR`).then(r => r.json());
+                renderList(series.results, 'seriesGrid', 'tv');
 
-let currentItem = null; 
-let historyStack = ['home'];
+                // 4. Ужасы (Жанр 27)
+                const horror = await fetch(`${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=27&language=tr-TR`).then(r => r.json());
+                renderList(horror.results, 'horrorGrid');
 
-// INITIALIZATION
-document.addEventListener('DOMContentLoaded', () => {
-    loadHomePageData();
-    setupGenreFilters();
-});
+                // Прячем лоадер
+                document.getElementById('loader').style.display = 'none';
 
-// NAVIGATION LOGIC
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    const targetPage = document.getElementById(`page-${pageId}`);
-    if(targetPage) targetPage.classList.add('active');
-    
-    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-    const activeNav = document.getElementById(`nav-${pageId}`);
-    if(activeNav) activeNav.classList.add('active');
-
-    if(historyStack[historyStack.length - 1] !== pageId) {
-        historyStack.push(pageId);
-    }
-    window.scrollTo({top: 0, behavior: 'smooth'});
-}
-
-function goBack() {
-    if(historyStack.length > 1) {
-        historyStack.pop();
-        const prevPage = historyStack[historyStack.length - 1];
-        showPage(prevPage);
-    } else {
-        showPage('home');
-    }
-}
-
-function toggleMobileMenu() {
-    document.getElementById('mobileNavDrawer').classList.toggle('open');
-}
-function closeMobileMenu() {
-    document.getElementById('mobileNavDrawer').classList.remove('open');
-}
-
-// FETCH HOME CONTENT
-async function loadHomePageData() {
-    try {
-        // Hero Content
-        const trending = await fetch(`${BASE_URL}/trending/all/week?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        if(trending.results && trending.results.length > 0) {
-            setupHero(trending.results[0]);
-            renderGrid(trending.results.slice(0, 12), 'trendingGrid');
+            } catch (err) {
+                console.error("Hata:", err);
+                alert("Veriler yüklenemedi. Lütfen API anahtarını и NoScript ayarlarını kontrol edin.");
+            }
         }
-        
-        // Popular Movies
-        const movies = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        renderGrid(movies.results.slice(0, 12), 'popularMoviesGrid');
 
-        // Popular Series
-        const series = await fetch(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        renderGrid(series.results.slice(0, 12), 'popularSeriesGrid');
-
-        // Categories placeholders
-        renderGrid(series.results.slice(2, 14), 'newSeriesHomeGrid');
-        renderGrid(series.results.slice(5, 17), 'turkishHomeGrid');
-        renderGrid(series.results.slice(8, 20), 'russianHomeGrid');
-        renderGrid(series.results.slice(1, 13), 'animeHomeGrid');
-
-    } catch(err) {
-        console.error("Home loading error: ", err);
-    }
-}
-
-function setupHero(item) {
-    const bg = document.getElementById('heroBg');
-    const title = document.getElementById('heroTitle');
-    const desc = document.getElementById('heroDesc');
-    const meta = document.getElementById('heroMeta');
-    
-    bg.style.backgroundImage = `url('${BACKDROP_URL}${item.backdrop_path}')`;
-    title.innerText = item.title || item.name;
-    desc.innerText = item.overview || "İçerik açıklaması bulunmuyor.";
-    meta.innerHTML = `<span class="hero-rating">⭐ ${item.vote_average.toFixed(1)}</span> — ${item.release_date || item.first_air_date || ''}`;
-    
-    document.getElementById('heroWatchBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
-    document.getElementById('heroInfoBtn').onclick = () => openDetailPage(item.id, item.media_type || 'movie');
-}
-
-function renderGrid(items, targetId) {
-    const container = document.getElementById(targetId);
-    if(!container) return;
-    container.innerHTML = '';
-    
-    if(!items || items.length === 0) {
-        container.innerHTML = '<div class="empty"><div class="empty-icon">📺</div><div class="empty-text">İçerik bulunamadı.</div></div>';
-        return;
-    }
-
-    items.forEach(item => {
-        const type = item.media_type || (item.title ? 'movie' : 'tv');
-        const card = document.createElement('div');
-        card.className = 'movie-card';
-        card.onclick = () => openDetailPage(item.id, type);
-        
-        const posterSrc = item.poster_path ? `${IMAGE_URL}${item.poster_path}` : '';
-        const imgBlock = posterSrc ? `<img class="card-poster" src="${posterSrc}" alt="${item.title || item.name}">` : `<div class="card-poster-placeholder">🎬</div>`;
-        
-        card.innerHTML = `
-            ${imgBlock}
-            <div class="card-badge">${type === 'movie' ? 'Film' : 'Dizi'}</div>
-            <div class="card-info">
-                <div class="card-title">${item.title || item.name}</div>
-                <div class="card-meta">
-                    <span>${item.release_date ? item.release_date.substring(0,4) : (item.first_air_date ? item.first_air_date.substring(0,4) : '')}</span>
-                    <span class="card-rating">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0.0'}</span>
+        function setupHero(item) {
+            const container = document.getElementById('hero-area');
+            const title = item.title || item.name;
+            container.innerHTML = `
+                <div class="hero" style="background-image: url('${HD_PATH}${item.backdrop_path}')">
+                    <div class="hero-content">
+                        <h1 class="hero-title">${title}</h1>
+                        <p class="hero-desc">${item.overview}</p>
+                        <button class="btn-play" onclick="openPlayer('${item.media_type || 'movie'}', ${item.id}, '${title.replace(/'/g, "")}')">
+                            <i class="fas fa-play"></i> Hemen İzle
+                        </button>
+                    </div>
                 </div>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
+            `;
+        }
 
-// GENRES SETUP
-function setupGenreFilters() {
-    const list = ["Aksiyon", "Macera", "Komedi", "Dram", "Korku", "Bilim Kurgu"];
-    ['movieGenreFilters', 'seriesGenreFilters', 'cartoonGenreFilters', 'animeGenreFilters'].forEach(id => {
-        const el = document.getElementById(id);
-        if(!el) return;
-        el.innerHTML = '<button class="genre-btn active">Tümü</button>';
-        list.forEach(g => {
-            el.innerHTML += `<button class="genre-btn">${g}</button>`;
-        });
-    });
-}
-
-// SEARCH FUNCTIONALITY
-async function handleSearch(query) {
-    if(!query || query.trim() === '') return;
-    showPage('search');
-    document.getElementById('searchQuery').innerText = query;
-    const grid = document.getElementById('searchGrid');
-    grid.innerHTML = '<div class="loading"><div class="spinner"></div> Aranıyor...</div>';
-    
-    try {
-        const res = await fetch(`${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&language=tr-TR`).then(r => r.json());
-        renderGrid(res.results, 'searchGrid');
-    } catch(e) {
-        grid.innerHTML = '<div class="empty">Bir hata oluştu.</div>';
-    }
-}
-
-// DETAIL PAGE & PLAYER INTERACTION (TORRENTIO INTEGRATION)
-async function openDetailPage(id, type) {
-    showPage('detail');
-    currentItem = { id, type };
-    
-    // Reset Views
-    document.getElementById('seriesStructureSection').style.display = 'none';
-    document.getElementById('torrentioPlayer').src = '';
-    
-    try {
-        const details = await fetch(`${BASE_URL}/${type}/${id}?api_key=${TMDB_API_KEY}&language=tr-TR&append_to_response=external_ids`).then(r => r.json());
-        
-        // Get IMDb ID or Fallback to TMDB
-        const imdbId = details.external_ids?.imdb_id || details.imdb_id || id;
-        currentItem.imdbId = imdbId;
-
-        // Fill Page Details
-        document.getElementById('detailBg').style.backgroundImage = `url('${BACKDROP_URL}${details.backdrop_path}')`;
-        document.getElementById('detailPoster').src = details.poster_path ? `${IMAGE_URL}${details.poster_path}` : '';
-        document.getElementById('detailTitle').innerText = details.title || details.name;
-        document.getElementById('detailDesc').innerText = details.overview || 'Açıklama mevcut değil.';
-        document.getElementById('detailRating').innerText = `⭐ ${details.vote_average.toFixed(1)}`;
-        document.getElementById('detailYear').innerText = details.release_date || details.first_air_date || '';
-        document.getElementById('detailRuntime').innerText = details.runtime ? `${details.runtime} dk` : (details.episode_run_time ? `${details.episode_run_time[0]} dk` : '');
-        
-        // Setup tags
-        const tags = document.getElementById('detailTags');
-        tags.innerHTML = '';
-        if(details.genres) {
-            details.genres.forEach(g => {
-                tags.innerHTML += `<span class="detail-tag">${g.name}</span>`;
+        function renderList(data, elementId, defaultType = 'movie') {
+            const grid = document.getElementById(elementId);
+            grid.innerHTML = '';
+            data.slice(0, 12).forEach(item => {
+                const title = item.title || item.name;
+                const type = item.media_type || defaultType;
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => openPlayer(type, item.id, title);
+                card.innerHTML = `
+                    <img src="${IMG_PATH}${item.poster_path}" alt="${title}">
+                    <div class="card-body">
+                        <div class="card-title">${title}</div>
+                        <div class="card-meta">
+                            <span>${new Date(item.release_date || item.first_air_date).getFullYear() || ''}</span>
+                            <span class="rating"><i class="fas fa-star"></i> ${item.vote_average.toFixed(1)}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
             });
         }
 
-        if(type === 'movie') {
-            // Для фильмов стримим напрямую через Stremio Embed плеер по IMDb ID
-            const playerUrl = `https://stremio-embed.netlify.app/#/player?streamurl=${encodeURIComponent(TORRENTIO_BASE + '/stream/movie/' + imdbId + '.json')}`;
-            document.getElementById('torrentioPlayer').src = playerUrl;
-        } else {
-            // Для сериалов разворачиваем структуру сезонов
-            document.getElementById('seriesStructureSection').style.display = 'block';
-            setupSeasonsAndEpisodes(details);
+        function openPlayer(type, id, title) {
+            const modal = document.getElementById('player-modal');
+            const holder = document.getElementById('player-frame-holder');
+            document.getElementById('player-title').innerText = title;
+            
+            // Используем стабильный плеер Torrentio
+            const videoUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${id}`;
+            
+            holder.innerHTML = `<iframe src="${videoUrl}" allowfullscreen></iframe>`;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
-    } catch(err) {
-        console.error("Detail load failed: ", err);
-    }
-}
-
-function setupSeasonsAndEpisodes(seriesDetails) {
-    const seasonsContainer = document.getElementById('seasonsList');
-    seasonsContainer.innerHTML = '';
-    
-    if(!seriesDetails.seasons || seriesDetails.seasons.length === 0) return;
-
-    // Фильтруем спецвыпуски (Сезон 0), если нужно
-    const validSeasons = seriesDetails.seasons.filter(s => s.season_number > 0);
-    
-    validSeasons.forEach((season, index) => {
-        const btn = document.createElement('button');
-        btn.className = `season-btn ${index === 0 ? 'active' : ''}`;
-        btn.innerText = `${season.season_number}. Sezon`;
-        btn.onclick = () => {
-            document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            loadEpisodes(seriesDetails.id, season.season_number);
-        };
-        seasonsContainer.appendChild(btn);
-    });
-
-    // Загружаем первый сезон по умолчанию
-    if(validSeasons.length > 0) {
-        loadEpisodes(seriesDetails.id, validSeasons[0].season_number);
-    }
-}
-
-async function loadEpisodes(seriesId, seasonNumber) {
-    const episodesContainer = document.getElementById('episodesList');
-    episodesContainer.innerHTML = '<div class="loading"><div class="spinner"></div> Bölümler Yükleniyor...</div>';
-    
-    try {
-        const res = await fetch(`${BASE_URL}/tv/${seriesId}/season/${seasonNumber}?api_key=${TMDB_API_KEY}&language=tr-TR`).then(r => r.json());
-        episodesContainer.innerHTML = '';
-        
-        res.episodes.forEach((ep, index) => {
-            const btn = document.createElement('button');
-            btn.className = `episode-btn ${index === 0 ? 'active' : ''}`;
-            btn.innerText = `${ep.episode_number}. Bölüm`;
-            btn.onclick = () => {
-                document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                playEpisode(seasonNumber, ep.episode_number);
-            };
-            episodesContainer.appendChild(btn);
-        });
-
-        if(res.episodes.length > 0) {
-            playEpisode(seasonNumber, res.episodes[0].episode_number);
+        function closePlayer() {
+            document.getElementById('player-modal').style.display = 'none';
+            document.getElementById('player-frame-holder').innerHTML = '';
+            document.body.style.overflow = 'auto';
         }
-    } catch(e) {
-        episodesContainer.innerHTML = '<div class="empty">Bölümler yüklenemedi.</div>';
-    }
-}
 
-function playEpisode(season, episode) {
-    // Формируем стрим-ссылку Stremio Torrentio для конкретной серии сериала
-    const streamTarget = `${TORRENTIO_BASE}/stream/series/${currentItem.imdbId}:${season}:${episode}.json`;
-    const playerUrl = `https://stremio-embed.netlify.app/#/player?streamurl=${encodeURIComponent(streamTarget)}`;
-    document.getElementById('torrentioPlayer').src = playerUrl;
-}
-
-function scrollToPlayer() {
-    document.getElementById('playerSection').scrollIntoView({ behavior: 'smooth' });
-}
-
-// SWITCH NEW RELEASES SUBPAGES
-function switchNewReleases(type, btn) {
-    document.querySelectorAll('#newReleasesFilters .genre-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const mockData = type === 'movies' ? 'popularMoviesGrid' : 'trendingGrid';
-    document.getElementById('newReleasesGrid').innerHTML = document.getElementById(mockData).innerHTML;
-}
-</script>
+        initSite();
+    </script>
 </body>
 </html>
