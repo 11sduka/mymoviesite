@@ -1788,64 +1788,51 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  document.getElementById('detailWatchBtn').onclick = async () => {
+  document.getElementById('detailWatchBtn').onclick = function() {
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
-
-    const RD_KEY = "ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
     
-    let imdbId = "";
-    // Пытаемся получить IMDb ID
-    try {
-      const response = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
-      const data = await response.json();
-      imdbId = data.imdb_id;
-    } catch (e) { console.error("ID Error"); }
-
-    const finalId = imdbId || id;
-    
-    // МЕНЯЕМ ПЛЕЕР: Используем официальный веб-интерфейс Stremio (или альтернативу)
-    // Это решит проблему с "Broken link" на Netlify
-    const playerUrl = type === 'tv' 
-      ? `https://web.stremio.com/#/player?type=tv&id=${finalId}:1:1`
-      : `https://web.stremio.com/#/player?type=movie&id=${finalId}`;
-    
-    // ВАЖНО: Если ты хочешь именно через Torrentio + RealDebrid в браузере, 
-    // попробуй этот формат (он самый стабильный):
-    const torrentioUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${type === 'tv' ? finalId + ':1:1' : finalId}&config=sort=seeders|realdebrid=${RD_KEY}`;
-
     const playerWrap = document.querySelector('.player-wrap');
-    if (playerWrap) {
-      // Если Netlify сдох, мы используем прямой эмбед Stremio
-      playerWrap.innerHTML = `
-        <iframe 
-          src="${playerUrl}" 
-          style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
-          allowfullscreen>
-        </iframe>`;
-    }
+    if (!playerWrap) return;
+
+    // 1. Показываем надпись "Загрузка", пока ищем IMDb ID
+    playerWrap.innerHTML = '<div style="color:white; text-align:center; padding:30px; font-family:sans-serif;">🚀 Загружаем плеер и потоки...</div>';
+
+    // 2. Получаем IMDb ID (tt...) через TMDB API
+    // Это КРИТИЧНО для Torrentio
+    fetch(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
+      .then(res => res.json())
+      .then(data => {
+        const imdbId = data.imdb_id || id; // Если IMDb нет, берем обычный ID
+        const videoId = type === 'tv' ? imdbId + ':1:1' : imdbId;
+
+        // 3. Используем официальный веб-плеер Stremio.
+        // Он увидит твой подключенный Torrentio в этом же браузере!
+        const playerUrl = `https://web.stremio.com/#/player?type=${type}&id=${videoId}`;
+
+        playerWrap.innerHTML = `
+          <iframe 
+            src="${playerUrl}" 
+            style="width:100%; height:550px; border:none; border-radius:12px; background:#000;" 
+            allowfullscreen 
+            allow="autoplay; encrypted-media">
+          </iframe>`;
+      })
+      .catch(err => {
+        console.error("Ошибка ID:", err);
+        playerWrap.innerHTML = '<div style="color:red; text-align:center;">Ошибка загрузки. Попробуйте еще раз.</div>';
+      });
+
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
 }
 
 function goBack() {
   const wrap = document.querySelector('.player-wrap');
-  if (wrap) wrap.innerHTML = ''; 
+  if (wrap) wrap.innerHTML = ''; // Останавливаем плеер
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
-}
-
-function scrollToTrailer() {
-  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
-}
-
-function goFullscreen() {
-  const iframe = document.querySelector('.player-wrap iframe');
-  if (iframe) {
-    if (iframe.requestFullscreen) iframe.requestFullscreen();
-    else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
-  }
 }
 // MOBILE MENU
 function toggleMobileMenu() {
