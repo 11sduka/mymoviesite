@@ -1792,34 +1792,32 @@ async function openDetail(id, type) {
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
     
-    // ТВОЙ КОНФИГ
-    const TORRENTIO_CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
+    const RD_KEY = "ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
+    const TORRENTIO_CONFIG = `sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=${RD_KEY}`;
     
-    // Пытаемся получить IMDb ID (так Torrentio работает на 100% стабильнее)
     let finalId = id;
-    try {
-      const extRes = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
-      const extData = await extRes.json();
-      if (extData.imdb_id) {
-        finalId = extData.imdb_id;
-      }
-    } catch(e) { console.log("IMDb ID не найден, используем TMDB"); }
 
-    // Формируем ID для видео
+    // Пытаемся получить IMDb ID через прокси, если основной TMDB лежит
+    try {
+      const response = await fetch(`${BASE_URL}/${type}/${id}/external_ids?api_key=${API_KEY}`);
+      const externalData = await response.json();
+      if (externalData.imdb_id) {
+        finalId = externalData.imdb_id;
+      }
+    } catch (e) {
+      console.log("Ошибка получения ID, используем текущий");
+    }
+
     const videoId = type === 'tv' ? `${finalId}:1:1` : finalId;
-    
-    // Ссылка на плеер
     const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
     
-    // ПРЯМАЯ ЗАМЕНА КОНТЕЙНЕРА (чтобы точно не было пустоты)
     const playerWrap = document.querySelector('.player-wrap');
     if (playerWrap) {
-      playerWrap.style.height = "500px"; // Принудительно задаем высоту
       playerWrap.innerHTML = `
         <iframe 
           id="playerSource" 
           src="${playerUrl}" 
-          style="width:100%; height:100%; border:none; border-radius:12px; background:#000;" 
+          style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
           allowfullscreen 
           allow="autoplay; encrypted-media">
         </iframe>`;
@@ -1831,10 +1829,14 @@ async function openDetail(id, type) {
 
 function goBack() {
   const playerWrap = document.querySelector('.player-wrap');
-  if (playerWrap) playerWrap.innerHTML = ''; // Чистим плеер при выходе
+  if (playerWrap) playerWrap.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
+}
+
+function scrollToTrailer() {
+  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
 }
 
 function goFullscreen() {
@@ -1844,4 +1846,28 @@ function goFullscreen() {
   else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
 }
 
-  
+// MOBILE MENU (БРАТ, Я ЕГО НЕ УДАЛЯЛ, ОНО ТУТ!)
+function toggleMobileMenu() {
+  const drawer = document.getElementById('mobileNavDrawer');
+  if(drawer) drawer.classList.toggle('open');
+}
+function closeMobileMenu() {
+  const drawer = document.getElementById('mobileNavDrawer');
+  if(drawer) drawer.classList.remove('open');
+}
+
+// INIT (ЗАПУСК САЙТА)
+loadHome();
+
+// ЕСЛИ TMDB НЕ ГРУЗИТСЯ, ДОБАВЛЯЕМ ПЕРЕЗАГРУЗКУ ЧЕРЕЗ 2 СЕКУНДЫ
+setTimeout(() => {
+    if (document.getElementById('trendingGrid') && document.getElementById('trendingGrid').innerHTML === "") {
+        console.log("TMDB не ответил, пробуем еще раз...");
+        loadHome();
+    }
+}, 2000);
+
+</script>
+</body>
+</html>
+ 
