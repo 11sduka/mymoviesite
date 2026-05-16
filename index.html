@@ -1789,34 +1789,31 @@ async function openDetail(id, type) {
 
   // Watch button
   document.getElementById('detailWatchBtn').onclick = () => {
-    // https://torrentio.strem.fun/sort=seeders%7Clanguage=russian,turkish,arabic,persian%7Cqualityfilter=cam%7Csizefilter=25GB%7Crealdebrid=ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A
     const playerSection = document.getElementById('playerSection');
     playerSection.style.display = 'block';
+    
+    // Твой ключ Real-Debrid уже внутри ссылки
+    const TORRENTIO_CONFIG = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=ZIUX3CELOQVVVRNO6BRUZKV5LRCJWQIRTQ73NJS6E5NIEOKFBD5A";
+    
+    // Авто-определение: фильм или сериал
+    const videoId = type === 'tv' ? `${id}:1:1` : id;
+    
+    // Готовая ссылка на плеер
+    const playerUrl = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(TORRENTIO_CONFIG)}`;
+    
+    // Эта строчка сама находит твой черный плеер и заменяет его на рабочее кино
+    const playerWrap = document.querySelector('.player-wrap');
+    playerWrap.innerHTML = `
+      <iframe 
+        id="playerSource" 
+        src="${playerUrl}" 
+        style="width:100%; height:500px; border:none; border-radius:12px; background:#000;" 
+        allowfullscreen 
+        allow="autoplay; encrypted-media">
+      </iframe>`;
+
     playerSection.scrollIntoView({behavior: 'smooth'});
-    // Placeholder - lisans aldıktan sonra gerçek link ekle:
-    // document.getElementById('playerSource').src = 'VIDEO_URL_BURAYA';
-    // document.getElementById('mainPlayer').load();
-    // document.getElementById('mainPlayer').play();
   };
-}
-
-function goBack() {
-  document.getElementById('detailTrailerFrame').src = '';
-  document.getElementById('playerSection').style.display = 'none';
-  showPage(previousPage);
-}
-
-function scrollToTrailer() {
-  document.getElementById('trailerSection').scrollIntoView({behavior:'smooth'});
-}
-
-function goFullscreen() {
-  const video = document.getElementById('mainPlayer');
-  if (video.requestFullscreen) video.requestFullscreen();
-  else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen();
-  else if (video.mozRequestFullScreen) video.mozRequestFullScreen();
-}
-
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
