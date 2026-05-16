@@ -1795,32 +1795,29 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (!playerWrap) return;
 
-    // 1. Показываем надпись "Загрузка", пока ищем IMDb ID
-    playerWrap.innerHTML = '<div style="color:white; text-align:center; padding:30px; font-family:sans-serif;">🚀 Загружаем плеер и потоки...</div>';
+    playerWrap.innerHTML = '<div style="color:white; text-align:center; padding:30px;">📡 Подключаемся к серверу Stremio...</div>';
 
-    // 2. Получаем IMDb ID (tt...) через TMDB API
-    // Это КРИТИЧНО для Torrentio
+    // Получаем IMDb ID
     fetch(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
       .then(res => res.json())
       .then(data => {
-        const imdbId = data.imdb_id || id; // Если IMDb нет, берем обычный ID
-        const videoId = type === 'tv' ? imdbId + ':1:1' : imdbId;
-
-        // 3. Используем официальный веб-плеер Stremio.
-        // Он увидит твой подключенный Torrentio в этом же браузере!
+        const imdbId = data.imdb_id || id;
+        const videoId = type === 'tv' ? `${imdbId}:1:1` : imdbId;
+        
+        // Используем прямую ссылку на плеер
+        // Добавляем параметр, который помогает браузеру "увидеть" локальный сервер
         const playerUrl = `https://web.stremio.com/#/player?type=${type}&id=${videoId}`;
-
+        
         playerWrap.innerHTML = `
           <iframe 
             src="${playerUrl}" 
-            style="width:100%; height:550px; border:none; border-radius:12px; background:#000;" 
+            style="width:100%; height:600px; border:none; border-radius:12px; background:#000;" 
             allowfullscreen 
-            allow="autoplay; encrypted-media">
+            allow="autoplay; encrypted-media; clipboard-write; microphone; camera">
           </iframe>`;
       })
       .catch(err => {
-        console.error("Ошибка ID:", err);
-        playerWrap.innerHTML = '<div style="color:red; text-align:center;">Ошибка загрузки. Попробуйте еще раз.</div>';
+        playerWrap.innerHTML = '<div style="color:red; text-align:center;">Ошибка: проверьте Streaming Server в Stremio.</div>';
       });
 
     playerSection.scrollIntoView({behavior: 'smooth'});
@@ -1829,7 +1826,7 @@ async function openDetail(id, type) {
 
 function goBack() {
   const wrap = document.querySelector('.player-wrap');
-  if (wrap) wrap.innerHTML = ''; // Останавливаем плеер
+  if (wrap) wrap.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
