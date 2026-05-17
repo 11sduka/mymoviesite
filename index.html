@@ -1788,49 +1788,52 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  var watchBtn = document.getElementById('detailWatchBtn');
-if (watchBtn) {
-    watchBtn.onclick = function() {
-        var pSec = document.getElementById('playerSection');
-        var pWrap = document.querySelector('.player-wrap');
-        if (!pSec || !pWrap) return;
+  document.getElementById('detailWatchBtn').onclick = function() {
+    var pSec = document.getElementById('playerSection');
+    var pWrap = document.querySelector('.player-wrap');
+    if (!pSec || !pWrap) return;
 
-        pSec.style.display = 'block';
+    pSec.style.display = 'block';
 
-        // Рисуем интерфейс (чистый турецкий/английский)
-        pWrap.innerHTML = 
-            '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;flex-wrap:wrap;">' +
-                '<button id="s1" style="padding:12px 20px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Premium Server</button>' +
-                '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Standart Server</button>' +
-            '</div>' +
-            '<div id="playerContainer" style="width:100%;background:#000;border-radius:12px;overflow:hidden;"></div>';
+    pWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
+      '<button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio)</button>' +
+      '<button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 2 (HD)</button>' +
+      '</div>' +
+      '<div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden;"></div>';
 
-        var container = document.getElementById('playerContainer');
+    var cont = document.getElementById('ifrC');
 
-        // Логика сервера 1 (Stremio через твой акк)
-        var startS1 = function() {
-            fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
-                .then(function(r) { return r.json(); })
-                .then(function(d) {
-                    var imdb = d.imdb_id || id;
-                    var vid = (type === 'tv') ? imdb + ':1:1' : imdb;
-                    var url = 'https://web.stremio.com/#/player?type=' + type + '&id=' + vid;
-                    container.innerHTML = '<iframe src="' + url + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay"></iframe>';
-                });
-        };
-
-        // Логика сервера 2 (Vidsrc - Прямой и быстрый)
-        var startS2 = function() {
-            var url = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-            container.innerHTML = '<iframe src="' + url + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
-        };
-
-        document.getElementById('s1').onclick = startS1;
-        document.getElementById('s2').onclick = startS2;
-
-        startS1(); // Запуск по умолчанию
-        pSec.scrollIntoView({behavior: 'smooth'});
+    var runS1 = function() {
+      fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          var imdb = d.imdb_id || id;
+          var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
+          // Прямая ссылка на официальный веб-плеер
+          var src = 'https://web.stremio.com/#/player?type=' + type + '&id=' + vId;
+          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:550px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+        });
     };
+
+    var runS2 = function() {
+      // Стабильное зеркало vidsrc.to
+      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
+    };
+
+    document.getElementById('s1').onclick = runS1;
+    document.getElementById('s2').onclick = runS2;
+
+    runS1(); 
+    pSec.scrollIntoView({behavior: 'smooth'});
+  };
+} // Конец функции страницы
+
+function goBack() {
+  var c = document.getElementById('ifrC');
+  if (c) c.innerHTML = ''; 
+  document.getElementById('playerSection').style.display = 'none';
+  showPage(previousPage);
 }
 // MOBILE MENU
 function toggleMobileMenu() {
