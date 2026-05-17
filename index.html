@@ -1800,16 +1800,17 @@ async function openDetail(id, type) {
   pSec.style.display = 'block';
 
   pWrap.innerHTML =
-    '<div style="display:flex;gap:10px;margin-bottom:16px;justify-content:center;flex-wrap:wrap;">' +
-      '<button id="serverBtn1" style="padding:12px 20px;background:#7c6af7;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Sunucu 1</button>' +
-      '<button id="serverBtn2" style="padding:12px 20px;background:#1f1f1f;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Sunucu 2</button>' +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">' +
+      '<button id="server1Btn" style="padding:12px 20px;background:#7c6af7;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Sunucu 1</button>' +
+      '<button id="server2Btn" style="padding:12px 20px;background:#232323;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Sunucu 2</button>' +
     '</div>' +
-    '<div id="iframeContainer" style="width:100%;height:100%;min-height:520px;background:#000;border-radius:12px;overflow:hidden;"></div>';
 
-  var iframeContainer = document.getElementById('iframeContainer');
+    '<div id="playerFrameContainer" style="width:100%;height:520px;background:#000;border-radius:12px;overflow:hidden;">' +
+    '</div>';
+
+  var playerFrameContainer = document.getElementById('playerFrameContainer');
 
   var imdbId = '';
-  var embedType = type === 'tv' ? 'series' : 'movie';
 
   try {
 
@@ -1823,65 +1824,72 @@ async function openDetail(id, type) {
       imdbId = externalData.imdb_id;
     }
 
-  } catch (err) {
-    console.error('TMDB external_ids fetch failed:', err);
+  } catch (error) {
+
+    console.error('TMDB external_ids error:', error);
+
   }
 
-  function loadProvider1() {
+  function loadServer1() {
 
     if (!imdbId) {
-      iframeContainer.innerHTML =
-        '<div style="display:flex;align-items:center;justify-content:center;height:520px;color:#fff;font-size:15px;">IMDB ID bulunamadı.</div>';
+
+      playerFrameContainer.innerHTML =
+        '<div style="width:100%;height:520px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;">IMDB ID bulunamadı.</div>';
+
       return;
     }
 
-    var stremioId = imdbId;
+    var finalImdbId = imdbId;
 
     if (type === 'tv') {
-      stremioId = imdbId + ':1:1';
+      finalImdbId = imdbId + ':1:1';
     }
 
     var src =
       'https://web.stremio.com/#/player?type=' +
-      embedType +
+      type +
       '&id=' +
-      stremioId;
+      finalImdbId;
 
-    iframeContainer.innerHTML =
+    playerFrameContainer.innerHTML =
       '<iframe ' +
       'src="' + src + '" ' +
-      'style="width:100%;height:520px;border:none;" ' +
-      'allowfullscreen ' +
-      'allow="autoplay;encrypted-media">' +
+      'style="width:100%;height:100%;border:none;" ' +
+      'allowfullscreen="true" ' +
+      'allow="autoplay; encrypted-media">' +
       '</iframe>';
   }
 
-  function loadProvider2() {
+  function loadServer2() {
 
     var src =
-      'https://vidsrc.to/embed/' +
-      (type === 'tv' ? 'tv' : 'movie') +
-      '/' +
-      id;
+      'https://vidsrc.xyz/embed/' +
+      (
+        type === 'tv'
+          ? 'tv?tmdb=' + id + '&sea=1&epi=1'
+          : 'movie?tmdb=' + id
+      );
 
-    iframeContainer.innerHTML =
+    playerFrameContainer.innerHTML =
       '<iframe ' +
       'src="' + src + '" ' +
-      'style="width:100%;height:520px;border:none;" ' +
-      'allowfullscreen>' +
+      'style="width:100%;height:100%;border:none;" ' +
+      'allowfullscreen="true" ' +
+      'allow="autoplay; encrypted-media">' +
       '</iframe>';
   }
 
-  document.getElementById('serverBtn1').onclick = function() {
-    loadProvider1();
+  document.getElementById('server1Btn').onclick = function() {
+    loadServer1();
   };
 
-  document.getElementById('serverBtn2').onclick = function() {
-    loadProvider2();
+  document.getElementById('server2Btn').onclick = function() {
+    loadServer2();
   };
 
-  // Default provider
-  loadProvider1();
+  // Default server
+  loadServer1();
 
   pSec.scrollIntoView({
     behavior: 'smooth'
