@@ -1795,46 +1795,43 @@ async function openDetail(id, type) {
     pSec.style.display = 'block';
 
     pWrap.innerHTML = `
-      <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">
-        <button id="s1" style="padding:12px 25px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 15px rgba(229,9,20,0.3);">PREMIUM SERVER (TR-HD)</button>
-        <button id="s2" style="padding:12px 25px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">STANDART (MULTI)</button>
+      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+          <button id="s_tr" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">TURKISH SERVER</button>
+          <button id="s_ru" style="padding:12px 20px; background:#0056b3; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">RUSSIAN SERVER</button>
+          <button id="s_en" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">ENGLISH/GLOBAL</button>
+        </div>
       </div>
-      <div id="ifrC" style="width:100%; min-height:450px; background:#000; border-radius:12px; overflow:hidden; border:1px solid #333;"></div>
+      <div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden; border:2px solid #222;"></div>
     `;
 
     var cont = document.getElementById('ifrC');
 
-    // ФУНКЦИЯ ДЛЯ БЛОКИРОВКИ РЕКЛАМЫ (Попытка перехвата)
-    const blockAds = () => {
-        const ifr = cont.querySelector('iframe');
-        if(ifr) {
-            ifr.setAttribute("sandbox", "allow-forms allow-pointer-lock allow-same-origin allow-scripts");
-            // Мы убрали allow-top-navigation, чтобы оно не могло редиректить ВСЮ страницу на казино
-        }
-    };
-
-    var runS1 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Türkçe Dublaj/Altyazı Hazırlanıyor...</div>';
-      // Используем SmashyStream, но с турецким приоритетом
-      var url = 'https://embed.smashystream.com/playere.php?' + 
-                (type === 'tv' ? 'tmdb=' + id + '&season=1&episode=1' : 'tmdb=' + id) + 
-                '&lang=tr'; // Пытаемся форсировать турецкий
-      
-      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
-      setTimeout(blockAds, 1000); // Пробуем "придушить" рекламу через секунду
-    };
-
-    var runS2 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Alternatif Hat...</div>';
-      // Используем другой домен, который реже падает
-      var url = 'https://autoembed.to/embed/' + (type === 'tv' ? 'tv/' + id + '/1/1' : 'movie/' + id);
+    // ТУРЕЦКИЙ ПОТОК (Аналог Dizipal)
+    document.getElementById('s_tr').onclick = function() {
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Türkçe Kanallar Yükleniyor...</div>';
+      // Используем мощный турецкий агрегатор через vidsrc.cc (он лучше ищет TR)
+      var url = 'https://vidsrc.cc/v2/embed/' + (type === 'tv' ? 'tv/' : 'movie/') + id + '?lang=tr';
       cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
     };
 
-    document.getElementById('s1').onclick = runS1;
-    document.getElementById('s2').onclick = runS2;
+    // РУССКИЙ ПОТОК (Аналог Kinogo/Rezka)
+    document.getElementById('s_ru').onclick = function() {
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Подключение к базе СНГ...</div>';
+      // Видеохостинг, который используют 80% киносайтов РФ
+      var url = 'https://vidsrc.me/embed/' + (type === 'tv' ? 'tv/' : 'movie/') + id; 
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
+    };
 
-    runS1(); 
+    // АНГЛИЙСКИЙ / ГЛОБАЛЬНЫЙ (Global Standard)
+    document.getElementById('s_en').onclick = function() {
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Global Stream Loading...</div>';
+      var url = 'https://embed.smashystream.com/playere.php?' + (type === 'tv' ? 'tmdb=' + id + '&season=1&episode=1' : 'tmdb=' + id);
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
+    };
+
+    // По умолчанию запускаем Турецкий, так как сайт на турецком
+    document.getElementById('s_tr').click();
     pSec.scrollIntoView({behavior: 'smooth'});
   };
 } // Эта скобка должна быть ПЕРЕД function goBack()
