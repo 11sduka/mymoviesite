@@ -1788,53 +1788,106 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  document.getElementById('detailWatchBtn').onclick = function() {
-    var pSec = document.getElementById('playerSection');
-    var pWrap = document.querySelector('.player-wrap');
-    if (!pSec || !pWrap) return;
+  document.getElementById('detailWatchBtn').onclick = async function() {
 
-    pSec.style.display = 'block';
+  var pSec = document.getElementById('playerSection');
+  var pWrap = document.querySelector('.player-wrap');
 
-    pWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
-      '<button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio)</button>' +
-      '<button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 2 (HD)</button>' +
-      '</div>' +
-      '<div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden;"></div>';
+  if (!pSec || !pWrap) {
+    return;
+  }
 
-    var cont = document.getElementById('ifrC');
+  pSec.style.display = 'block';
 
-    var runS1 = function() {
-      fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
-        .then(function(r) { return r.json(); })
-        .then(function(d) {
-          var imdb = d.imdb_id || id;
-          var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
-          // Прямая ссылка на официальный веб-плеер
-          var src = 'https://web.stremio.com/#/player?type=' + type + '&id=' + vId;
-          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:550px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
-        });
-    };
+  pWrap.innerHTML =
+    '<div style="display:flex;gap:10px;margin-bottom:16px;justify-content:center;flex-wrap:wrap;">' +
+      '<button id="serverBtn1" style="padding:12px 20px;background:#7c6af7;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Sunucu 1</button>' +
+      '<button id="serverBtn2" style="padding:12px 20px;background:#1f1f1f;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Sunucu 2</button>' +
+    '</div>' +
+    '<div id="iframeContainer" style="width:100%;height:100%;min-height:520px;background:#000;border-radius:12px;overflow:hidden;"></div>';
 
-    var runS2 = function() {
-      // Стабильное зеркало vidsrc.to
-      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
-    };
+  var iframeContainer = document.getElementById('iframeContainer');
 
-    document.getElementById('s1').onclick = runS1;
-    document.getElementById('s2').onclick = runS2;
+  var imdbId = '';
+  var embedType = type === 'tv' ? 'series' : 'movie';
 
-    runS1(); 
-    pSec.scrollIntoView({behavior: 'smooth'});
+  try {
+
+    var externalResponse = await fetch(
+      BASE + '/' + type + '/' + id + '/external_ids?api_key=' + API_KEY
+    );
+
+    var externalData = await externalResponse.json();
+
+    if (externalData && externalData.imdb_id) {
+      imdbId = externalData.imdb_id;
+    }
+
+  } catch (err) {
+    console.error('TMDB external_ids fetch failed:', err);
+  }
+
+  function loadProvider1() {
+
+    if (!imdbId) {
+      iframeContainer.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:520px;color:#fff;font-size:15px;">IMDB ID bulunamadı.</div>';
+      return;
+    }
+
+    var stremioId = imdbId;
+
+    if (type === 'tv') {
+      stremioId = imdbId + ':1:1';
+    }
+
+    var src =
+      'https://web.stremio.com/#/player?type=' +
+      embedType +
+      '&id=' +
+      stremioId;
+
+    iframeContainer.innerHTML =
+      '<iframe ' +
+      'src="' + src + '" ' +
+      'style="width:100%;height:520px;border:none;" ' +
+      'allowfullscreen ' +
+      'allow="autoplay;encrypted-media">' +
+      '</iframe>';
+  }
+
+  function loadProvider2() {
+
+    var src =
+      'https://vidsrc.to/embed/' +
+      (type === 'tv' ? 'tv' : 'movie') +
+      '/' +
+      id;
+
+    iframeContainer.innerHTML =
+      '<iframe ' +
+      'src="' + src + '" ' +
+      'style="width:100%;height:520px;border:none;" ' +
+      'allowfullscreen>' +
+      '</iframe>';
+  }
+
+  document.getElementById('serverBtn1').onclick = function() {
+    loadProvider1();
   };
-} // Конец функции страницы
 
-function goBack() {
-  var c = document.getElementById('ifrC');
-  if (c) c.innerHTML = ''; 
-  document.getElementById('playerSection').style.display = 'none';
-  showPage(previousPage);
-}
+  document.getElementById('serverBtn2').onclick = function() {
+    loadProvider2();
+  };
+
+  // Default provider
+  loadProvider1();
+
+  pSec.scrollIntoView({
+    behavior: 'smooth'
+  });
+
+};
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
