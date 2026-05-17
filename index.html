@@ -1795,13 +1795,11 @@ async function openDetail(id, type) {
 
     pSec.style.display = 'block';
 
-    // Красивые кнопки без лишних названий
-    pWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">' +
-      '<button id="s1" style="padding:12px 25px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s;">Premium Server (4K/UltraHD)</button>' +
-      '<button id="s2" style="padding:12px 25px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition:0.3s;">Standart Server (HD)</button>' +
+    pWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
+      '<button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium Выбор)</button>' +
+      '<button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 2 (Прямой HD)</button>' +
       '</div>' +
-      '<div id="ifrC" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden; position:relative;">' +
-      '</div>';
+      '<div id="ifrC" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;"></div>';
 
     var cont = document.getElementById('ifrC');
 
@@ -1810,34 +1808,31 @@ async function openDetail(id, type) {
         .then(function(r) { return r.json(); })
         .then(function(d) {
           var imdb = d.imdb_id || id;
-          var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
-          
-          // Мы используем /player, чтобы человек сразу попадал в кино. 
-          // Если ты залогинен в Stremio в Chrome, он сам скроет лишние меню и запустит поток.
-          var src = 'https://web.stremio.com/#/player?type=' + type + '&id=' + vId;
-          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:550px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+          // Вместо /player используем /detail - это откроет список всех твоих ссылок (торрентов)
+          var src = 'https://web.stremio.com/#/detail/' + type + '/' + imdb;
+          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
         });
     };
 
     var runS2 = function() {
       var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
+      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>';
     };
 
-    document.getElementById('s1').onclick = function() {
-        this.style.background = '#e50914';
-        document.getElementById('s2').style.background = '#333';
-        runS1();
-    };
-    document.getElementById('s2').onclick = function() {
-        this.style.background = '#e50914';
-        document.getElementById('s1').style.background = '#333';
-        runS2();
-    };
+    document.getElementById('s1').onclick = runS1;
+    document.getElementById('s2').onclick = runS2;
 
     runS1(); 
     pSec.scrollIntoView({behavior: 'smooth'});
   };
+} // Конец функции страницы
+
+function goBack() {
+  var c = document.getElementById('ifrC');
+  if (c) c.innerHTML = ''; 
+  document.getElementById('playerSection').style.display = 'none';
+  showPage(previousPage);
+}
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
