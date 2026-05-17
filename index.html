@@ -1794,13 +1794,14 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (!playerWrap) return;
 
+    // Arayüz (Турецкий интерфейс)
     playerWrap.innerHTML = `
       <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
-        <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium 4K)</button>
+        <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio)</button>
         <button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart HD)</button>
       </div>
       <div id="iframeContainer" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;">
-        <div id="playerLoader" style="color:white; text-align:center; padding-top:200px;">🚀 Oynatıcı Yükleniyor...</div>
+        <div id="playerLoader" style="color:white; text-align:center; padding-top:200px;">🚀 Yükleniyor...</div>
       </div>
     `;
 
@@ -1812,10 +1813,8 @@ async function openDetail(id, type) {
           .then(data => {
             const imdbId = data.imdb_id || id;
             const videoId = type === 'tv' ? `${imdbId}:1:1` : imdbId;
-            
-            // Используем официальный веб-апп Stremio. Он не может быть "Not Found" в Chrome.
+            // Используем официальный домен, так как netlify у тебя заблокирован
             const url = `https://web.stremio.com/#/player?type=${type}&id=${videoId}`;
-            
             container.innerHTML = `<iframe src="${url}" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
           });
     };
