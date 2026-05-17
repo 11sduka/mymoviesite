@@ -1789,45 +1789,52 @@ async function openDetail(id, type) {
 
   // Watch button
   document.getElementById('detailWatchBtn').onclick = function() {
-    var playerSection = document.getElementById('playerSection');
-    var playerWrap = document.querySelector('.player-wrap');
-    if (!playerWrap) return;
+    var pSec = document.getElementById('playerSection');
+    var pWrap = document.querySelector('.player-wrap');
+    if (!pSec || !pWrap) return;
 
-    playerSection.style.display = 'block';
+    pSec.style.display = 'block';
 
-    playerWrap.innerHTML = 
-      '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
-        '<button id="btnS1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium)</button>' +
-        '<button id="btnS2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart)</button>' +
+    // Arayüz oluşturma (Турецкий интерфейс)
+    pWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
+      '<button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium)</button>' +
+      '<button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart)</button>' +
       '</div>' +
-      '<div id="ifrCont" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden;"></div>';
+      '<div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden;"></div>';
 
-    var container = document.getElementById('ifrCont');
-    var myRD = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ";
+    var cont = document.getElementById('ifrC');
+    var cfg = 'sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ';
 
-    var loadS1 = function() {
+    var runS1 = function() {
       fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
-        .then(function(r){ return r.json(); })
-        .then(function(d){
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
           var imdb = d.imdb_id || id;
           var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
-          // Кодируем конфиг, чтобы он не обрывал ссылку
-          var finalUrl = 'https://stremio-embed.netlify.app/#/player?type=' + type + '&id=' + vId + '&config=' + encodeURIComponent(myRD);
-          container.innerHTML = '<iframe src="' + finalUrl + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
+          var src = 'https://stremio-embed.netlify.app/#/player?type=' + type + '&id=' + vId + '&config=' + encodeURIComponent(cfg);
+          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
         });
     };
 
-    var loadS2 = function() {
-      var vUrl = (type === 'tv') ? 'https://vidsrc.xyz/embed/tv?tmdb=' + id + '&sea=1&epi=1' : 'https://vidsrc.xyz/embed/movie?tmdb=' + id;
-      container.innerHTML = '<iframe src="' + vUrl + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
+    var runS2 = function() {
+      var src2 = (type === 'tv') ? 'https://vidsrc.xyz/embed/tv?tmdb=' + id : 'https://vidsrc.xyz/embed/movie?tmdb=' + id;
+      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
     };
 
-    document.getElementById('btnS1').onclick = function() { loadS1(); };
-    document.getElementById('btnS2').onclick = function() { loadS2(); };
+    document.getElementById('s1').onclick = runS1;
+    document.getElementById('s2').onclick = runS2;
 
-    loadS1(); // Стартуем с первого
-    playerSection.scrollIntoView({behavior: 'smooth'});
+    runS1(); // Запуск первого сервера
+    pSec.scrollIntoView({behavior: 'smooth'});
   };
+} // <--- ЭТА СКОБКА ЗАКРЫВАЕТ ФУНКЦИЮ ОТКРЫТИЯ СТРАНИЦЫ (openDetail/showPage)
+
+function goBack() {
+  var c = document.getElementById('ifrC');
+  if (c) c.innerHTML = ''; 
+  document.getElementById('playerSection').style.display = 'none';
+  showPage(previousPage);
+}
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
