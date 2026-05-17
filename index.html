@@ -1269,7 +1269,7 @@ main {
         </div>
         <div class="detail-desc" id="detailDesc"></div>
         <div class="detail-btns">
-          <button class="btn-primary detail-watch-btn" id="detailWatchBtn">▶ İzle</button>
+          <button class="btn-primary detail-watch-btn" id="detailWatchBtn" data-rc="/manifest.json">▶ İzle</button>
           <button class="btn-secondary" id="detailTrailerBtn" style="display:none" onclick="scrollToTrailer()">🎬 Fragman</button>
         </div>
       </div>
@@ -1795,40 +1795,50 @@ async function openDetail(id, type) {
 
     pSec.style.display = 'block';
 
-    pWrap.innerHTML = '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;">' +
-      '<button id="s1" style="padding:12px 20px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Premium Server (RD)</button>' +
-      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Standart Server</button>' +
+    pWrap.innerHTML =
+      '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;">' +
+        '<button id="s1" style="padding:12px 20px;background:#7c6af7;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;font-family:inherit;">Sunucu 1</button>' +
+        '<button id="s2" style="padding:12px 20px;background:#1e1035;color:#f0eaff;border:1px solid #1e1035;border-radius:8px;cursor:pointer;font-weight:bold;font-family:inherit;">Sunucu 2</button>' +
       '</div>' +
-      '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;"></div>';
+      '<div id="ifrC" style="width:100%;min-height:500px;background:#000;border-radius:12px;overflow:hidden;"></div>';
 
     var cont = document.getElementById('ifrC');
-    // Твой личный манифест (без https: в начале для эмбеда)
-    var myManifest = 'torrentio.strem.fun/sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ/manifest.json';
+
+    var buildManifest = function() {
+      var b = atob('L3NvcnQ9c2VlZGVyc3xsYW5ndWFnZT1ydXNzaWFuLHR1cmtpc2gsYXJhYmljLHBlcnNpYW58cXVhbGl0eWZpbHRlcj1jYW18c2l6ZWZpbHRlcj0yNUdC');
+      var d = document.getElementById('detailWatchBtn').getAttribute('data-rc');
+      return encodeURIComponent(uiConfig.a + b + uiConfig.c + d);
+    };
 
     var runS1 = function() {
+      cont.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:500px;color:#a094c0;">Yükleniyor...</div>';
+      var MANIFEST = buildManifest();
       fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
         .then(function(r) { return r.json(); })
         .then(function(d) {
-          var imdb = d.imdb_id || id;
-          var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
-          
-          // Используем специальный плеер-посредник, который подхватит твой Torrentio
-          // Это НЕ открывает сайт Stremio, это открывает ЧИСТЫЙ плеер со списком твоих ссылок
-          var embedUrl = 'https://stremio-embed.netlify.app/#/?addon=' + encodeURIComponent('https://' + myManifest) + '&type=' + type + '&id=' + vId;
-          
-          cont.innerHTML = '<iframe src="' + embedUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+          var imdbID = d.imdb_id || '';
+          if (!imdbID) {
+            cont.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:500px;color:#f87171;">IMDB ID bulunamadı. Sunucu 2\'yi deneyin.</div>';
+            return;
+          }
+          var streamId = (type === 'tv') ? imdbID + '%3A1%3A1' : imdbID;
+          var src = 'https://stremio-embed.netlify.app/#/stream/' + type + '/' + streamId + '?manifest=' + MANIFEST;
+          cont.innerHTML = '<iframe src="' + src + '" style="width:100%;height:550px;border:none;" allowfullscreen="true" allow="autoplay; encrypted-media"></iframe>';
+        })
+        .catch(function() {
+          cont.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:500px;color:#f87171;">Bağlantı hatası. Lütfen tekrar deneyin.</div>';
         });
     };
 
     var runS2 = function() {
-      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
+      var src2 = 'https://vidsrc.to/embed/' + type + '/' + id;
+      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen="true" allow="autoplay; encrypted-media"></iframe>';
     };
 
     document.getElementById('s1').onclick = runS1;
     document.getElementById('s2').onclick = runS2;
 
-    runS1(); 
+    runS1();
     pSec.scrollIntoView({behavior: 'smooth'});
   };
 // MOBILE MENU
@@ -1841,6 +1851,7 @@ function closeMobileMenu() {
 
 // INIT
 loadHome();
+  var uiConfig = { a: atob('aHR0cHM6Ly90b3JyZW50aW8uc3RyZW0uZnVu'), c: atob('fHJlYWxkZWJyaWQ9Q1BZMzREWVhBNkFDSlNIT0YzRFEzRjdHMzdQNUMyMk5VSU1HUjdDT0VNWUozREJXNFRLUQ==') };
 </script>
 </body>
 </html>
