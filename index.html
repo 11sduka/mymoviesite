@@ -1789,49 +1789,48 @@ async function openDetail(id, type) {
 
   // Watch button
   document.getElementById('detailWatchBtn').onclick = function() {
-    const playerSection = document.getElementById('playerSection');
+    var playerSection = document.getElementById('playerSection');
+    var playerWrap = document.querySelector('.player-wrap');
+    
+    if (!playerSection || !playerWrap) return;
+
     playerSection.style.display = 'block';
-    const playerWrap = document.querySelector('.player-wrap');
-    if (!playerWrap) return;
 
-    playerWrap.innerHTML = `
-      <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
-        <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio)</button>
-        <button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart HD)</button>
-      </div>
-      <div id="iframeContainer" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;">
-        <div id="playerLoader" style="color:white; text-align:center; padding-top:200px;">🚀 Yükleniyor...</div>
-      </div>
-    `;
+    // Arayuz olusturma
+    playerWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">' +
+      '<button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio)</button>' +
+      '<button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart HD)</button>' +
+      '</div>' +
+      '<div id="iframeContainer" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;">' +
+      '<div id="playerLoader" style="color:white; text-align:center; padding-top:200px;">🚀 Yukleniyor...</div>' +
+      '</div>';
 
-    const container = document.getElementById('iframeContainer');
+    var container = document.getElementById('iframeContainer');
 
-    const loadStremio = () => {
-        fetch(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
-          .then(res => res.json())
-          .then(data => {
-            const imdbId = data.imdb_id || id;
-            const videoId = type === 'tv' ? imdbId + ':1:1' : imdbId;
-            const url = "https://web.stremio.com/#/player?type=" + type + "&id=" + videoId;
+    function loadStremio() {
+        fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            var imdbId = data.imdb_id || id;
+            var videoId = (type === 'tv') ? imdbId + ':1:1' : imdbId;
+            var url = 'https://web.stremio.com/#/player?type=' + type + '&id=' + videoId;
             container.innerHTML = '<iframe src="' + url + '" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
-          })
-          .catch(err => console.error("Error:", err));
-    };
+          });
+    }
 
-    const loadVidsrc = () => {
-        const url = type === 'tv' 
-            ? "https://vidsrc.me/embed/tv?tmdb=" + id + "&sea=1&epi=1" 
-            : "https://vidsrc.me/embed/movie?tmdb=" + id;
+    function loadVidsrc() {
+        var url = (type === 'tv') ? 'https://vidsrc.me/embed/tv?tmdb=' + id + '&sea=1&epi=1' : 'https://vidsrc.me/embed/movie?tmdb=' + id;
         container.innerHTML = '<iframe src="' + url + '" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>';
-    };
+    }
 
     document.getElementById('btnPlayer1').onclick = function() {
-        document.getElementById('btnPlayer1').style.background = '#e50914';
+        this.style.background = '#e50914';
         document.getElementById('btnPlayer2').style.background = '#333';
         loadStremio();
     };
+
     document.getElementById('btnPlayer2').onclick = function() {
-        document.getElementById('btnPlayer2').style.background = '#e50914';
+        this.style.background = '#e50914';
         document.getElementById('btnPlayer1').style.background = '#333';
         loadVidsrc();
     };
@@ -1842,7 +1841,7 @@ async function openDetail(id, type) {
 }
 
 function goBack() {
-  const container = document.getElementById('iframeContainer');
+  var container = document.getElementById('iframeContainer');
   if (container) container.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
