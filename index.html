@@ -1795,38 +1795,40 @@ async function openDetail(id, type) {
 
     playerSection.style.display = 'block';
 
-    playerWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">' +
-      '<button id="btnPlayer1" style="padding:12px 24px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio Premium)</button>' +
-      '<button id="btnPlayer2" style="padding:12px 24px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart HD)</button>' +
+    // Создаем кнопки и контейнер для плеера
+    playerWrap.innerHTML = 
+      '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">' +
+        '<button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium)</button>' +
+        '<button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart)</button>' +
       '</div>' +
-      '<div id="iframeContainer" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;">' +
-      '<div id="playerLoader" style="color:white; text-align:center; padding-top:200px;">🚀 Yukleniyor...</div>' +
-      '</div>';
+      '<div id="iframeContainer" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;"></div>';
 
     var container = document.getElementById('iframeContainer');
 
-    function loadStremio() {
+    // Функция для Плеера 1 (Stremio)
+    var openStremio = function() {
         fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
           .then(function(res) { return res.json(); })
           .then(function(data) {
             var imdbId = data.imdb_id || id;
-            var videoId = (type === 'tv') ? imdbId + ':1:1' : imdbId;
-            // Используем прямой embed без netlify
-            var url = 'https://web.stremio.com/#/player?type=' + type + '&id=' + videoId;
-            container.innerHTML = '<iframe src="' + url + '" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+            var vId = (type === 'tv') ? imdbId + ':1:1' : imdbId;
+            var link = 'https://web.stremio.com/#/player?type=' + type + '&id=' + vId;
+            container.innerHTML = '<iframe src="' + link + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
           });
-    }
+    };
 
-    function loadVidsrc() {
-        // Используем зеркало vidsrc.xyz — оно лучше всего дружит с GitHub Pages
-        var url = (type === 'tv') ? 'https://vidsrc.xyz/embed/tv?tmdb=' + id + '&sea=1&epi=1' : 'https://vidsrc.xyz/embed/movie?tmdb=' + id;
-        container.innerHTML = '<iframe src="' + url + '" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>';
-    }
+    // Функция для Плеера 2 (Zoro/Vidsrc)
+    var openVidsrc = function() {
+        var link = (type === 'tv') ? 'https://vidsrc.xyz/embed/tv?tmdb=' + id + '&sea=1&epi=1' : 'https://vidsrc.xyz/embed/movie?tmdb=' + id;
+        container.innerHTML = '<iframe src="' + link + '" style="width:100%; height:550px; border:none;" allowfullscreen></iframe>';
+    };
 
-    document.getElementById('btnPlayer1').onclick = function() { loadStremio(); };
-    document.getElementById('btnPlayer2').onclick = function() { loadVidsrc(); };
+    // Слушаем клики
+    document.getElementById('btnPlayer1').onclick = openStremio;
+    document.getElementById('btnPlayer2').onclick = openVidsrc;
 
-    loadStremio();
+    // Сразу запускаем первый плеер
+    openStremio();
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
 // MOBILE MENU
