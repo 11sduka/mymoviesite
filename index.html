@@ -1795,56 +1795,42 @@ async function openDetail(id, type) {
 
     pSec.style.display = 'block';
 
-    pWrap.innerHTML =
-      '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
-        '<button id="s1" style="padding:12px 20px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-family:DM Sans,sans-serif;">Sunucu 1</button>' +
-        '<button id="s2" style="padding:12px 20px; background:var(--bg3); color:var(--text); border:1px solid var(--border); border-radius:8px; cursor:pointer; font-weight:bold; font-family:DM Sans,sans-serif;">Sunucu 2</button>' +
+    pWrap.innerHTML = '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;">' +
+      '<button id="s1" style="padding:12px 20px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Premium Server (RD)</button>' +
+      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Standart Server</button>' +
       '</div>' +
-      '<div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden;"></div>';
+      '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;"></div>';
 
     var cont = document.getElementById('ifrC');
+    // Твой личный манифест (без https: в начале для эмбеда)
+    var myManifest = 'torrentio.strem.fun/sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ/manifest.json';
 
-    // Provider A — Cloud Sync: async IMDB ID lookup → Stremio web player
     var runS1 = function() {
-      cont.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:500px;color:var(--text2);font-family:DM Sans,sans-serif;">Yükleniyor...</div>';
       fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
         .then(function(r) { return r.json(); })
         .then(function(d) {
-          var imdbID = d.imdb_id || '';
-          if (!imdbID) {
-            cont.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:500px;color:#f87171;font-family:DM Sans,sans-serif;">IMDB ID bulunamadı. Lütfen Sunucu 2\'yi deneyin.</div>';
-            return;
-          }
-          var vId = (type === 'tv') ? imdbID + ':1:1' : imdbID;
-          var src = 'https://web.stremio.com/#/player?type=' + type + '&id=' + vId;
-          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:550px; border:none;" allowfullscreen="true" allow="autoplay; encrypted-media"></iframe>';
-        })
-        .catch(function() {
-          cont.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:500px;color:#f87171;font-family:DM Sans,sans-serif;">Bağlantı hatası. Lütfen tekrar deneyin.</div>';
+          var imdb = d.imdb_id || id;
+          var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
+          
+          // Используем специальный плеер-посредник, который подхватит твой Torrentio
+          // Это НЕ открывает сайт Stremio, это открывает ЧИСТЫЙ плеер со списком твоих ссылок
+          var embedUrl = 'https://stremio-embed.netlify.app/#/?addon=' + encodeURIComponent('https://' + myManifest) + '&type=' + type + '&id=' + vId;
+          
+          cont.innerHTML = '<iframe src="' + embedUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
         });
     };
 
-    // Provider B — Direct Stream: TMDB ID → vidsrc.to embed
     var runS2 = function() {
-      var src2 = 'https://vidsrc.to/embed/' + type + '/' + id;
-      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:550px; border:none;" allowfullscreen="true" allow="autoplay; encrypted-media"></iframe>';
+      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
     document.getElementById('s1').onclick = runS1;
     document.getElementById('s2').onclick = runS2;
 
-    // Default to Provider A on first open
-    runS1();
+    runS1(); 
     pSec.scrollIntoView({behavior: 'smooth'});
   };
-} // Конец функции страницы
-
-function goBack() {
-  var c = document.getElementById('ifrC');
-  if (c) c.innerHTML = ''; 
-  document.getElementById('playerSection').style.display = 'none';
-  showPage(previousPage);
-}
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
