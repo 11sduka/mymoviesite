@@ -1795,44 +1795,33 @@ async function openDetail(id, type) {
 
     pSec.style.display = 'block';
 
-    pWrap.innerHTML = '<div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center;">' +
-      '<button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium Выбор)</button>' +
-      '<button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">Sunucu 2 (Прямой HD)</button>' +
-      '</div>' +
-      '<div id="ifrC" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;"></div>';
+    // Генерируем кнопки
+    pWrap.innerHTML = '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;">' +
+      '<button id="s1" style="padding:12px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Premium Server</button>' +
+      '<button id="s2" style="padding:12px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">Standart Server</button>' +
+      '</div><div id="ifrC"></div>';
 
-    var cont = document.getElementById('ifrC');
-
-    var runS1 = function() {
+    var loadS1 = function() {
       fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
-        .then(function(r) { return r.json(); })
-        .then(function(d) {
+        .then(function(r){return r.json()})
+        .then(function(d){
           var imdb = d.imdb_id || id;
-          // Вместо /player используем /detail - это откроет список всех твоих ссылок (торрентов)
-          var src = 'https://web.stremio.com/#/detail/' + type + '/' + imdb;
-          cont.innerHTML = '<iframe src="' + src + '" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+          var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
+          document.getElementById('ifrC').innerHTML = '<iframe src="https://web.stremio.com/#/player?type=' + type + '&id=' + vId + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
         });
     };
 
-    var runS2 = function() {
-      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>';
+    var loadS2 = function() {
+      var s2Url = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      document.getElementById('ifrC').innerHTML = '<iframe src="' + s2Url + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
-    document.getElementById('s1').onclick = runS1;
-    document.getElementById('s2').onclick = runS2;
+    document.getElementById('s1').onclick = loadS1;
+    document.getElementById('s2').onclick = loadS2;
 
-    runS1(); 
+    loadS1(); // Сразу грузим первый
     pSec.scrollIntoView({behavior: 'smooth'});
   };
-} // Конец функции страницы
-
-function goBack() {
-  var c = document.getElementById('ifrC');
-  if (c) c.innerHTML = ''; 
-  document.getElementById('playerSection').style.display = 'none';
-  showPage(previousPage);
-}
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
