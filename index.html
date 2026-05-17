@@ -1794,30 +1794,32 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
-    // Профессиональный селектор серверов (как на Dizipal)
     pWrap.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
-        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-          <button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">PREMIUM LINE (V-PRO)</button>
-          <button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">RESERV SERVER (V-CLOUD)</button>
-        </div>
+      <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
+        <button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SERVER 1 (BEST)</button>
+        <button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SERVER 2 (FAST)</button>
       </div>
-      <div id="ifrC" style="width:100%; min-height:550px; background:#000; border-radius:12px; border:1px solid #333;"></div>
+      <div id="ifrC" style="width:100%; min-height:450px; background:#000; border-radius:12px; overflow:hidden; border:1px solid #333;"></div>
     `;
 
     var cont = document.getElementById('ifrC');
 
-    // Метод гигантов: обращение к агрегатору через зашифрованный ID
+    // ФОРМИРУЕМ ССЫЛКУ УМНО:
+    // Если это сериал (tv), добавляем сезон и серию, иначе плеер не поймет
+    var suffix = (type === 'tv') ? '/1/1' : ''; 
+
     var runS1 = function() {
-      // Использование vidsrc.xyz - один из самых мощных на сегодня
-      var url = 'https://vidsrc.xyz/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + url + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Yükleniyor...</div>';
+      // VidSrc.to - лучший баланс рекламы и стабильности
+      var url = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id + suffix : 'movie/' + id);
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>`;
     };
 
     var runS2 = function() {
-      // Использование альтернативного хаба 2embed
-      var url = 'https://www.2embed.cc/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + url + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Alternatif Hat...</div>';
+      // SuperEmbed - мощный запасной вариант
+      var url = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1' + (type === 'tv' ? '&s=1&e=1' : '');
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>`;
     };
 
     document.getElementById('s1').onclick = runS1;
