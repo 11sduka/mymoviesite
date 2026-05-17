@@ -1795,24 +1795,27 @@ async function openDetail(id, type) {
     pSec.style.display = 'block';
 
     pWrap.innerHTML = '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;">' +
-      '<button id="s1" style="padding:12px 20px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">PREMIUM SERVER (RD)</button>' +
-      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">STANDART SERVER</button>' +
+      '<button id="s1" style="padding:12px 20px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">PREMIUM (RD)</button>' +
+      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">STANDART</button>' +
       '</div>' +
       '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;"></div>';
 
     var cont = document.getElementById('ifrC');
-    var myAddon = 'https://torrentio.strem.fun/sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ/manifest.json';
+    // Твой закодированный ключ
+    var myAddon = 'https%3A%2F%2Ftorrentio.strem.fun%2Fsort%3Dseeders%7Clanguage%3Drussian%2Cturkish%2Carabic%2Cpersian%7Cqualityfilter%3Dcam%7Csizefilter%3D25GB%7Crealdebrid%3DCPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ%2Fmanifest.json';
 
     var runS1 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Loading Premium...</div>';
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Loading Premium Stream...</div>';
       fetch('https://api.themoviedb.org/3/' + type + '/' + id + '/external_ids?api_key=' + API_KEY)
         .then(function(r) { return r.json(); })
         .then(function(d) {
           var imdb = d.imdb_id || id;
           var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
-          // Официальный стабильный встраиваемый плеер
-          var streamUrl = 'https://stremio-development.github.io/stremio-embedded-player/#/?addon=' + encodeURIComponent(myAddon) + '&type=' + type + '&id=' + vId;
-          cont.innerHTML = '<iframe src="' + streamUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+          
+          // САМЫЙ ПРЯМОЙ ПУТЬ: Специальный встраиваемый плеер через сервис stremio-embed.org
+          var streamUrl = 'https://stremio-embed.org/?addon=' + myAddon + '&type=' + type + '&id=' + vId;
+          
+          cont.innerHTML = '<iframe src="' + streamUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
         });
     };
 
