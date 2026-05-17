@@ -1269,7 +1269,7 @@ main {
         </div>
         <div class="detail-desc" id="detailDesc"></div>
         <div class="detail-btns">
-          <button class="btn-primary detail-watch-btn" id="detailWatchBtn" data-rc="/manifest.json">▶ İzle</button>
+          <button ... id="detailWatchBtn" data-rc="/manifest.json">▶ İzle</button>
           <button class="btn-secondary" id="detailTrailerBtn" style="display:none" onclick="scrollToTrailer()">🎬 Fragman</button>
         </div>
       </div>
@@ -1788,6 +1788,7 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
+  // Watch button
   document.getElementById('detailWatchBtn').onclick = function() {
     var pSec = document.getElementById('playerSection');
     var pWrap = document.querySelector('.player-wrap');
@@ -1851,7 +1852,6 @@ function closeMobileMenu() {
 
 // INIT
 loadHome();
-  var uiConfig = { a: atob('aHR0cHM6Ly90b3JyZW50aW8uc3RyZW0uZnVu'), c: atob('fHJlYWxkZWJyaWQ9Q1BZMzREWVhBNkFDSlNIT0YzRFEzRjdHMzdQNUMyMk5VSU1HUjdDT0VNWUozREJXNFRLUQ==') };
 </script>
 </body>
 </html>
