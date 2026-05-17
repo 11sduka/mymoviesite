@@ -1812,15 +1812,20 @@ async function openDetail(id, type) {
           var imdb = d.imdb_id || id;
           var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
           
-          // САМЫЙ ПРЯМОЙ ПУТЬ: Специальный встраиваемый плеер через сервис stremio-embed.org
-          var streamUrl = 'https://stremio-embed.org/?addon=' + myAddon + '&type=' + type + '&id=' + vId;
+          // ИСПОЛЬЗУЕМ СЕРВИС-АГРЕГАТОР, КОТОРЫЙ НЕ БЛОКИРУЕТ IFRAME
+          // Это сторонний плеер, который умеет работать с Stremio ссылками
+          var streamUrl = 'https://stremio-player.vercel.app/?addon=' + myAddon + '&type=' + type + '&id=' + vId;
           
           cont.innerHTML = '<iframe src="' + streamUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
+        })
+        .catch(function(e) {
+           console.log(e);
+           runS2(); // Если не вышло, автоматом грузим стандарт
         });
     };
 
     var runS2 = function() {
-      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      var src2 = 'https://vidsrc.cc/v2/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
       cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
