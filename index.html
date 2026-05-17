@@ -1794,39 +1794,44 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (!playerWrap) return;
 
-    // Создаем меню выбора плеера
+    // Türkçe Arayüz - Выбор серверов на турецком
     playerWrap.innerHTML = `
-      <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center;">
-        <button id="btnPlayer1" style="padding:10px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Сервер 1 (4K Ultra)</button>
-        <button id="btnPlayer2" style="padding:10px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Сервер 2 (Full HD)</button>
+      <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
+        <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold; font-size:14px;">Sunucu 1 (Premium 4K)</button>
+        <button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold; font-size:14px;">Sunucu 2 (Standart HD)</button>
       </div>
-      <div id="iframeContainer"></div>
+      <div id="iframeContainer" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden; position:relative;">
+        <div id="playerLoader" style="color:white; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:sans-serif;">🚀 Oynatıcı Yükleniyor...</div>
+      </div>
     `;
 
     const container = document.getElementById('iframeContainer');
+    const loader = document.getElementById('playerLoader');
 
-    // Функция для запуска Плеера 1 (Stremio)
+    // Твой актуальный конфиг Torrentio
+    const myConfig = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ";
+
     const loadStremio = () => {
-        container.innerHTML = '<div style="color:white; text-align:center; padding:20px;">Запуск Премиум сервера...</div>';
+        if(loader) loader.style.display = 'block';
         fetch(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
           .then(res => res.json())
           .then(data => {
             const imdbId = data.imdb_id || id;
             const videoId = type === 'tv' ? `${imdbId}:1:1` : imdbId;
-            const myConfig = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=ТВОЙ_API_КЛЮЧ";
             const url = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(myConfig)}`;
-            container.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none; border-radius:12px; background:#000;" allowfullscreen></iframe>`;
+            container.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none;" allowfullscreen onload="document.getElementById('playerLoader').style.display='none';"></iframe>`;
           });
     };
 
-    // Функция для запуска Плеера 2 (Vidsrc - запасной)
     const loadVidsrc = () => {
-        const videoId = type === 'tv' ? `${id}&s=1&e=1` : id;
-        const url = `https://vidsrc.to/embed/${type}/${videoId}`;
-        container.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none; border-radius:12px; background:#000;" allowfullscreen></iframe>`;
+        if(loader) loader.style.display = 'block';
+        const url = type === 'tv' 
+            ? `https://vidsrc.me/embed/tv?tmdb=${id}&sea=1&epi=1` 
+            : `https://vidsrc.me/embed/movie?tmdb=${id}`;
+        container.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none;" allowfullscreen onload="document.getElementById('playerLoader').style.display='none';"></iframe>`;
     };
 
-    // Слушатели кнопок
+    // Buton Mantığı (Логика кнопок)
     document.getElementById('btnPlayer1').onclick = () => {
         document.getElementById('btnPlayer1').style.background = '#e50914';
         document.getElementById('btnPlayer2').style.background = '#333';
@@ -1838,15 +1843,15 @@ async function openDetail(id, type) {
         loadVidsrc();
     };
 
-    // По умолчанию грузим первый плеер
+    // İlk sunucuyu başlat (Авто-старт 1-го сервера)
     loadStremio();
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
 }
 
 function goBack() {
-  const wrap = document.querySelector('.player-wrap');
-  if (wrap) wrap.innerHTML = ''; 
+  const container = document.getElementById('iframeContainer');
+  if (container) container.innerHTML = ''; 
   document.getElementById('detailTrailerFrame').src = '';
   document.getElementById('playerSection').style.display = 'none';
   showPage(previousPage);
