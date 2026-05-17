@@ -1794,44 +1794,39 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (!playerWrap) return;
 
-    // Türkçe Arayüz - Выбор серверов на турецком
     playerWrap.innerHTML = `
       <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
-        <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold; font-size:14px;">Sunucu 1 (Premium 4K)</button>
-        <button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold; font-size:14px;">Sunucu 2 (Standart HD)</button>
+        <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Premium 4K)</button>
+        <button id="btnPlayer2" style="padding:12px 20px; border-radius:8px; border:none; background:#333; color:white; cursor:pointer; font-weight:bold;">Sunucu 2 (Standart HD)</button>
       </div>
-      <div id="iframeContainer" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden; position:relative;">
-        <div id="playerLoader" style="color:white; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:sans-serif;">🚀 Oynatıcı Yükleniyor...</div>
+      <div id="iframeContainer" style="width:100%; min-height:550px; background:#000; border-radius:12px; overflow:hidden;">
+        <div id="playerLoader" style="color:white; text-align:center; padding-top:200px;">🚀 Oynatıcı Yükleniyor...</div>
       </div>
     `;
 
     const container = document.getElementById('iframeContainer');
-    const loader = document.getElementById('playerLoader');
-
-    // Твой актуальный конфиг Torrentio
-    const myConfig = "sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ";
 
     const loadStremio = () => {
-        if(loader) loader.style.display = 'block';
         fetch(`https://api.themoviedb.org/3/${type}/${id}/external_ids?api_key=${API_KEY}`)
           .then(res => res.json())
           .then(data => {
             const imdbId = data.imdb_id || id;
             const videoId = type === 'tv' ? `${imdbId}:1:1` : imdbId;
-            const url = `https://stremio-embed.netlify.app/#/player?type=${type}&id=${videoId}&config=${encodeURIComponent(myConfig)}`;
-            container.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none;" allowfullscreen onload="document.getElementById('playerLoader').style.display='none';"></iframe>`;
+            
+            // Используем официальный веб-апп Stremio. Он не может быть "Not Found" в Chrome.
+            const url = `https://web.stremio.com/#/player?type=${type}&id=${videoId}`;
+            
+            container.innerHTML = `<iframe src="${url}" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
           });
     };
 
     const loadVidsrc = () => {
-        if(loader) loader.style.display = 'block';
         const url = type === 'tv' 
             ? `https://vidsrc.me/embed/tv?tmdb=${id}&sea=1&epi=1` 
             : `https://vidsrc.me/embed/movie?tmdb=${id}`;
-        container.innerHTML = `<iframe src="${url}" style="width:100%; height:550px; border:none;" allowfullscreen onload="document.getElementById('playerLoader').style.display='none';"></iframe>`;
+        container.innerHTML = `<iframe src="${url}" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>`;
     };
 
-    // Buton Mantığı (Логика кнопок)
     document.getElementById('btnPlayer1').onclick = () => {
         document.getElementById('btnPlayer1').style.background = '#e50914';
         document.getElementById('btnPlayer2').style.background = '#333';
@@ -1843,19 +1838,9 @@ async function openDetail(id, type) {
         loadVidsrc();
     };
 
-    // İlk sunucuyu başlat (Авто-старт 1-го сервера)
     loadStremio();
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
-}
-
-function goBack() {
-  const container = document.getElementById('iframeContainer');
-  if (container) container.innerHTML = ''; 
-  document.getElementById('detailTrailerFrame').src = '';
-  document.getElementById('playerSection').style.display = 'none';
-  showPage(previousPage);
-}
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
