@@ -1794,38 +1794,39 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
-    // Интерфейс как у топовых сайтов: выбор серверов
-    pWrap.innerHTML = '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;flex-wrap:wrap;">' +
-      '<button id="s1" style="padding:12px 25px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">ANA SUNUCU (Server 1)</button>' +
-      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">HIZLI KANAL (Server 2)</button>' +
-      '</div>' +
-      '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;border:1px solid #1e1035;"></div>';
+    // Профессиональный селектор серверов (как на Dizipal)
+    pWrap.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+          <button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">PREMIUM LINE (V-PRO)</button>
+          <button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">RESERV SERVER (V-CLOUD)</button>
+        </div>
+      </div>
+      <div id="ifrC" style="width:100%; min-height:550px; background:#000; border-radius:12px; border:1px solid #333;"></div>
+    `;
 
     var cont = document.getElementById('ifrC');
 
-    // SERVER 1: ИСТОЧНИК ГИГАНТОВ (VIDSRC PRO)
+    // Метод гигантов: обращение к агрегатору через зашифрованный ID
     var runS1 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Yükleniyor...</div>';
-      // Этот источник автоматически находит турецкую озвучку или субтитры
-      var src1 = 'https://vidsrc.pro/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + src1 + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+      // Использование vidsrc.xyz - один из самых мощных на сегодня
+      var url = 'https://vidsrc.xyz/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      cont.innerHTML = '<iframe src="' + url + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
-    // SERVER 2: АЛЬТЕРНАТИВНЫЙ ИСТОЧНИК (2EMBED)
     var runS2 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Alternatif Hat Bağlanıyor...</div>';
-      var src2 = 'https://www.2embed.cc/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
-      cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
+      // Использование альтернативного хаба 2embed
+      var url = 'https://www.2embed.cc/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      cont.innerHTML = '<iframe src="' + url + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
     document.getElementById('s1').onclick = runS1;
     document.getElementById('s2').onclick = runS2;
 
-    runS1(); // Запуск сразу при нажатии
+    runS1(); 
     pSec.scrollIntoView({behavior: 'smooth'});
   };
-} // Закрываем showDetail
-} // Конец функции showDetail - ЭТА СКОБКА ОБЯЗАТЕЛЬНА
+} // Эта скобка должна быть ПЕРЕД function goBack()
 function goBack() {
   var c = document.getElementById('ifrC');
   if (c) c.innerHTML = ''; 
