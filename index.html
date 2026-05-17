@@ -1796,30 +1796,38 @@ async function openDetail(id, type) {
 
     pWrap.innerHTML = `
       <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
-        <button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SERVER 1 (BEST)</button>
-        <button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SERVER 2 (FAST)</button>
+        <button id="s1" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SERVER 1 (TR/EN)</button>
+        <button id="s2" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">SERVER 2 (MULTI)</button>
       </div>
       <div id="ifrC" style="width:100%; min-height:450px; background:#000; border-radius:12px; overflow:hidden; border:1px solid #333;"></div>
     `;
 
     var cont = document.getElementById('ifrC');
 
-    // ФОРМИРУЕМ ССЫЛКУ УМНО:
-    // Если это сериал (tv), добавляем сезон и серию, иначе плеер не поймет
-    var suffix = (type === 'tv') ? '/1/1' : ''; 
-
+    // Настройка языка: tr (Турецкий) -> en (Английский) -> fa (Персидский)
+    // Большинство агрегаторов понимают это через доп. параметры
     var runS1 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Yükleniyor...</div>';
-      // VidSrc.to - лучший баланс рекламы и стабильности
-      var url = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id + suffix : 'movie/' + id);
-      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>`;
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Hat Aranıyor (TR-EN)...</div>';
+      
+      // Используем vidsrc.xyz — он лучше всего подтягивает локальные озвучки
+      var baseUrl = 'https://vidsrc.xyz/embed/';
+      var url = baseUrl + (type === 'tv' ? 'tv/' + id + '/1/1' : 'movie/' + id);
+      
+      // Добавляем параметры языка для плеера
+      url += '?ds_lang=tr&lang=tr'; 
+
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
     };
 
     var runS2 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Alternatif Hat...</div>';
-      // SuperEmbed - мощный запасной вариант
-      var url = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1' + (type === 'tv' ? '&s=1&e=1' : '');
-      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"></iframe>`;
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Alternatif Yükleniyor...</div>';
+      
+      // SuperEmbed с явным указанием турецкого
+      var url = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1';
+      if (type === 'tv') url += '&s=1&e=1';
+      url += '&preferred_language=tr'; 
+
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
     };
 
     document.getElementById('s1').onclick = runS1;
