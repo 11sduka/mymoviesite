@@ -1794,7 +1794,6 @@ async function openDetail(id, type) {
     const playerWrap = document.querySelector('.player-wrap');
     if (!playerWrap) return;
 
-    // Arayüz (Турецкий интерфейс)
     playerWrap.innerHTML = `
       <div style="display:flex; gap:10px; margin-bottom:20px; justify-content:center; flex-wrap:wrap;">
         <button id="btnPlayer1" style="padding:12px 20px; border-radius:8px; border:none; background:#e50914; color:white; cursor:pointer; font-weight:bold;">Sunucu 1 (Stremio)</button>
@@ -1812,26 +1811,26 @@ async function openDetail(id, type) {
           .then(res => res.json())
           .then(data => {
             const imdbId = data.imdb_id || id;
-            const videoId = type === 'tv' ? `${imdbId}:1:1` : imdbId;
-            // Используем официальный домен, так как netlify у тебя заблокирован
-            const url = `https://web.stremio.com/#/player?type=${type}&id=${videoId}`;
-            container.innerHTML = `<iframe src="${url}" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-          });
+            const videoId = type === 'tv' ? imdbId + ':1:1' : imdbId;
+            const url = "https://web.stremio.com/#/player?type=" + type + "&id=" + videoId;
+            container.innerHTML = '<iframe src="' + url + '" style="width:100%; height:600px; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
+          })
+          .catch(err => console.error("Error:", err));
     };
 
     const loadVidsrc = () => {
         const url = type === 'tv' 
-            ? `https://vidsrc.me/embed/tv?tmdb=${id}&sea=1&epi=1` 
-            : `https://vidsrc.me/embed/movie?tmdb=${id}`;
-        container.innerHTML = `<iframe src="${url}" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>`;
+            ? "https://vidsrc.me/embed/tv?tmdb=" + id + "&sea=1&epi=1" 
+            : "https://vidsrc.me/embed/movie?tmdb=" + id;
+        container.innerHTML = '<iframe src="' + url + '" style="width:100%; height:600px; border:none;" allowfullscreen></iframe>';
     };
 
-    document.getElementById('btnPlayer1').onclick = () => {
+    document.getElementById('btnPlayer1').onclick = function() {
         document.getElementById('btnPlayer1').style.background = '#e50914';
         document.getElementById('btnPlayer2').style.background = '#333';
         loadStremio();
     };
-    document.getElementById('btnPlayer2').onclick = () => {
+    document.getElementById('btnPlayer2').onclick = function() {
         document.getElementById('btnPlayer2').style.background = '#e50914';
         document.getElementById('btnPlayer1').style.background = '#333';
         loadVidsrc();
@@ -1840,6 +1839,15 @@ async function openDetail(id, type) {
     loadStremio();
     playerSection.scrollIntoView({behavior: 'smooth'});
   };
+}
+
+function goBack() {
+  const container = document.getElementById('iframeContainer');
+  if (container) container.innerHTML = ''; 
+  document.getElementById('detailTrailerFrame').src = '';
+  document.getElementById('playerSection').style.display = 'none';
+  showPage(previousPage);
+}
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
