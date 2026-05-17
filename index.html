@@ -1794,34 +1794,37 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
+    // Интерфейс как у топовых сайтов: выбор серверов
     pWrap.innerHTML = '<div style="display:flex;gap:10px;margin-bottom:20px;justify-content:center;flex-wrap:wrap;">' +
-      '<button id="s1" style="padding:12px 20px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;transition:0.3s;">ANA SUNUCU (4K)</button>' +
-      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;transition:0.3s;">ALTERNATİF (HD)</button>' +
+      '<button id="s1" style="padding:12px 25px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">ANA SUNUCU (Server 1)</button>' +
+      '<button id="s2" style="padding:12px 20px;background:#333;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:bold;">HIZLI KANAL (Server 2)</button>' +
       '</div>' +
-      '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;border:1px solid #1e1035;box-shadow:0 10px 30px rgba(0,0,0,0.5);"></div>';
+      '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;border:1px solid #1e1035;"></div>';
 
     var cont = document.getElementById('ifrC');
 
-    // SERVER 1: Технология мировых лидеров (Vidsrc PRO)
+    // SERVER 1: ИСТОЧНИК ГИГАНТОВ (VIDSRC PRO)
     var runS1 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Güvenli Bağlantı Kuruluyor...</div>';
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Yükleniyor...</div>';
+      // Этот источник автоматически находит турецкую озвучку или субтитры
       var src1 = 'https://vidsrc.pro/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
       cont.innerHTML = '<iframe src="' + src1 + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
     };
 
-    // SERVER 2: Резервный канал (Multiembed)
+    // SERVER 2: АЛЬТЕРНАТИВНЫЙ ИСТОЧНИК (2EMBED)
     var runS2 = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Yedek Kanal Hazırlanıyor...</div>';
-      var src2 = 'https://multiembed.mov/?video_id=' + id + '&tmdb=1';
+      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Alternatif Hat Bağlanıyor...</div>';
+      var src2 = 'https://www.2embed.cc/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
       cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
     document.getElementById('s1').onclick = runS1;
     document.getElementById('s2').onclick = runS2;
 
-    runS1(); // Сразу запускаем основной
+    runS1(); // Запуск сразу при нажатии
     pSec.scrollIntoView({behavior: 'smooth'});
   };
+} // Закрываем showDetail
 } // Конец функции showDetail - ЭТА СКОБКА ОБЯЗАТЕЛЬНА
 function goBack() {
   var c = document.getElementById('ifrC');
