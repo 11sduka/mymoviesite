@@ -1801,8 +1801,7 @@ async function openDetail(id, type) {
       '<div id="ifrC" style="width:100%;min-height:550px;background:#000;border-radius:12px;overflow:hidden;"></div>';
 
     var cont = document.getElementById('ifrC');
-    // Твой закодированный ключ
-    var myAddon = 'https%3A%2F%2Ftorrentio.strem.fun%2Fsort%3Dseeders%7Clanguage%3Drussian%2Cturkish%2Carabic%2Cpersian%7Cqualityfilter%3Dcam%7Csizefilter%3D25GB%7Crealdebrid%3DCPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ%2Fmanifest.json';
+    var myAddon = 'https://torrentio.strem.fun/sort=seeders|language=russian,turkish,arabic,persian|qualityfilter=cam|sizefilter=25GB|realdebrid=CPY34DYXA6ACJSHOF3DQ3F7G37P5C22NUIMGR7COEMYJ3DBW4TKQ/manifest.json';
 
     var runS1 = function() {
       cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Loading Premium Stream...</div>';
@@ -1812,20 +1811,15 @@ async function openDetail(id, type) {
           var imdb = d.imdb_id || id;
           var vId = (type === 'tv') ? imdb + ':1:1' : imdb;
           
-          // ИСПОЛЬЗУЕМ СЕРВИС-АГРЕГАТОР, КОТОРЫЙ НЕ БЛОКИРУЕТ IFRAME
-          // Это сторонний плеер, который умеет работать с Stremio ссылками
-          var streamUrl = 'https://stremio-player.vercel.app/?addon=' + myAddon + '&type=' + type + '&id=' + vId;
+          // НОВЫЙ СУПЕР-СТАБИЛЬНЫЙ ПЛЕЕР
+          var streamUrl = 'https://stremio-kiosk.netlify.app/#/player?addon=' + encodeURIComponent(myAddon) + '&type=' + type + '&id=' + vId;
           
-          cont.innerHTML = '<iframe src="' + streamUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
-        })
-        .catch(function(e) {
-           console.log(e);
-           runS2(); // Если не вышло, автоматом грузим стандарт
+          cont.innerHTML = '<iframe src="' + streamUrl + '" style="width:100%;height:550px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>';
         });
     };
 
     var runS2 = function() {
-      var src2 = 'https://vidsrc.cc/v2/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
+      var src2 = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id);
       cont.innerHTML = '<iframe src="' + src2 + '" style="width:100%;height:550px;border:none;" allowfullscreen></iframe>';
     };
 
