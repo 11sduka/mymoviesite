@@ -1794,43 +1794,60 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
+    // Интуитивный и солидный интерфейс выбора языковых зон
     pWrap.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
+      <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px; align-items:center;">
         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
-          <button id="s_tr" style="padding:12px 20px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">TURKISH SERVER</button>
-          <button id="s_ru" style="padding:12px 20px; background:#0056b3; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">RUSSIAN SERVER</button>
-          <button id="s_en" style="padding:12px 20px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">ENGLISH/GLOBAL</button>
+          <button id="s_tr" style="padding:12px 25px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; box-shadow: 0 4px 15px rgba(229,9,20,0.3); transition: 0.2s;">TÜRKÇE (Server 1)</button>
+          <button id="s_ru" style="padding:12px 25px; background:#0056b3; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition: 0.2s;">RUSSIAN (Server 2)</button>
+          <button id="s_en" style="padding:12px 25px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; transition: 0.2s;">ENGLISH (Server 3)</button>
         </div>
+        <div id="streamStatus" style="color:#aaa; font-size:13px; font-weight:500;"></div>
       </div>
-      <div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden; border:2px solid #222;"></div>
+      <div id="ifrC" style="width:100%; min-height:500px; background:#000; border-radius:12px; overflow:hidden; border:2px solid #222; box-shadow:0 10px 30px rgba(0,0,0,0.7);"></div>
     `;
 
     var cont = document.getElementById('ifrC');
+    var status = document.getElementById('streamStatus');
 
-    // ТУРЕЦКИЙ ПОТОК (Аналог Dizipal)
+    // Нажатие на кнопку визуально активирует её
+    var setActiveBtn = function(activeId) {
+      ['s_tr', 's_ru', 's_en'].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if(btn) btn.style.opacity = (id === activeId) ? '1' : '0.5';
+      });
+    };
+
+    // 1. ТУРЕЦКИЙ СЕРВЕР (Dizipal Спецификация)
     document.getElementById('s_tr').onclick = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Türkçe Kanallar Yükleniyor...</div>';
-      // Используем мощный турецкий агрегатор через vidsrc.cc (он лучше ищет TR)
-      var url = 'https://vidsrc.cc/v2/embed/' + (type === 'tv' ? 'tv/' : 'movie/') + id + '?lang=tr';
-      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
+      setActiveBtn('s_tr');
+      status.innerText = 'Türkçe hat optimize ediliyor...';
+      // Используем vidsrc.cc с жестким флагом турецкого языка
+      var url = 'https://vidsrc.cc/v2/embed/' + (type === 'tv' ? 'tv/' + id + '/1/1' : 'movie/' + id) + '?lang=tr';
+      cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
     };
 
-    // РУССКИЙ ПОТОК (Аналог Kinogo/Rezka)
+    // 2. РУССКИЙ СЕРВЕР (HDRezka / СНГ Спецификация)
     document.getElementById('s_ru').onclick = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Подключение к базе СНГ...</div>';
-      // Видеохостинг, который используют 80% киносайтов РФ
-      var url = 'https://vidsrc.me/embed/' + (type === 'tv' ? 'tv/' : 'movie/') + id; 
+      setActiveBtn('s_ru');
+      status.innerText = 'Подключение к СНГ CDN балансировщику...';
+      // Легендарный плеер voidboost — выдает тонну озвучек на русском
+      var url = 'https://voidboost.cc/embed/' + id; 
+      // Если это сериал, voidboost сам выведет удобную сетку серий на русском
       cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
     };
 
-    // АНГЛИЙСКИЙ / ГЛОБАЛЬНЫЙ (Global Standard)
+    // 3. АНГЛИЙСКИЙ СЕРВЕР (Глобальный поток)
     document.getElementById('s_en').onclick = function() {
-      cont.innerHTML = '<div style="color:#fff;text-align:center;padding-top:100px;">Global Stream Loading...</div>';
-      var url = 'https://embed.smashystream.com/playere.php?' + (type === 'tv' ? 'tmdb=' + id + '&season=1&episode=1' : 'tmdb=' + id);
+      setActiveBtn('s_en');
+      status.innerText = 'Establishing secure connection to global CDN...';
+      // Самый чистый на сегодня плеер embed.su
+      var url = 'https://embed.su/embed/' + type + '/' + id;
+      if (type === 'tv') url += '/1/1';
       cont.innerHTML = `<iframe src="${url}" style="width:100%;height:500px;border:none;" allowfullscreen></iframe>`;
     };
 
-    // По умолчанию запускаем Турецкий, так как сайт на турецком
+    // АВТОЗАПУСК: Так как сайт на турецком, сразу инициируем турецкий сервер
     document.getElementById('s_tr').click();
     pSec.scrollIntoView({behavior: 'smooth'});
   };
