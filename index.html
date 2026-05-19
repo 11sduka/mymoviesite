@@ -1789,68 +1789,32 @@ async function openDetail(id, type) {
 
   // Watch button
   document.getElementById('detailWatchBtn').onclick = function() {
-    var pSec = document.getElementById('playerSection');
-    var pWrap = document.querySelector('.player-wrap');
-    if (!pSec || !pWrap) return;
-    pSec.style.display = 'block';
-
     // Автоматический поиск ID и типа контента в коде твоего сайта
     var currentId = (typeof id !== 'undefined') ? id : (typeof currentMovieId !== 'undefined' ? currentMovieId : '');
     var contentType = (typeof type !== 'undefined') ? type : 'movie'; 
     
-    // Приведение типа контента к стандарту VidSrc (movie или tv)
-    if (contentType === 'tvshow' || contentType === 'series') {
+    // Приведение типа к стандарту vidsrc.to
+    if (contentType === 'tvshow' || contentType === 'series' || contentType === 'tv') {
       contentType = 'tv';
+    } else {
+      contentType = 'movie';
     }
 
     if (typeof currentId === 'string') {
       currentId = currentId.trim();
     }
 
-    // Адаптивная верстка 16:9 под экраны мобильных телефонов (не уплывает вниз)
-    pWrap.innerHTML = `
-      <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
-        
-        <!-- Селектор потоков (Турция / Англия) -->
-        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; flex-wrap:wrap; width:100%;">
-          <button id="s_tr" style="flex:1; min-width:130px; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(229,9,20,0.2);">TÜRKÇE</button>
-          <button id="s_en" style="flex:1; min-width:130px; padding:12px; background:#333; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px;">ENGLISH</button>
-        </div>
-        
-        <!-- Адаптивный плеер 16:9 (Строго по центру экрана) -->
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #222; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Yükleniyor (ID: ${currentId})...</div>
-        </div>
+    // Жесткая проверка на наличие ID
+    if (!currentId) {
+      alert("Внимание: Скрипт не смог найти ID фильма/сериала на странице. Проверь переменную id.");
+      return;
+    }
 
-      </div>
-    `;
+    // Формируем чистую ссылку строго по твоей документации (с турецким языком)
+    var url = 'https://vidsrc.to/embed/' + contentType + '/' + currentId + '?lang=tr';
 
-    var cont = document.getElementById('ifrC');
-
-    // Функция вставки iframe
-    var setPlayer = function(url) {
-      cont.innerHTML = `<iframe src="${url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-    };
-
-    // 1. TÜRKÇE — Строго по твоей инструкции через официальный vidsrc.to + флаг турецкого языка
-    document.getElementById('s_tr').onclick = function() {
-      var url = 'https://vidsrc.to/embed/' + contentType + '/' + currentId + '?lang=tr';
-      setPlayer(url);
-    };
-
-    // 2. ENGLISH — Чистый оригинальный поток vidsrc.to
-    document.getElementById('s_en').onclick = function() {
-      var url = 'https://vidsrc.to/embed/' + contentType + '/' + currentId;
-      setPlayer(url);
-    };
-
-    // Автозапуск турецкого сервера при клике
-    document.getElementById('s_tr').click();
-    
-    // Плавный фокус на плеер под мобильные телефоны
-    setTimeout(function() {
-      pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
-    }, 250);
+    // Открываем поток в новой вкладке — это работает всегда, везде и на любом телефоне!
+    window.open(url, '_blank', 'noopener,noreferrer');
 };
 } // Эта скобка должна быть ПЕРЕД function goBack()
 function goBack() {
