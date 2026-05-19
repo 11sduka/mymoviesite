@@ -1794,96 +1794,67 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
-    // Получаем ID контента из твоего сайта
+    // Вытаскиваем чистый ID TMDB с твоего сайта
     var currentId = (typeof id !== 'undefined' && id) ? id : '';
     var contentType = (typeof type !== 'undefined' && type) ? type : 'movie'; 
     
     if (contentType === 'tvshow' || contentType === 'series') {
-        contentType = 'tv';
+      contentType = 'tv';
     }
 
-    // Твой персональный API Ключ TMDB (вставь сюда свой, если этот тестовый устареет)
-    var tmdbApiKey = '3fd2b6b0b81fa436a11ad8c645f69d64'; 
-
-    // Базовая адаптивная верстка плеера 16:9
+    // Полностью адаптивная верстка 16:9
     pWrap.innerHTML = `
       <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
         
-        <!-- Селектор Языков (Турция / Оригинал) -->
-        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; flex-wrap:wrap; width:100%;">
-          <button id="s_tr" style="flex:1; min-width:130px; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(229,9,20,0.2);">TÜRKÇE REKLAMSIZ</button>
-          <button id="s_en" style="flex:1; min-width:130px; padding:12px; background:#333; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px;">ENGLISH ORIGINAL</button>
+        <!-- Переключатели потоков -->
+        <div style="display:flex; gap:8px; margin-bottom:15px; justify-content:center; flex-wrap:wrap; width:100%;">
+          <button id="src_1" style="flex:1; min-width:140px; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px; box-shadow:0 4px 10px rgba(229,9,20,0.2);">TÜRKÇE (Поток 1)</button>
+          <button id="src_2" style="flex:1; min-width:140px; padding:12px; background:#222; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;">ENGLISH (Поток 2)</button>
+          <button id="src_3" style="flex:1; min-width:140px; padding:12px; background:#222; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;">РЕЗЕРВ (Поток 3)</button>
         </div>
         
         <!-- Контейнер плеера -->
         <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #222;">
-          <div id="playerLoader" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Поток загружается...</div>
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Запуск защищенного шлюза...</div>
         </div>
 
       </div>
     `;
 
-    // Функция запроса к официальному API TMDB для поиска незаблокированного видеопотока (YouTube/Vimeo)
-    function loadTmdbVideo(lang) {
-        var loader = document.getElementById('playerLoader');
-        if (loader) loader.innerText = 'Синхронизация с сервером TMDB...';
+    var cont = document.getElementById('ifrC');
 
-        var apiUrl = 'https://api.themoviedb.org/3/' + contentType + '/' + currentId + '/videos?api_key=' + tmdbApiKey + '&language=' + lang;
+    var setPlayer = function(url, btnId) {
+      ['src_1', 'src_2', 'src_3'].forEach(function(id) {
+         var btn = document.getElementById(id);
+         if(btn) btn.style.background = '#222';
+      });
+      document.getElementById(btnId).style.background = '#e50914';
+      cont.innerHTML = `<iframe src="${url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+    };
 
-        fetch(apiUrl)
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                var videoKey = '';
-                
-                // Ищем официальный трейлер или тизер в результатах
-                if (data.results && data.results.length > 0) {
-                    // Пытаемся найти именно Trailer
-                    var trailer = data.results.find(function(v) { return v.type === 'Trailer' && v.site === 'YouTube'; });
-                    if (!trailer) trailer = data.results[0]; // Если нет трейлера, берем любое первое видео
-                    videoKey = trailer.key;
-                }
+    // Поток 1: SmashyStream (Поддерживает турецкий/английский по выбору в плеере)
+    document.getElementById('src_1').onclick = function() {
+      var url = 'https://embed.smashystream.com/playere.php?tmdb=' + currentId;
+      setPlayer(url, 'src_1');
+    };
 
-                // Если на турецком видео не нашлось, делаем резервный запрос на английском
-                if (!videoKey && lang === 'tr-TR') {
-                    loadTmdbVideo('en-US');
-                    return;
-                }
+    // Поток 2: AutoEmbed (Оригинальный звук, стабильный шлюз)
+    document.getElementById('src_2').onclick = function() {
+      var url = 'https://player.autoembed.cc/embed/' + contentType + '/' + currentId;
+      setPlayer(url, 'src_2');
+    };
 
-                if (videoKey) {
-                    // Выводим чистейший, легальный HD плеер, который НЕЛЬЗЯ забанить в Турции (официальный YouTube-поток)
-                    document.getElementById('ifrC').innerHTML = `
-                        <iframe src="https://www.youtube.com/embed/${videoKey}?autoplay=1&modestbranding=1&rel=0" 
-                                style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
-                                allowfullscreen 
-                                allow="autoplay; encrypted-media">
-                        </iframe>
-                    `;
-                } else {
-                    document.getElementById('ifrC').innerHTML = `
-                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#e50914; font-size:14px; text-align:center; width:90%;">
-                            <b>Medyaya Ulaşılamadı!</b><br><span style="color:#666; font-size:12px;">Убедитесь, что ID контента (${currentId}) указан верно.</span>
-                        </div>
-                    `;
-                }
-            })
-            .catch(function() {
-                document.getElementById('ifrC').innerHTML = `
-                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#e50914; font-size:14px;">
-                        Ошибка соединения с базой TMDB.
-                    </div>
-                `;
-            });
-    }
+    // Поток 3: 2Embed (Глобальный мировой бэкап)
+    document.getElementById('src_3').onclick = function() {
+      var url = 'https://www.2embed.cc/embed/' + currentId;
+      setPlayer(url, 'src_3');
+    };
 
-    // Логика кнопок
-    document.getElementById('s_tr').onclick = function() { loadTmdbVideo('tr-TR'); };
-    document.getElementById('s_en').onclick = function() { loadTmdbVideo('en-US'); };
-
-    // По умолчанию грузим турецкий поток
-    document.getElementById('s_tr').click();
-
+    // Авто-старт первого потока
+    document.getElementById('src_1').click();
+    
     setTimeout(function() {
-        pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
+      pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
     }, 250);
 };
 } // Эта скобка должна быть ПЕРЕД function goBack()
