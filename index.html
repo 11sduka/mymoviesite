@@ -1791,43 +1791,65 @@ async function openDetail(id, type) {
   document.getElementById('detailWatchBtn').onclick = function() {
     var pSec = document.getElementById('playerSection');
     var pWrap = document.querySelector('.player-wrap');
-    if (!pSec || !pWrap) return;
+    if (!pSec || !pWrap) {
+        alert("ОШИБКА ВЕРСТКИ: Элементы 'playerSection' или 'player-wrap' не найдены в HTML коде твоего сайта!");
+        return;
+    }
     pSec.style.display = 'block';
 
-    // Вытаскиваем ID фильма из твоей базы TMDB
-    var currentId = (typeof id !== 'undefined' && id) ? id : '';
-    var contentType = (typeof type !== 'undefined' && type) ? type : 'movie'; 
-    
-    if (contentType === 'tvshow' || contentType === 'series') {
-      contentType = 'tv';
+    // Ищем ID всеми возможными способами, которые бывают в JavaScript
+    var testId = '';
+    try {
+        if (typeof id !== 'undefined' && id) testId = id;
+        else if (typeof currentMovieId !== 'undefined' && currentMovieId) testId = currentMovieId;
+        else if (typeof movie !== 'undefined' && movie && movie.id) testId = movie.id;
+        else if (typeof show !== 'undefined' && show && show.id) testId = show.id;
+    } catch(e) {
+        console.log(e);
     }
 
-    // Адаптивная верстка, чтобы плеер идеально встал на мобильном
+    var testType = 'movie';
+    try {
+        if (typeof type !== 'undefined' && type) testType = type;
+    } catch(e) {}
+
+    // Если ID пустой, мы принудительно ставим Интерстеллар (TMDB ID: 157336), 
+    // чтобы проверить: работает ли вообще плеер vidsrc.to
+    var isAutofilled = false;
+    if (!testId) {
+        testId = '157336'; 
+        isAutofilled = true;
+    }
+
+    if (testType === 'tvshow' || testType === 'series') {
+        testType = 'tv';
+    }
+
+    // Собираем ссылки строго по твоим скринам vidsrc.to
+    var finalUrl = 'https://vidsrc.to/embed/' + testType + '/' + testId + '?lang=tr';
+
+    // Отрисовка интерфейса и диагностической панели
     pWrap.innerHTML = `
-      <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
-        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%;">
-          <button id="s_tr" style="flex:1; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px;">TÜRKÇE / ENGLISH (TMDB Stream)</button>
+      <div style="width:100%; max-width:800px; margin:0 auto; padding:10px; box-sizing:border-box; background:#111; border-radius:10px; border:1px solid #333;">
+        
+        <!-- Панель отладки -->
+        <div style="background:#222; padding:10px; border-radius:6px; margin-bottom:15px; font-family:monospace; font-size:12px; color:#fff; border-left:4px solid #e50914;">
+          <b style="color:#e50914;">ИНФО ДИАГНОСТИКИ:</b><br>
+          • Найденный ID на твоем сайте: <span style="color:#00ff00; font-weight:bold;">${isAutofilled ? 'НЕ НАЙДЕН (Включен ТЕСТ: 157336)' : testId}</span><br>
+          • Тип контента: <span style="color:#00ffff;">${testType}</span><br>
+          • Финальная ссылка в плеере: <a href="${finalUrl}" target="_blank" style="color:#ffaa00; text-decoration:underline;">${finalUrl}</a>
         </div>
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #222;">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Загрузка медиа по ID: ${currentId}...</div>
+
+        <!-- Контейнер плеера -->
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:6px; overflow:hidden; border:1px solid #444;">
+          <iframe src="${finalUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>
         </div>
+
       </div>
-    `;
-
-    // Используем шлюз, который принимает чистые ID TMDB напрямую
-    var url = 'https://vidsrc.me/embed/' + (contentType === 'movie' ? 'movie' : 'tv') + '?tmdb=' + currentId;
-
-    // Вставляем iframe
-    document.getElementById('ifrC').innerHTML = `
-      <iframe src="${url}" 
-              style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
-              allowfullscreen 
-              allow="autoplay; encrypted-media">
-      </iframe>
     `;
     
     setTimeout(function() {
-      pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
+        pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
     }, 250);
 };
 } // Эта скобка должна быть ПЕРЕД function goBack()
