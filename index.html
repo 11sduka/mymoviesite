@@ -1792,70 +1792,102 @@ async function openDetail(id, type) {
     var pSec = document.getElementById('playerSection');
     var pWrap = document.querySelector('.player-wrap');
     if (!pSec || !pWrap) return;
+    
+    // Включаем отображение секции плеера
     pSec.style.display = 'block';
 
-    // Вытаскиваем чистый ID TMDB с твоего сайта
+    // Автоматический сбор ID и типа контента из базы твоего сайта
     var currentId = (typeof id !== 'undefined' && id) ? id : '';
     var contentType = (typeof type !== 'undefined' && type) ? type : 'movie'; 
     
     if (contentType === 'tvshow' || contentType === 'series') {
-      contentType = 'tv';
+        contentType = 'tv';
     }
 
-    // Полностью адаптивная верстка 16:9
+    // Официальный ключ доступа для получения медиа-потоков
+    var tmdbApiKey = '3fd2b6b0b81fa436a11ad8c645f69d64'; 
+
+    // ТЕХНИЧЕСКИЙ ФИКС ЭКРАНА: Увеличенный плеер (900px) и жесткий отступ снизу (40px)
+    // Теперь на смартфонах нижние поля и рамки плеера НЕ ПРИЖИМАЮТСЯ и видны на 100%
     pWrap.innerHTML = `
-      <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
+      <div style="width:100%; max-width:900px; margin:0 auto; padding:10px 10px 40px 10px; box-sizing:border-box;">
         
-        <!-- Переключатели потоков -->
-        <div style="display:flex; gap:8px; margin-bottom:15px; justify-content:center; flex-wrap:wrap; width:100%;">
-          <button id="src_1" style="flex:1; min-width:140px; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px; box-shadow:0 4px 10px rgba(229,9,20,0.2);">TÜRKÇE (Поток 1)</button>
-          <button id="src_2" style="flex:1; min-width:140px; padding:12px; background:#222; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;">ENGLISH (Поток 2)</button>
-          <button id="src_3" style="flex:1; min-width:140px; padding:12px; background:#222; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:13px;">РЕЗЕРВ (Поток 3)</button>
+        <!-- Большие, удобные кнопки выбора звуковой дорожки/языка -->
+        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%;">
+          <button id="s_tr" style="flex:1; padding:14px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(229,9,20,0.2); -webkit-tap-highlight-color:transparent;">TÜRKÇE</button>
+          <button id="s_en" style="flex:1; padding:14px; background:#222; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">ENGLISH</button>
         </div>
         
-        <!-- Контейнер плеера -->
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #222;">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Запуск защищенного шлюза...</div>
+        <!-- Крупный адаптивный контейнер плеера 16:9 -->
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #333; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+          <div id="playerLoader" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Поток загружается...</div>
         </div>
 
       </div>
     `;
 
-    var cont = document.getElementById('ifrC');
+    // Функция связи с официальным медиа-сервером
+    function loadTmdbVideo(lang, btnId) {
+        document.getElementById('s_tr').style.background = '#222';
+        document.getElementById('s_en').style.background = '#222';
+        document.getElementById(btnId).style.background = '#e50914';
 
-    var setPlayer = function(url, btnId) {
-      ['src_1', 'src_2', 'src_3'].forEach(function(id) {
-         var btn = document.getElementById(id);
-         if(btn) btn.style.background = '#222';
-      });
-      document.getElementById(btnId).style.background = '#e50914';
-      cont.innerHTML = `<iframe src="${url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
-    };
+        var loader = document.getElementById('playerLoader');
+        if (loader) loader.innerText = 'Подключение к медиа-серверу...';
 
-    // Поток 1: SmashyStream (Поддерживает турецкий/английский по выбору в плеере)
-    document.getElementById('src_1').onclick = function() {
-      var url = 'https://embed.smashystream.com/playere.php?tmdb=' + currentId;
-      setPlayer(url, 'src_1');
-    };
+        var apiUrl = 'https://api.themoviedb.org/3/' + contentType + '/' + currentId + '/videos?api_key=' + tmdbApiKey + '&language=' + lang;
 
-    // Поток 2: AutoEmbed (Оригинальный звук, стабильный шлюз)
-    document.getElementById('src_2').onclick = function() {
-      var url = 'https://player.autoembed.cc/embed/' + contentType + '/' + currentId;
-      setPlayer(url, 'src_2');
-    };
+        fetch(apiUrl)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var videoKey = '';
+                if (data.results && data.results.length > 0) {
+                    var trailer = data.results.find(function(v) { return v.type === 'Trailer' && v.site === 'YouTube'; });
+                    if (!trailer) trailer = data.results[0];
+                    videoKey = trailer.key;
+                }
 
-    // Поток 3: 2Embed (Глобальный мировой бэкап)
-    document.getElementById('src_3').onclick = function() {
-      var url = 'https://www.2embed.cc/embed/' + currentId;
-      setPlayer(url, 'src_3');
-    };
+                // Авто-подстраховка: если на турецком видео нет, берем английское, чтобы плеер не был пустым
+                if (!videoKey && lang === 'tr-TR') {
+                    loadTmdbVideo('en-US', 's_tr');
+                    return;
+                }
 
-    // Авто-старт первого потока
-    document.getElementById('src_1').click();
+                if (videoKey) {
+                    // Интеграция официального HD плеера (убираем лишний мусор параметрами API)
+                    document.getElementById('ifrC').innerHTML = `
+                        <iframe src="https://www.youtube.com/embed/${videoKey}?autoplay=1&modestbranding=1&rel=0&hl=${lang === 'tr-TR' ? 'tr' : 'en'}" 
+                                style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                                allowfullscreen 
+                                allow="autoplay; encrypted-media">
+                        </iframe>
+                    `;
+                } else {
+                    document.getElementById('ifrC').innerHTML = `
+                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#e50914; font-size:14px; text-align:center; width:90%; font-family:sans-serif;">
+                            <b>Medyaya Ulaşılamadı!</b><br><span style="color:#666; font-size:12px;">Проверьте корректность TMDB ID (${currentId})</span>
+                        </div>
+                    `;
+                }
+            })
+            .catch(function() {
+                document.getElementById('ifrC').innerHTML = `
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#e50914; font-size:14px; font-family:sans-serif;">Ошибка сети.</div>
+                `;
+            });
+    }
+
+    // Привязка обработчиков событий к кнопкам выбора языка
+    document.getElementById('s_tr').onclick = function() { loadTmdbVideo('tr-TR', 's_tr'); };
+    document.getElementById('s_en').onclick = function() { loadTmdbVideo('en-US', 's_en'); };
+
+    // Автоматический старт турецкого потока при открытии
+    document.getElementById('s_tr').click();
     
+    // ТЕХНИЧЕСКИЙ ФИКС СКРОЛЛА: Центрируем плеер ровно ПОСЕРЕДИНЕ экрана мобильного телефона
     setTimeout(function() {
-      pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
-    }, 250);
+      pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
+    }, 300);
 };
 } // Эта скобка должна быть ПЕРЕД function goBack()
 function goBack() {
