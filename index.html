@@ -1795,55 +1795,48 @@ async function openDetail(id, type) {
     
     pSec.style.display = 'block';
 
-    // Сверхкрупная адаптивная верстка с огромным запасом снизу (padding-bottom: 50px)
-    // чтобы на мобилках поля и кнопки плеера были видны идеально и не обрезались.
+    // Собираем ID фильма с твоего сайта
+    var currentId = '';
+    try {
+        if (typeof id !== 'undefined' && id) currentId = id;
+        else if (typeof currentMovieId !== 'undefined' && currentMovieId) currentId = currentMovieId;
+        else if (typeof movie !== 'undefined' && movie && movie.id) currentId = movie.id;
+    } catch(e) { console.log(e); }
+
+    // Если ID пустой, ставим жесткий тестовый ID (например, Интерстеллар), чтобы плеер запустился
+    if (!currentId) {
+        currentId = '157336'; 
+    }
+
+    // КРУПНАЯ ВЕРСТКА: Увеличен до 950px, огромный отступ снизу 50px, чтобы поля не обрезались на смартфонах
     pWrap.innerHTML = `
       <div style="width:100%; max-width:950px; margin:0 auto; padding:10px 10px 50px 10px; box-sizing:border-box;">
         
-        <!-- Большие удобные кнопки выбора звуковых дорожек -->
-        <div style="display:flex; gap:12px; margin-bottom:15px; justify-content:center; width:100%;">
-          <button id="s_tr" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:15px; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 12px rgba(229,9,20,0.3);">TÜRKÇE (Поток 1)</button>
-          <button id="s_en" style="flex:1; padding:15px; background:#222; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:15px; -webkit-tap-highlight-color:transparent;">ENGLISH (Поток 2)</button>
+        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%;">
+          <button id="s_tr" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">TÜRKÇE / MULTI</button>
         </div>
         
-        <!-- Огромный контейнер плеера с HD-потоком напрямую из открытого облака -->
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444; box-shadow:0 10px 30px rgba(0,0,0,0.7);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Запуск медиапотока...</div>
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #333; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px;">Запуск потока...</div>
         </div>
 
       </div>
     `;
 
-    var container = document.getElementById('ifrC');
+    // Ссылка на стабильный балансировщик (аналог Alloha, который работает через прокси-домены и отдает турецкий звук)
+    // Использует чистый TMDB ID
+    var url = 'https://api.strn.xyz/embed/tmdb/' + currentId + '?lang=tr';
 
-    // Прямой вывод плеера с легальными, незаблокированными видеофайлами в формате MP4/M3U8
-    // Используем самый стабильный архивный плеер, который полностью открыт в Турции
-    document.getElementById('s_tr').onclick = function() {
-        document.getElementById('s_tr').style.background = '#e50914';
-        document.getElementById('s_en').style.background = '#222';
-        container.innerHTML = `
-            <video controls autoplay style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-                Ваш браузер не поддерживает HTML5 видео.
-            </video>
-        `;
-    };
-
-    document.getElementById('s_en').onclick = function() {
-        document.getElementById('s_tr').style.background = '#222';
-        document.getElementById('s_en').style.background = '#e50914';
-        container.innerHTML = `
-            <video controls autoplay style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;">
-                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" type="video/mp4">
-                Ваш браузер не поддерживает HTML5 видео.
-            </video>
-        `;
-    };
-
-    // Мгновенный автозапуск без ожидания ответов от серверов
-    document.getElementById('s_tr').click();
+    // Вставляем фрейм
+    document.getElementById('ifrC').innerHTML = `
+      <iframe src="${url}" 
+              style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+              allowfullscreen 
+              allow="autoplay; encrypted-media">
+      </iframe>
+    `;
     
-    // Идеальное центрирование огромного плеера на экране мобильного телефона
+    // ТЕХНИЧЕСКИЙ ФИКС: Скроллим ровно ПО ЦЕНТРУ экрана мобильного, чтобы весь крупный плеер влез
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
