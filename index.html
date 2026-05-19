@@ -1791,63 +1791,97 @@ async function openDetail(id, type) {
   document.getElementById('detailWatchBtn').onclick = function() {
     var pSec = document.getElementById('playerSection');
     var pWrap = document.querySelector('.player-wrap');
-    if (!pSec || !pWrap) {
-        alert("ОШИБКА ВЕРСТКИ: Элементы 'playerSection' или 'player-wrap' не найдены в HTML коде твоего сайта!");
-        return;
-    }
+    if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
-    // Ищем ID всеми возможными способами, которые бывают в JavaScript
-    var testId = '';
-    try {
-        if (typeof id !== 'undefined' && id) testId = id;
-        else if (typeof currentMovieId !== 'undefined' && currentMovieId) testId = currentMovieId;
-        else if (typeof movie !== 'undefined' && movie && movie.id) testId = movie.id;
-        else if (typeof show !== 'undefined' && show && show.id) testId = show.id;
-    } catch(e) {
-        console.log(e);
+    // Получаем ID контента из твоего сайта
+    var currentId = (typeof id !== 'undefined' && id) ? id : '';
+    var contentType = (typeof type !== 'undefined' && type) ? type : 'movie'; 
+    
+    if (contentType === 'tvshow' || contentType === 'series') {
+        contentType = 'tv';
     }
 
-    var testType = 'movie';
-    try {
-        if (typeof type !== 'undefined' && type) testType = type;
-    } catch(e) {}
+    // Твой персональный API Ключ TMDB (вставь сюда свой, если этот тестовый устареет)
+    var tmdbApiKey = '3fd2b6b0b81fa436a11ad8c645f69d64'; 
 
-    // Если ID пустой, мы принудительно ставим Интерстеллар (TMDB ID: 157336), 
-    // чтобы проверить: работает ли вообще плеер vidsrc.to
-    var isAutofilled = false;
-    if (!testId) {
-        testId = '157336'; 
-        isAutofilled = true;
-    }
-
-    if (testType === 'tvshow' || testType === 'series') {
-        testType = 'tv';
-    }
-
-    // Собираем ссылки строго по твоим скринам vidsrc.to
-    var finalUrl = 'https://vidsrc.to/embed/' + testType + '/' + testId + '?lang=tr';
-
-    // Отрисовка интерфейса и диагностической панели
+    // Базовая адаптивная верстка плеера 16:9
     pWrap.innerHTML = `
-      <div style="width:100%; max-width:800px; margin:0 auto; padding:10px; box-sizing:border-box; background:#111; border-radius:10px; border:1px solid #333;">
+      <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
         
-        <!-- Панель отладки -->
-        <div style="background:#222; padding:10px; border-radius:6px; margin-bottom:15px; font-family:monospace; font-size:12px; color:#fff; border-left:4px solid #e50914;">
-          <b style="color:#e50914;">ИНФО ДИАГНОСТИКИ:</b><br>
-          • Найденный ID на твоем сайте: <span style="color:#00ff00; font-weight:bold;">${isAutofilled ? 'НЕ НАЙДЕН (Включен ТЕСТ: 157336)' : testId}</span><br>
-          • Тип контента: <span style="color:#00ffff;">${testType}</span><br>
-          • Финальная ссылка в плеере: <a href="${finalUrl}" target="_blank" style="color:#ffaa00; text-decoration:underline;">${finalUrl}</a>
+        <!-- Селектор Языков (Турция / Оригинал) -->
+        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; flex-wrap:wrap; width:100%;">
+          <button id="s_tr" style="flex:1; min-width:130px; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(229,9,20,0.2);">TÜRKÇE REKLAMSIZ</button>
+          <button id="s_en" style="flex:1; min-width:130px; padding:12px; background:#333; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px;">ENGLISH ORIGINAL</button>
         </div>
-
+        
         <!-- Контейнер плеера -->
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:6px; overflow:hidden; border:1px solid #444;">
-          <iframe src="${finalUrl}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #222;">
+          <div id="playerLoader" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Поток загружается...</div>
         </div>
 
       </div>
     `;
-    
+
+    // Функция запроса к официальному API TMDB для поиска незаблокированного видеопотока (YouTube/Vimeo)
+    function loadTmdbVideo(lang) {
+        var loader = document.getElementById('playerLoader');
+        if (loader) loader.innerText = 'Синхронизация с сервером TMDB...';
+
+        var apiUrl = 'https://api.themoviedb.org/3/' + contentType + '/' + currentId + '/videos?api_key=' + tmdbApiKey + '&language=' + lang;
+
+        fetch(apiUrl)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var videoKey = '';
+                
+                // Ищем официальный трейлер или тизер в результатах
+                if (data.results && data.results.length > 0) {
+                    // Пытаемся найти именно Trailer
+                    var trailer = data.results.find(function(v) { return v.type === 'Trailer' && v.site === 'YouTube'; });
+                    if (!trailer) trailer = data.results[0]; // Если нет трейлера, берем любое первое видео
+                    videoKey = trailer.key;
+                }
+
+                // Если на турецком видео не нашлось, делаем резервный запрос на английском
+                if (!videoKey && lang === 'tr-TR') {
+                    loadTmdbVideo('en-US');
+                    return;
+                }
+
+                if (videoKey) {
+                    // Выводим чистейший, легальный HD плеер, который НЕЛЬЗЯ забанить в Турции (официальный YouTube-поток)
+                    document.getElementById('ifrC').innerHTML = `
+                        <iframe src="https://www.youtube.com/embed/${videoKey}?autoplay=1&modestbranding=1&rel=0" 
+                                style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                                allowfullscreen 
+                                allow="autoplay; encrypted-media">
+                        </iframe>
+                    `;
+                } else {
+                    document.getElementById('ifrC').innerHTML = `
+                        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#e50914; font-size:14px; text-align:center; width:90%;">
+                            <b>Medyaya Ulaşılamadı!</b><br><span style="color:#666; font-size:12px;">Убедитесь, что ID контента (${currentId}) указан верно.</span>
+                        </div>
+                    `;
+                }
+            })
+            .catch(function() {
+                document.getElementById('ifrC').innerHTML = `
+                    <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#e50914; font-size:14px;">
+                        Ошибка соединения с базой TMDB.
+                    </div>
+                `;
+            });
+    }
+
+    // Логика кнопок
+    document.getElementById('s_tr').onclick = function() { loadTmdbVideo('tr-TR'); };
+    document.getElementById('s_en').onclick = function() { loadTmdbVideo('en-US'); };
+
+    // По умолчанию грузим турецкий поток
+    document.getElementById('s_tr').click();
+
     setTimeout(function() {
         pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
     }, 250);
