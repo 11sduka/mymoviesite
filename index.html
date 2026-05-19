@@ -1794,7 +1794,20 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
-    // 100% Адаптивная верстка под экраны мобильных (не уплывает вниз)
+    // Автоматический поиск ID и типа контента в коде твоего сайта
+    var currentId = (typeof id !== 'undefined') ? id : (typeof currentMovieId !== 'undefined' ? currentMovieId : '');
+    var contentType = (typeof type !== 'undefined') ? type : 'movie'; 
+    
+    // Приведение типа контента к стандарту VidSrc
+    if (contentType === 'tvshow' || contentType === 'series') {
+      contentType = 'tv';
+    }
+
+    if (typeof currentId === 'string') {
+      currentId = currentId.trim();
+    }
+
+    // Адаптивная верстка 16:9 под экраны мобильных (не уплывает вниз)
     pWrap.innerHTML = `
       <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
         
@@ -1806,7 +1819,7 @@ async function openDetail(id, type) {
         
         <!-- Адаптивный плеер 16:9 (Строго по центру экрана) -->
         <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #222; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Yükleniyor...</div>
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#666; font-size:14px;">Yükleniyor (ID: ${currentId})...</div>
         </div>
 
       </div>
@@ -1822,10 +1835,10 @@ async function openDetail(id, type) {
     // 1. ТУРЕЦКИЙ СЕРВЕР (VidSrc по твоим скринам + Турецкий приоритет)
     document.getElementById('s_tr').onclick = function() {
       var url = '';
-      if (type === 'movie') {
-        url = 'https://vidsrc.cc/v2/embed/movie/' + id + '?lang=tr';
+      if (contentType === 'movie') {
+        url = 'https://vidsrc.cc/v2/embed/movie/' + currentId + '?lang=tr';
       } else {
-        url = 'https://vidsrc.cc/v2/embed/tv/' + id + '/1/1?lang=tr';
+        url = 'https://vidsrc.cc/v2/embed/tv/' + currentId + '/1/1?lang=tr';
       }
       setPlayer(url);
     };
@@ -1833,10 +1846,10 @@ async function openDetail(id, type) {
     // 2. АНГЛИЙСКИЙ СЕРВЕР (Оригинальный поток без флагов языка)
     document.getElementById('s_en').onclick = function() {
       var url = '';
-      if (type === 'movie') {
-        url = 'https://vidsrc.cc/v2/embed/movie/' + id;
+      if (contentType === 'movie') {
+        url = 'https://vidsrc.cc/v2/embed/movie/' + currentId;
       } else {
-        url = 'https://vidsrc.cc/v2/embed/tv/' + id + '/1/1';
+        url = 'https://vidsrc.cc/v2/embed/tv/' + currentId + '/1/1';
       }
       setPlayer(url);
     };
