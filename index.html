@@ -1794,47 +1794,59 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
     pSec.style.display = 'block';
 
-    // Создаем стабильную мульти-платформенную панель
+    // 100% Адаптивная разметка под экраны смартфонов и ПК
     pWrap.innerHTML = `
-      <div style="display:flex; flex-direction:column; gap:20px; align-items:center; background:#111; padding:30px; border-radius:15px; border:1px solid #222; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
-        <h3 style="color:#fff; margin:0; font-size:18px; text-align:center;">MEDYA OYNATICI MERKEZİ (MULTI-STREAM CDN)</h3>
-        <p style="color:#888; font-size:13px; text-align:center; margin:0 0 10px 0;">Tarayıcı korumasını aşmak ve reklamsız izlemek için bir hat seçiniz:</p>
+      <div style="width:100%; max-width:800px; margin:0 auto; padding:5px; box-sizing:border-box;">
         
-        <div style="display:flex; gap:15px; flex-wrap:wrap; justify-content:center; width:100%;">
-          <button id="s_tr" style="padding:15px 30px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:15px; min-width:200px; box-shadow: 0 4px 15px rgba(229,9,20,0.4); transition:0.2s;">TÜRKÇE İZLE (Server 1)</button>
-          <button id="s_ru" style="padding:15px 30px; background:#0056b3; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:15px; min-width:200px; box-shadow: 0 4px 15px rgba(0,86,179,0.4); transition:0.2s;">RUSSIAN (Server 2)</button>
-          <button id="s_en" style="padding:15px 30px; background:#333; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:15px; min-width:200px; transition:0.2s;">ENGLISH (Server 3)</button>
+        <!-- Селектор потоков (Языковые зоны) -->
+        <div style="display:flex; gap:8px; margin-bottom:15px; justify-content:center; flex-wrap:wrap; width:100%;">
+          <button id="s_tr" style="flex:1; min-width:100px; padding:12px; background:#e50914; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(229,9,20,0.2);">TÜRKÇE (Server 1)</button>
+          <button id="s_ru" style="flex:1; min-width:100px; padding:12px; background:#0056b3; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px; box-shadow:0 4px 10px rgba(0,86,179,0.2);">RUSSIAN (Server 2)</button>
+          <button id="s_en" style="flex:1; min-width:100px; padding:12px; background:#333; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size:14px;">ENGLISH (Server 3)</button>
         </div>
         
-        <div style="color:#555; font-size:11px; text-align:center; margin-top:10px;">
-          * Güvenli Protokol (SSL/TLS 1.3) ile şifrelenmiştir. Chrome, Safari ve Google uygulamalarıyla %100 uyumludur.
+        <!-- Адаптивный плеер 16:9 (Не уплывает вниз на iOS/Android) -->
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:10px; overflow:hidden; border:1px solid #252525; box-shadow:0 8px 24px rgba(0,0,0,0.5);">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#888; font-size:14px;">Yükleniyor...</div>
         </div>
+
       </div>
     `;
 
-    // Формируем ссылки, которые гарантированно откроются в браузере, обходя защиту iframe
+    var cont = document.getElementById('ifrC');
     var suffix = (type === 'tv') ? '/1/1' : '';
 
-    // 1. ТУРЕЦКИЙ (Используем самый пробиваемый хаб, который открывается везде)
-    document.getElementById('s_tr').onclick = function() {
-      var url = 'https://vidsrc.to/embed/' + (type === 'tv' ? 'tv/' + id + suffix : 'movie/' + id) + '?lang=tr';
-      window.open(url, '_blank', 'noopener,noreferrer');
+    // Универсальный инжектор безопасного потока
+    var injectStream = function(url) {
+      cont.innerHTML = `<iframe src="${url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
     };
 
-    // 2. РУССКИЙ (База СНГ через универсальный шлюз)
+    // 1. ПОТОК: ТУРЦИЯ (Приватный узел VidSrc V2)
+    document.getElementById('s_tr').onclick = function() {
+      var url = 'https://vidsrc.cc/v2/embed/' + (type === 'tv' ? 'tv/' + id : 'movie/' + id) + '?lang=tr';
+      injectStream(url);
+    };
+
+    // 2. ПОТОК: СНГ / РОССИЯ (Универсальный шлюз)
     document.getElementById('s_ru').onclick = function() {
       var url = 'https://vidsrc.me/embed/' + (type === 'tv' ? 'tv/' + id + suffix : 'movie/' + id);
-      window.open(url, '_blank', 'noopener,noreferrer');
+      injectStream(url);
     };
 
-    // 3. АНГЛИЙСКИЙ (Глобальный поток)
+    // 3. ПОТОК: ГЛОБАЛЬНЫЙ (Английский оригинал / Netflix Source)
     document.getElementById('s_en').onclick = function() {
       var url = 'https://embed.su/embed/' + type + '/' + id + (type === 'tv' ? '/1/1' : '');
-      window.open(url, '_blank', 'noopener,noreferrer');
+      injectStream(url);
     };
 
-    pSec.scrollIntoView({behavior: 'smooth'});
-  };
+    // По умолчанию включаем Турецкий поток
+    document.getElementById('s_tr').click();
+    
+    // Мягкий фокус на плеер для мобильных устройств
+    setTimeout(function() {
+      pSec.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }, 250);
+};
 } // Эта скобка должна быть ПЕРЕД function goBack()
 function goBack() {
   var c = document.getElementById('ifrC');
