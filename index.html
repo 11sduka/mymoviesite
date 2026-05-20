@@ -1793,50 +1793,81 @@ async function openDetail(id, type) {
     var pWrap = document.querySelector('.player-wrap');
     if (!pSec || !pWrap) return;
     
+    // Включаем видимость секции плеера
     pSec.style.display = 'block';
 
-    // Собираем ID фильма с твоего сайта
-    var currentId = '';
-    try {
-        if (typeof id !== 'undefined' && id) currentId = id;
-        else if (typeof currentMovieId !== 'undefined' && currentMovieId) currentId = currentMovieId;
-        else if (typeof movie !== 'undefined' && movie && movie.id) currentId = movie.id;
-    } catch(e) { console.log(e); }
+    // 1. Автоматический сбор ID и типа контента со страницы твоего сайта
+    var currentId = (typeof id !== 'undefined' && id) ? id : '823464'; // Тест: Дюна 2, если ID пуст
+    var contentType = (typeof type !== 'undefined' && type) ? type : 'movie';
+    if (contentType === 'tvshow' || contentType === 'series') contentType = 'tv';
 
-    // Если ID пустой, ставим жесткий тестовый ID (например, Интерстеллар), чтобы плеер запустился
-    if (!currentId) {
-        currentId = '157336'; 
-    }
+    // Поддержка сериалов (сезон и серия)
+    var seasonNum = (typeof season !== 'undefined' && season) ? season : '1';
+    var episodeNum = (typeof episode !== 'undefined' && episode) ? episode : '1';
 
-    // КРУПНАЯ ВЕРСТКА: Увеличен до 950px, огромный отступ снизу 50px, чтобы поля не обрезались на смартфонах
+    // Ключ для мгновенного запроса IMDb ID через API, как требуют новые сервера vsembed
+    var tmdbApiKey = '3fd2b6b0b81fa436a11ad8c645f69d64'; 
+
+    // ЖЕСТКИЙ ФИКС ВЕРСТКИ: Плеер увеличен до 980px, снизу добавлен гигантский отступ 60px.
+    // Теперь на любых телефонах полоса перемотки, выбор серий и кнопка "на весь экран" НЕ обрежутся!
     pWrap.innerHTML = `
-      <div style="width:100%; max-width:950px; margin:0 auto; padding:10px 10px 50px 10px; box-sizing:border-box;">
+      <div style="width:100%; max-width:980px; margin:0 auto; padding:10px 10px 60px 10px; box-sizing:border-box;">
         
+        <!-- Кнопка индикатора официального шлюза -->
         <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%;">
-          <button id="s_tr" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">TÜRKÇE / MULTI</button>
+          <button id="vsembed_btn" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 12px rgba(229,9,20,0.3);">VSEMBED OFFICIAL STREAM</button>
         </div>
         
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #333; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px;">Запуск потока...</div>
+        <!-- Большой адаптивный контейнер плеера 16:9 -->
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+          <div id="playerLoader" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Авторизация на серверах vsembed.su...</div>
         </div>
 
       </div>
     `;
 
-    // Ссылка на стабильный балансировщик (аналог Alloha, который работает через прокси-домены и отдает турецкий звук)
-    // Использует чистый TMDB ID
-    var url = 'https://api.strn.xyz/embed/tmdb/' + currentId + '?lang=tr';
+    // Если ID на сайте уже в формате IMDb (начинается на tt), сразу пускаем поток
+    if (String(currentId).startsWith('tt')) {
+        startVsEmbedStream(currentId);
+    } else {
+        // Мгновенно конвертируем цифровой TMDB ID в формат IMDb (требование документации vsembed)
+        var convertUrl = 'https://api.themoviedb.org/3/' + contentType + '/' + currentId + '/external_ids?api_key=' + tmdbApiKey;
+        
+        fetch(convertUrl)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                var imdbId = data.imdb_id;
+                if (imdbId) {
+                    startVsEmbedStream(imdbId);
+                } else {
+                    startVsEmbedStream(currentId); // Резервный запуск по TMDB
+                }
+            })
+            .catch(function() {
+                startVsEmbedStream(currentId);
+            });
+    }
 
-    // Вставляем фрейм
-    document.getElementById('ifrC').innerHTML = `
-      <iframe src="${url}" 
-              style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
-              allowfullscreen 
-              allow="autoplay; encrypted-media">
-      </iframe>
-    `;
+    // Функция встраивания стрима на новые анонсированные сервера vsembed.su
+    function startVsEmbedStream(targetId) {
+        var finalEmbedUrl = '';
+        
+        if (contentType === 'movie') {
+            finalEmbedUrl = 'https://vsembed.su/embed/movie/' + targetId;
+        } else {
+            finalEmbedUrl = 'https://vsembed.su/embed/tv/' + targetId + '/' + seasonNum + '-' + episodeNum;
+        }
+
+        document.getElementById('ifrC').innerHTML = `
+          <iframe src="${finalEmbedUrl}" 
+                  style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                  allowfullscreen 
+                  allow="autoplay; encrypted-media">
+          </iframe>
+        `;
+    }
     
-    // ТЕХНИЧЕСКИЙ ФИКС: Скроллим ровно ПО ЦЕНТРУ экрана мобильного, чтобы весь крупный плеер влез
+    // ТЕХНИЧЕСКИЙ ФИКС СКРОЛЛА: Центрируем крупный плеер ровно посередине дисплея смартфона
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
