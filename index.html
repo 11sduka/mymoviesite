@@ -1795,44 +1795,61 @@ async function openDetail(id, type) {
     
     pSec.style.display = 'block';
 
-    // Сбор ID фильма/сериала со страницы. Тест: 157336 (Интерстеллар)
+    // Авто-сбор ID фильма или сериала с твоего сайта. Тест: 157336 (Интерстеллар)
     var currentId = (typeof id !== 'undefined' && id) ? id : '157336'; 
     var contentType = (typeof type !== 'undefined' && type) ? type : 'movie';
     if (contentType === 'tvshow' || contentType === 'series') contentType = 'tv';
 
-    // Крупная верстка плеера (980px) с большим нижним полем (60px) под мобильные экраны
+    // ВЕРСТКА: Огромный плеер 980px, отступ снизу 60px — кнопки и полоса перемотки на телефонах НЕ обрежутся
     pWrap.innerHTML = `
       <div style="width:100%; max-width:980px; margin:0 auto; padding:10px 10px 60px 10px; box-sizing:border-box;">
         
+        <!-- Кнопки переключения незабаненных баз контента -->
         <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%;">
-          <button id="vidsrc_direct_btn" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 12px rgba(229,9,20,0.3);">VIDSRC.ME DIRECT STREAM</button>
+          <button id="src_cc" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 12px rgba(229,9,20,0.3);">ИСТОЧНИК 1 (VidSrc CC)</button>
+          <button id="src_su" style="flex:1; padding:15px; background:#222; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">ИСТОЧНИК 2 (Embed SU)</button>
         </div>
         
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444;">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Запуск официального потока...</div>
+        <!-- Контейнер плеера -->
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Запуск видеопотока...</div>
         </div>
 
       </div>
     `;
 
-    // Сборка прямой ссылки по официальной документации vidsrc.me с поддержкой TMDB ID
-    var finalEmbedUrl = '';
-    if (contentType === 'movie') {
-        finalEmbedUrl = 'https://vidsrc.me/embed/movie?tmdb=' + currentId;
-    } else {
-        finalEmbedUrl = 'https://vidsrc.me/embed/tv?tmdb=' + currentId + '&season=1&episode=1';
-    }
+    var container = document.getElementById('ifrC');
 
-    // Встраивание фрейма напрямую в плеер
-    document.getElementById('ifrC').innerHTML = `
-      <iframe src="${finalEmbedUrl}" 
-              style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
-              allowfullscreen 
-              allow="autoplay; encrypted-media">
-      </iframe>
-    `;
+    var loadStream = function(url, btnId) {
+        document.getElementById('src_cc').style.background = '#222';
+        document.getElementById('src_su').style.background = '#222';
+        document.getElementById(btnId).style.background = '#e50914';
+        
+        container.innerHTML = `
+          <iframe src="${url}" 
+                  style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                  allowfullscreen 
+                  allow="autoplay; encrypted-media">
+          </iframe>
+        `;
+    };
+
+    // ИСТОЧНИК 1: vidsrc.cc — новое, абсолютно чистое от блокировок зеркало VidSrc
+    document.getElementById('src_cc').onclick = function() {
+        var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
+        loadStream(url, 'src_cc');
+    };
+
+    // ИСТОЧНИК 2: embed.su — самый стабильный азиатский шлюз с обходом турецких файрволов
+    document.getElementById('src_su').onclick = function() {
+        var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
+        loadStream(url, 'src_su');
+    };
+
+    // По умолчанию сразу запускаем первый незабаненный источник
+    document.getElementById('src_cc').click();
     
-    // Плавное центрирование плеера на экране смартфона
+    // Плавное центрирование крупного плеера на экране мобильного телефона
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
