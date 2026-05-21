@@ -1788,8 +1788,7 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  watchBtn.onclick = function() {
-    var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
+  var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
     var currentId = currentItem.id;
     
     var trW = document.getElementById('trW');
@@ -1800,7 +1799,6 @@ async function openDetail(id, type) {
     
     var ifrC = document.getElementById('ifrC');
     
-    // Внутренняя функция загрузки потока в iframe
     function loadStream(url, activeId) {
         var player = document.getElementById('videoPlayer');
         if (player) player.src = url;
@@ -1818,7 +1816,7 @@ async function openDetail(id, type) {
         });
     }
 
-    // Собираем динамическую ссылку для нового формата vidsrc.xyz
+    // Формируем правильный адрес для нового vidsrc.xyz
     var xyzUrl = '';
     if (contentType === 'movie') {
         xyzUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
@@ -1830,7 +1828,6 @@ async function openDetail(id, type) {
         xyzUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
     }
 
-    // Отрисовываем интерфейс твоих вкладок-источников
     ifrC.innerHTML = `
         <div class="player-wrap">
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
@@ -1842,31 +1839,29 @@ async function openDetail(id, type) {
         </div>
     `;
 
-    // ИСТОЧНИК 1: Твой новый исправленный vidsrc.xyz
+    // ТВОИ ЛЮБИМЫЕ СТРОЧКИ НАЧИНАЯ С document.getElementById
     document.getElementById('src_xyz').onclick = function() {
         loadStream(xyzUrl, 'src_xyz');
     };
 
-    // ИСТОЧНИК 2: твой старый vidsrc.cc
     document.getElementById('src_cc').onclick = function() {
         var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
         loadStream(url, 'src_cc');
     };
 
-    // ИСТОЧНИК 3: твой старый embed.su
     document.getElementById('src_su').onclick = function() {
         var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
         loadStream(url, 'src_su');
     };
 
-    // По умолчанию сразу запускаем первый исправленный источник
+    // Автоматический клик по умолчанию
     document.getElementById('src_xyz').click();
     
-    // Плавное центрирование крупного плеера на экране мобильного телефона
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
 };
+} // Эта скобка должна быть ПЕРЕД function goBack()
   function goBack() {
     var c = document.getElementById('ifrC');
     if (c) c.innerHTML = ''; 
