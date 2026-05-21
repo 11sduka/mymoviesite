@@ -1799,10 +1799,9 @@ async function openDetail(id, type) {
     var contentType = (typeof type !== 'undefined' && type) ? type : 'movie';
     if (contentType === 'tvshow' || contentType === 'series') contentType = 'tv';
 
-    // Формируем базовый URL через новый стабильный домен
-    var baseUrl = 'https://vidsrc-embed.ru/embed/';
+    // Меняем на другой домен из списка
+    var baseUrl = 'https://vsrc.su/embed/';
     
-    // Получаем текущие данные для сериалов, если есть выбор сезона/серии
     var season = document.getElementById('seasonInput') ? document.getElementById('seasonInput').value : '1';
     var episode = document.getElementById('episodeInput') ? document.getElementById('episodeInput').value : '1';
 
@@ -1812,9 +1811,6 @@ async function openDetail(id, type) {
 
     pWrap.innerHTML = `
       <div style="width:100%; max-width:980px; margin:0 auto; padding:10px; box-sizing:border-box;">
-        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; flex-wrap:wrap;">
-          <button id="src_main" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">ВИДЕОПОТОК</button>
-        </div>
         <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444;">
            <iframe id="videoPlayer" 
                    src="${playerUrl}" 
