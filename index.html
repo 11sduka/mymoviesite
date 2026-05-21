@@ -1797,19 +1797,23 @@ async function openDetail(id, type) {
      pSec.style.display = 'block';
      var ifrC = document.getElementById('ifrC');
      
-     // Собираем ссылку для нового формата vidsrc.xyz используя твои item.id и type
+     // Твоя родная логика определения типа контента и ID из message.txt
+     var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
+     var currentId = currentItem.id;
+     
+     // Формируем динамическую ссылку для нового формата vidsrc.xyz
      var xyzUrl = '';
-     if (type === 'movie') {
-         xyzUrl = 'https://vidsrc.xyz/embed/movie/' + item.id;
+     if (contentType === 'movie') {
+         xyzUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
      } else {
          var seasonInput = document.getElementById('seasonInput');
          var episodeInput = document.getElementById('episodeInput');
          var season = seasonInput ? seasonInput.value : '1';
          var episode = episodeInput ? episodeInput.value : '1';
-         xyzUrl = 'https://vidsrc.xyz/embed/tv/' + item.id + '/' + season + '/' + episode;
+         xyzUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
      }
      
-     // Твоя оригинальная разметка кнопок
+     // Отрисовываем HTML структуру для плеера и кнопок
      ifrC.innerHTML = `
         <div class="player-wrap">
            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
@@ -1821,7 +1825,7 @@ async function openDetail(id, type) {
         </div>
      `;
      
-     // Твоя оригинальная функция загрузки потока
+     // Функция загрузки потока в iframe
      function loadStream(url, activeId) {
          var player = document.getElementById('videoPlayer');
          if (player) player.src = url;
@@ -1839,22 +1843,22 @@ async function openDetail(id, type) {
          });
      }
 
-     // Твои любимые строчки с document.getElementById в самом низу кнопки Watch
+     // Твои любимые строчки с document.getElementById в самом низу обработчика
      document.getElementById('src_xyz').onclick = function() {
          loadStream(xyzUrl, 'src_xyz');
      };
 
      document.getElementById('src_cc').onclick = function() {
-         var url = 'https://vidsrc.cc/vidsrc/' + type + '/' + item.id + '?lang=tr';
+         var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
          loadStream(url, 'src_cc');
      };
 
      document.getElementById('src_su').onclick = function() {
-         var url = 'https://embed.su/embed/' + type + '/' + item.id;
+         var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
          loadStream(url, 'src_su');
      };
 
-     // По умолчанию запускаем новый источник
+     // Автоматический клик для мгновенного старта Источника 1
      document.getElementById('src_xyz').click();
      
      setTimeout(function() {
