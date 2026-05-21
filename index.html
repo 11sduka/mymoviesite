@@ -1788,73 +1788,86 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  document.getElementById('detailWatchBtn').onclick = function() {
-    var pSec = document.getElementById('playerSection');
-    var pWrap = document.querySelector('.player-wrap');
-    if (!pSec || !pWrap) return;
+  var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
+    var currentId = currentItem.id;
     
+    // Прячем кнопку трейлера, если она была, и готовим плеерную секцию
+    var trW = document.getElementById('trW');
+    if (trW) trW.style.display = 'none';
+    
+    var pSec = document.getElementById('playerSection');
     pSec.style.display = 'block';
-
-    // Авто-сбор ID фильма или сериала с твоего сайта. Тест: 157336 (Интерстеллар)
-    var currentId = (typeof id !== 'undefined' && id) ? id : '157336'; 
-    var contentType = (typeof type !== 'undefined' && type) ? type : 'movie';
-    if (contentType === 'tvshow' || contentType === 'series') contentType = 'tv';
-
-    // ВЕРСТКА: Огромный плеер 980px, отступ снизу 60px — кнопки и полоса перемотки на телефонах НЕ обрежутся
-    pWrap.innerHTML = `
-      <div style="width:100%; max-width:980px; margin:0 auto; padding:10px 10px 60px 10px; box-sizing:border-box;">
-        
-        <!-- Кнопки переключения незабаненных баз контента -->
-        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%;">
-          <button id="src_cc" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 12px rgba(229,9,20,0.3);">ИСТОЧНИК 1 (VidSrc CC)</button>
-          <button id="src_su" style="flex:1; padding:15px; background:#222; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">ИСТОЧНИК 2 (Embed SU)</button>
+    
+    var ifrC = document.getElementById('ifrC');
+    
+    // Формируем базовый адрес для vidsrc.xyz в зависимости от типа контента
+    var baseStreamUrl = '';
+    if (contentType === 'movie') {
+        baseStreamUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
+    } else {
+        // Для сериалов собираем сезон и серию (если их нет, ставим по умолчанию 1)
+        var seasonInput = document.getElementById('seasonInput');
+        var episodeInput = document.getElementById('episodeInput');
+        var season = seasonInput ? seasonInput.value : '1';
+        var episode = episodeInput ? episodeInput.value : '1';
+        baseStreamUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
+    }
+    
+    // Отрисовываем интерфейс твоих вкладок-источников
+    ifrC.innerHTML = `
+        <div class="player-wrap">
+            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
         </div>
-        
-        <!-- Контейнер плеера -->
-        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
-          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Запуск видеопотока...</div>
+        <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="season-btn active" id="src_xyz" style="background:var(--purple3); color:#fff">Источник 1 (xyz)</button>
+            <button class="season-btn" id="src_cc">Источник 2 (cc)</button>
+            <button class="season-btn" id="src_su">Источник 3 (su)</button>
         </div>
-
-      </div>
     `;
 
-    var container = document.getElementById('ifrC');
+    // Внутренняя функция загрузки потока в iframe
+    function loadStream(url, activeId) {
+        var player = document.getElementById('videoPlayer');
+        if (player) player.src = url;
+        ['src_xyz', 'src_cc', 'src_su'].forEach(function(id) {
+            var btn = document.getElementById(id);
+            if (btn) {
+                if (id === activeId) {
+                    btn.style.background = 'var(--purple3)';
+                    btn.style.color = '#fff';
+                } else {
+                    btn.style.background = 'var(--bg3)';
+                    btn.style.color = 'var(--text2)';
+                }
+            }
+        });
+    }
 
-    var loadStream = function(url, btnId) {
-        document.getElementById('src_cc').style.background = '#222';
-        document.getElementById('src_su').style.background = '#222';
-        document.getElementById(btnId).style.background = '#e50914';
-        
-        container.innerHTML = `
-          <iframe src="${url}" 
-                  style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
-                  allowfullscreen 
-                  allow="autoplay; encrypted-media">
-          </iframe>
-        `;
+    // ИСТОЧНИК 1: Твой новый vidsrc.xyz (.xyz /movie/ или /tv/)
+    document.getElementById('src_xyz').onclick = function() {
+        loadStream(baseStreamUrl, 'src_xyz');
     };
 
-    // ИСТОЧНИК 1: vidsrc.cc — новое, абсолютно чистое от блокировок зеркало VidSrc
+    // ИСТОЧНИК 2: vidsrc.cc — старое зеркало
     document.getElementById('src_cc').onclick = function() {
         var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
         loadStream(url, 'src_cc');
     };
 
-    // ИСТОЧНИК 2: embed.su — самый стабильный азиатский шлюз с обходом турецких файрволов
+    // ИСТОЧНИК 3: embed.su — стабильный шлюз
     document.getElementById('src_su').onclick = function() {
         var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
         loadStream(url, 'src_su');
     };
 
-    // По умолчанию сразу запускаем первый незабаненный источник
-    document.getElementById('src_cc').click();
+    // По умолчанию сразу запускаем твой новый исправленный vidsrc.xyz
+    document.getElementById('src_xyz').click();
     
     // Плавное центрирование крупного плеера на экране мобильного телефона
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
 };
-} // Эта скобка должна быть ПЕРЕД function goBack()
 function goBack() {
   var c = document.getElementById('ifrC');
   if (c) c.innerHTML = ''; 
