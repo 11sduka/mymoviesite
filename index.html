@@ -1788,58 +1788,62 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
-    var currentId = currentItem.id;
-    
-    var trW = document.getElementById('trW');
-    if (trW) trW.style.display = 'none';
-    
+ document.getElementById('detailWatchBtn').onclick = function() {
     var pSec = document.getElementById('playerSection');
+    var pWrap = document.querySelector('.player-wrap');
+    if (!pSec || !pWrap) return;
+    
     pSec.style.display = 'block';
-    
-    var ifrC = document.getElementById('ifrC');
-    
-    function loadStream(url, activeId) {
-        var player = document.getElementById('videoPlayer');
-        if (player) player.src = url;
-        ['src_xyz', 'src_cc', 'src_su'].forEach(function(id) {
-            var btn = document.getElementById(id);
-            if (btn) {
-                if (id === activeId) {
-                    btn.style.background = 'var(--purple3)';
-                    btn.style.color = '#fff';
-                } else {
-                    btn.style.background = 'var(--bg3)';
-                    btn.style.color = 'var(--text2)';
-                }
-            }
-        });
-    }
 
-    // Собираем правильный адрес для vidsrc.xyz
+    // Твои родные переменные из функции openDetail
+    var currentId = (typeof id !== 'undefined' && id) ? id : '157336';
+    var contentType = (typeof type !== 'undefined' && type) ? type : 'movie';
+    if (contentType === 'tvshow' || contentType === 'series') contentType = 'tv';
+
+    // Формируем ссылку для нового vidsrc.xyz
     var xyzUrl = '';
     if (contentType === 'movie') {
         xyzUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
     } else {
-        var seasonInput = document.getElementById('seasonInput');
-        var episodeInput = document.getElementById('episodeInput');
-        var season = seasonInput ? seasonInput.value : '1';
-        var episode = episodeInput ? episodeInput.value : '1';
-        xyzUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
+        // Для сериалов по умолчанию ставим 1 сезон 1 серию, чтобы плеер сразу загрузился
+        xyzUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/1/1';
     }
 
-    ifrC.innerHTML = `
-        <div class="player-wrap">
-            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+    // ТВОЯ РОДНАЯ ВЕРСТКА: Огромный плеер 980px, отступ снизу 60px
+    pWrap.innerHTML = `
+      <div style="width:100%; max-width:980px; margin:0 auto; padding:10px 10px 60px 10px; box-sizing:border-box;">
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px; justify-content:center; width:100%; flex-wrap:wrap;">
+          <button id="src_xyz" style="flex:1; padding:15px; background:#e50914; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent; box-shadow:0 4px 12px rgba(229,9,20,0.3);">ИСТОЧНИК 1 (xyz)</button>
+          <button id="src_cc" style="flex:1; padding:15px; background:#222; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">ИСТОЧНИК 2 (cc)</button>
+          <button id="src_su" style="flex:1; padding:15px; background:#222; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; -webkit-tap-highlight-color:transparent;">ИСТОЧНИК 3 (su)</button>
         </div>
-        <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="season-btn active" id="src_xyz" style="background:var(--purple3); color:#fff">Источник 1 (xyz)</button>
-            <button class="season-btn" id="src_cc">Источник 2 (cc)</button>
-            <button class="season-btn" id="src_su">Источник 3 (su)</button>
+        
+        <div id="ifrC" style="width:100%; position:relative; padding-top:56.25%; background:#000; border-radius:12px; overflow:hidden; border:2px solid #444; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
+          <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#aaa; font-size:14px; font-family:sans-serif;">Запуск видеопотока...</div>
         </div>
+
+      </div>
     `;
 
-    // ТВОИ НАСТОЯЩИЕ СТРОЧКИ С document.getElementById
+    var container = document.getElementById('ifrC');
+
+    var loadStream = function(url, btnId) {
+        document.getElementById('src_xyz').style.background = '#222';
+        document.getElementById('src_cc').style.background = '#222';
+        document.getElementById('src_su').style.background = '#222';
+        document.getElementById(btnId).style.background = '#e50914';
+        
+        container.innerHTML = `
+          <iframe src="${url}" 
+                  style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;" 
+                  allowfullscreen 
+                  allow="autoplay; encrypted-media">
+          </iframe>
+        `;
+    };
+
+    // ТВОИ РОДНЫЕ ПРИВЯЗКИ КНОПОК
     document.getElementById('src_xyz').onclick = function() {
         loadStream(xyzUrl, 'src_xyz');
     };
@@ -1854,9 +1858,10 @@ async function openDetail(id, type) {
         loadStream(url, 'src_su');
     };
 
-    // Автоматический клик по первому источнику
+    // По умолчанию сразу запускаем первый незабаненный источник
     document.getElementById('src_xyz').click();
     
+    // Плавное центрирование крупного плеера на экране мобильного телефона
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
