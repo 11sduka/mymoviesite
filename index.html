@@ -1800,7 +1800,7 @@ async function openDetail(id, type) {
     
     var ifrC = document.getElementById('ifrC');
     
-    // Формируем базовый адрес для vidsrc.xyz
+    // Формируем правильный адрес для vidsrc.xyz
     var baseStreamUrl = '';
     if (contentType === 'movie') {
         baseStreamUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
@@ -1812,7 +1812,7 @@ async function openDetail(id, type) {
         baseStreamUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
     }
     
-    // Отрисовываем интерфейс вкладок-источников
+    // Перерисовываем три источника, ставя xyz на первое место
     ifrC.innerHTML = `
         <div class="player-wrap">
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
@@ -1824,7 +1824,6 @@ async function openDetail(id, type) {
         </div>
     `;
 
-    // Внутренняя функция загрузки потока в iframe
     function loadStream(url, activeId) {
         var player = document.getElementById('videoPlayer');
         if (player) player.src = url;
@@ -1842,31 +1841,28 @@ async function openDetail(id, type) {
         });
     }
 
-    // ИСТОЧНИК 1: Новый vidsrc.xyz
+    // Привязываем ссылки к кнопкам переключения
     document.getElementById('src_xyz').onclick = function() {
         loadStream(baseStreamUrl, 'src_xyz');
     };
 
-    // ИСТОЧНИК 2: vidsrc.cc
     document.getElementById('src_cc').onclick = function() {
         var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
         loadStream(url, 'src_cc');
     };
 
-    // ИСТОЧНИК 3: embed.su
     document.getElementById('src_su').onclick = function() {
         var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
         loadStream(url, 'src_su');
     };
 
-    // По умолчанию сразу запускаем vidsrc.xyz
+    // Автоматически кликаем на первый рабочий плеер
     document.getElementById('src_xyz').click();
     
-    // Плавное центрирование плеера
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
-  }; // Вот она — правильная ОДНА скобка, закрывающая кнопку İzle!
+  };
   function goBack() {
     var c = document.getElementById('ifrC');
     if (c) c.innerHTML = ''; 
