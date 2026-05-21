@@ -1788,17 +1788,38 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
-    var currentId = currentItem.id;
-    
-    var trW = document.getElementById('trW');
-    if (trW) trW.style.display = 'none';
-    
-    var pSec = document.getElementById('playerSection');
-    pSec.style.display = 'block';
-    
-    var ifrC = document.getElementById('ifrC');
-    
+  watchBtn.onclick = function() {
+     document.getElementById('playerSection').style.display = 'block';
+     var trW = document.getElementById('trW');
+     if (trW) trW.style.display = 'none';
+     
+     var pSec = document.getElementById('playerSection');
+     pSec.style.display = 'block';
+     var ifrC = document.getElementById('ifrC');
+     
+     // Собираем динамическую ссылку для нового формата vidsrc.xyz
+     var xyzUrl = '';
+     if (type === 'movie') {
+         xyzUrl = 'https://vidsrc.xyz/embed/movie/' + item.id;
+     } else {
+         var seasonInput = document.getElementById('seasonInput');
+         var episodeInput = document.getElementById('episodeInput');
+         var season = seasonInput ? seasonInput.value : '1';
+         var episode = episodeInput ? episodeInput.value : '1';
+         xyzUrl = 'https://vidsrc.xyz/embed/tv/' + item.id + '/' + season + '/' + episode;
+     }
+     
+     ifrC.innerHTML = `
+        <div class="player-wrap">
+           <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+        </div>
+        <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+           <button class="season-btn active" id="src_xyz" style="background:var(--purple3); color:#fff">Источник 1 (xyz)</button>
+           <button class="season-btn" id="src_cc">Источник 2 (cc)</button>
+           <button class="season-btn" id="src_su">Источник 3 (su)</button>
+        </div>
+     `;
+     
     function loadStream(url, activeId) {
         var player = document.getElementById('videoPlayer');
         if (player) player.src = url;
@@ -1816,47 +1837,27 @@ async function openDetail(id, type) {
         });
     }
 
-    // Формируем правильный адрес для нового vidsrc.xyz
-    var xyzUrl = '';
-    if (contentType === 'movie') {
-        xyzUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
-    } else {
-        var seasonInput = document.getElementById('seasonInput');
-        var episodeInput = document.getElementById('episodeInput');
-        var season = seasonInput ? seasonInput.value : '1';
-        var episode = episodeInput ? episodeInput.value : '1';
-        xyzUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
-    }
-
-    ifrC.innerHTML = `
-        <div class="player-wrap">
-            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
-        </div>
-        <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="season-btn active" id="src_xyz" style="background:var(--purple3); color:#fff">Источник 1 (xyz)</button>
-            <button class="season-btn" id="src_cc">Источник 2 (cc)</button>
-            <button class="season-btn" id="src_su">Источник 3 (su)</button>
-        </div>
-    `;
-
-    // ТВОИ ЛЮБИМЫЕ СТРОЧКИ НАЧИНАЯ С document.getElementById
+    // ИСТОЧНИК 1: Твой новый исправленный vidsrc.xyz
     document.getElementById('src_xyz').onclick = function() {
         loadStream(xyzUrl, 'src_xyz');
     };
 
+    // ИСТОЧНИК 2: твой старый vidsrc.cc
     document.getElementById('src_cc').onclick = function() {
-        var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
+        var url = 'https://vidsrc.cc/vidsrc/' + type + '/' + item.id + '?lang=tr';
         loadStream(url, 'src_cc');
     };
 
+    // ИСТОЧНИК 3: твой старый embed.su
     document.getElementById('src_su').onclick = function() {
-        var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
+        var url = 'https://embed.su/embed/' + type + '/' + item.id;
         loadStream(url, 'src_su');
     };
 
-    // Автоматический клик по умолчанию
+    // По умолчанию сразу запускаем первый незабаненный источник
     document.getElementById('src_xyz').click();
     
+    // Плавное центрирование крупного плеера на экране мобильного телефона
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
