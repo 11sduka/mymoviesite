@@ -1788,10 +1788,10 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
-  var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
+  watchBtn.onclick = function() {
+    var contentType = currentItem.media_type || (currentType === 'movies' ? 'movie' : 'tv');
     var currentId = currentItem.id;
     
-    // Прячем кнопку трейлера, если она была, и готовим плеерную секцию
     var trW = document.getElementById('trW');
     if (trW) trW.style.display = 'none';
     
@@ -1800,12 +1800,11 @@ async function openDetail(id, type) {
     
     var ifrC = document.getElementById('ifrC');
     
-    // Формируем базовый адрес для vidsrc.xyz в зависимости от типа контента
+    // Формируем базовый адрес для vidsrc.xyz
     var baseStreamUrl = '';
     if (contentType === 'movie') {
         baseStreamUrl = 'https://vidsrc.xyz/embed/movie/' + currentId;
     } else {
-        // Для сериалов собираем сезон и серию (если их нет, ставим по умолчанию 1)
         var seasonInput = document.getElementById('seasonInput');
         var episodeInput = document.getElementById('episodeInput');
         var season = seasonInput ? seasonInput.value : '1';
@@ -1813,7 +1812,7 @@ async function openDetail(id, type) {
         baseStreamUrl = 'https://vidsrc.xyz/embed/tv/' + currentId + '/' + season + '/' + episode;
     }
     
-    // Отрисовываем интерфейс твоих вкладок-источников
+    // Отрисовываем интерфейс вкладок-источников
     ifrC.innerHTML = `
         <div class="player-wrap">
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
@@ -1843,40 +1842,40 @@ async function openDetail(id, type) {
         });
     }
 
-    // ИСТОЧНИК 1: Твой новый vidsrc.xyz (.xyz /movie/ или /tv/)
+    // ИСТОЧНИК 1: Новый vidsrc.xyz
     document.getElementById('src_xyz').onclick = function() {
         loadStream(baseStreamUrl, 'src_xyz');
     };
 
-    // ИСТОЧНИК 2: vidsrc.cc — старое зеркало
+    // ИСТОЧНИК 2: vidsrc.cc
     document.getElementById('src_cc').onclick = function() {
         var url = 'https://vidsrc.cc/vidsrc/' + contentType + '/' + currentId + '?lang=tr';
         loadStream(url, 'src_cc');
     };
 
-    // ИСТОЧНИК 3: embed.su — стабильный шлюз
+    // ИСТОЧНИК 3: embed.su
     document.getElementById('src_su').onclick = function() {
         var url = 'https://embed.su/embed/' + contentType + '/' + currentId;
         loadStream(url, 'src_su');
     };
 
-    // По умолчанию сразу запускаем твой новый исправленный vidsrc.xyz
+    // По умолчанию сразу запускаем vidsrc.xyz
     document.getElementById('src_xyz').click();
     
-    // Плавное центрирование крупного плеера на экране мобильного телефона
+    // Плавное центрирование плеера
     setTimeout(function() {
       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
     }, 300);
-};
-}
-function goBack() {
-  var c = document.getElementById('ifrC');
-  if (c) c.innerHTML = ''; 
-  document.getElementById('playerSection').style.display = 'none';
-  document.getElementById('detailPage').style.display = 'none';
-  document.getElementById('mainPage').style.display = 'block';
-  window.scrollTo(0,0);
-}
+  }; // Вот она — правильная ОДНА скобка, закрывающая кнопку İzle!
+
+  function goBack() {
+    var c = document.getElementById('ifrC');
+    if (c) c.innerHTML = ''; 
+    document.getElementById('playerSection').style.display = 'none';
+    document.getElementById('detailPage').style.display = 'none';
+    document.getElementById('mainPage').style.display = 'block';
+    window.scrollTo(0,0);
+  }
 // MOBILE MENU
 function toggleMobileMenu() {
   document.getElementById('mobileNavDrawer').classList.toggle('open');
