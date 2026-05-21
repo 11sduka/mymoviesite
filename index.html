@@ -1797,7 +1797,7 @@ async function openDetail(id, type) {
      pSec.style.display = 'block';
      var ifrC = document.getElementById('ifrC');
      
-     // Собираем динамическую ссылку для нового формата vidsrc.xyz
+     // Собираем ссылку для нового формата vidsrc.xyz используя твои item.id и type
      var xyzUrl = '';
      if (type === 'movie') {
          xyzUrl = 'https://vidsrc.xyz/embed/movie/' + item.id;
@@ -1809,6 +1809,7 @@ async function openDetail(id, type) {
          xyzUrl = 'https://vidsrc.xyz/embed/tv/' + item.id + '/' + season + '/' + episode;
      }
      
+     // Твоя оригинальная разметка кнопок
      ifrC.innerHTML = `
         <div class="player-wrap">
            <iframe id="videoPlayer" src="" allowfullscreen></iframe>
@@ -1820,48 +1821,46 @@ async function openDetail(id, type) {
         </div>
      `;
      
-    function loadStream(url, activeId) {
-        var player = document.getElementById('videoPlayer');
-        if (player) player.src = url;
-        ['src_xyz', 'src_cc', 'src_su'].forEach(function(id) {
-            var btn = document.getElementById(id);
-            if (btn) {
-                if (id === activeId) {
-                    btn.style.background = 'var(--purple3)';
-                    btn.style.color = '#fff';
-                } else {
-                    btn.style.background = 'var(--bg3)';
-                    btn.style.color = 'var(--text2)';
-                }
-            }
-        });
-    }
+     // Твоя оригинальная функция загрузки потока
+     function loadStream(url, activeId) {
+         var player = document.getElementById('videoPlayer');
+         if (player) player.src = url;
+         ['src_xyz', 'src_cc', 'src_su'].forEach(function(id) {
+             var btn = document.getElementById(id);
+             if (btn) {
+                 if (id === activeId) {
+                     btn.style.background = 'var(--purple3)';
+                     btn.style.color = '#fff';
+                 } else {
+                     btn.style.background = 'var(--bg3)';
+                     btn.style.color = 'var(--text2)';
+                 }
+             }
+         });
+     }
 
-    // ИСТОЧНИК 1: Твой новый исправленный vidsrc.xyz
-    document.getElementById('src_xyz').onclick = function() {
-        loadStream(xyzUrl, 'src_xyz');
-    };
+     // Твои любимые строчки с document.getElementById в самом низу кнопки Watch
+     document.getElementById('src_xyz').onclick = function() {
+         loadStream(xyzUrl, 'src_xyz');
+     };
 
-    // ИСТОЧНИК 2: твой старый vidsrc.cc
-    document.getElementById('src_cc').onclick = function() {
-        var url = 'https://vidsrc.cc/vidsrc/' + type + '/' + item.id + '?lang=tr';
-        loadStream(url, 'src_cc');
-    };
+     document.getElementById('src_cc').onclick = function() {
+         var url = 'https://vidsrc.cc/vidsrc/' + type + '/' + item.id + '?lang=tr';
+         loadStream(url, 'src_cc');
+     };
 
-    // ИСТОЧНИК 3: твой старый embed.su
-    document.getElementById('src_su').onclick = function() {
-        var url = 'https://embed.su/embed/' + type + '/' + item.id;
-        loadStream(url, 'src_su');
-    };
+     document.getElementById('src_su').onclick = function() {
+         var url = 'https://embed.su/embed/' + type + '/' + item.id;
+         loadStream(url, 'src_su');
+     };
 
-    // По умолчанию сразу запускаем первый незабаненный источник
-    document.getElementById('src_xyz').click();
-    
-    // Плавное центрирование крупного плеера на экране мобильного телефона
-    setTimeout(function() {
-      pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
-    }, 300);
-};
+     // По умолчанию запускаем новый источник
+     document.getElementById('src_xyz').click();
+     
+     setTimeout(function() {
+       pSec.scrollIntoView({behavior: 'smooth', block: 'center'});
+     }, 300);
+  };
 } // Эта скобка должна быть ПЕРЕД function goBack()
   function goBack() {
     var c = document.getElementById('ifrC');
