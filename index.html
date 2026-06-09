@@ -1802,23 +1802,26 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
- document.getElementById('detailWatchBtn').onclick = function() {
+ window.watchNow = function() {
     var pSec = document.getElementById('playerSection');
-    var pWrap = document.querySelector('.player-wrap');
+    var pWrap = document.getElementById('playerWrap');
     if (!pSec || !pWrap) return;
-    
+
     pSec.style.display = 'block';
+    
+    // Формируем ссылку на плеер 2Embed.cc по TMDB ID
+    var playerUrl = '';
+    if (contentType === 'movie') {
+        // Ссылка для фильмов
+        playerUrl = 'https://www.2embed.cc/embed/' + currentId;
+    } else {
+        // Ссылка для сериалов (берём выбранный сезон и серию)
+        var s = document.getElementById('seasonInput') ? document.getElementById('seasonInput').value : '1';
+        var e = document.getElementById('episodeInput') ? document.getElementById('episodeInput').value : '1';
+        playerUrl = 'https://www.2embed.cc/embedtv/' + currentId + '&s=' + s + '&e=' + e;
+    }
 
-    var currentId = (typeof id !== 'undefined' && id) ? id : '157336';
-    var contentType = (typeof type !== 'undefined' && type) ? type : 'movie';
-    if (contentType === 'tvshow' || contentType === 'series') contentType = 'tv';
-
-    // Используем MultiEmbed (альтернатива Vidsrc)
-    // Параметры: tmdb для фильмов и сериалов
-    var playerUrl = (contentType === 'movie') 
-        ? 'https://multiembed.mov/?video_id=' + currentId + '&tmdb=1'
-        : 'https://multiembed.mov/?video_id=' + currentId + '&tmdb=1&s=' + (document.getElementById('seasonInput') ? document.getElementById('seasonInput').value : '1') + '&e=' + (document.getElementById('episodeInput') ? document.getElementById('episodeInput').value : '1');
-
+    // Вставляем плеер на страницу
     pWrap.innerHTML = `
       <div style="width:100%; max-width:980px; margin:0 auto; padding:10px;">
         <iframe src="${playerUrl}" 
@@ -1829,6 +1832,7 @@ async function openDetail(id, type) {
       </div>
     `;
     
+    // Плавно скроллим пользователя к плееру
     pSec.scrollIntoView({behavior: 'smooth'});
 };
 } // Эта скобка должна быть ПЕРЕД function goBack()
