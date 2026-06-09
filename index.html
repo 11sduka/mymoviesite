@@ -1808,7 +1808,7 @@ async function openDetail(id, type) {
     if (!pSec || !pWrap) return;
 
     pSec.style.display = 'block';
-    
+
     // Формируем ссылку на плеер 2Embed.cc по TMDB ID
     var playerUrl = '';
     if (contentType === 'movie') {
@@ -1821,7 +1821,6 @@ async function openDetail(id, type) {
         playerUrl = 'https://www.2embed.cc/embedtv/' + currentId + '&s=' + s + '&e=' + e;
     }
 
-    // Вставляем плеер на страницу
     pWrap.innerHTML = `
       <div style="width:100%; max-width:980px; margin:0 auto; padding:10px;">
         <iframe src="${playerUrl}" 
@@ -1832,9 +1831,8 @@ async function openDetail(id, type) {
       </div>
     `;
     
-    // Плавно скроллим пользователя к плееру
     pSec.scrollIntoView({behavior: 'smooth'});
-};
+  };
 } // Эта скобка должна быть ПЕРЕД function goBack()
   function goBack() {
     var c = document.getElementById('ifrC');
