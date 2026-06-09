@@ -1832,22 +1832,23 @@ async function openDetail(id, type) {
     `;
     
     pSec.scrollIntoView({behavior: 'smooth'});
-  };
-} // Эта скобка должна быть ПЕРЕД function goBack()
-  function goBack() {
+};
+
+function goBack() {
     var c = document.getElementById('ifrC');
     if (c) c.innerHTML = ''; 
     document.getElementById('playerSection').style.display = 'none';
     document.getElementById('detailPage').style.display = 'none';
     document.getElementById('mainPage').style.display = 'block';
     window.scrollTo(0,0);
-  }
+}
+
 // MOBILE MENU
 function toggleMobileMenu() {
-  document.getElementById('mobileNavDrawer').classList.toggle('open');
+    document.getElementById('mobileNavDrawer').classList.toggle('open');
 }
 function closeMobileMenu() {
-  document.getElementById('mobileNavDrawer').classList.remove('open');
+    document.getElementById('mobileNavDrawer').classList.remove('open');
 }
 
 // INIT
@@ -1855,4 +1856,3 @@ loadHome();
 </script>
 </body>
 </html>
-  
