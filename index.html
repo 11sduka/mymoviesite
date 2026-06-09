@@ -1802,49 +1802,47 @@ async function openDetail(id, type) {
   renderCards(document.getElementById('similarGrid'), similar, type);
 
   // Watch button
- var watchBtn = document.getElementById('watchBtn');
-  if (watchBtn) {
-    watchBtn.onclick = function() {
-      var pSec = document.getElementById('playerSection');
-      var pWrap = document.getElementById('playerWrap');
-      if (!pSec || !pWrap) return;
+ window.watchNow = function() {
+    var pSec = document.getElementById('playerSection');
+    var pWrap = document.getElementById('playerWrap');
+    if (!pSec || !pWrap) return;
 
-      pSec.style.display = 'block';
+    pSec.style.display = 'block';
 
-      // Формируем ссылку на плеер 2Embed.cc по TMDB ID
-      var playerUrl = '';
-      if (contentType === 'movie') {
-          // Ссылка для фильмов
-          playerUrl = 'https://www.2embed.cc/embed/' + currentId;
-      } else {
-          // Ссылка для сериалов (берём выбранный сезон и серию)
-          var s = document.getElementById('seasonInput') ? document.getElementById('seasonInput').value : '1';
-          var e = document.getElementById('episodeInput') ? document.getElementById('episodeInput').value : '1';
-          playerUrl = 'https://www.2embed.cc/embedtv/' + currentId + '&s=' + s + '&e=' + e;
-      }
+    // Формируем ссылку на качественный плеер 2Embed.cc по TMDB ID
+    var playerUrl = '';
+    if (contentType === 'movie') {
+        // Ссылка для фильмов
+        playerUrl = 'https://www.2embed.cc/embed/' + currentId;
+    } else {
+        // Ссылка для сериалов (берём выбранный сезон и серию из выпадающих списков сайта)
+        var s = document.getElementById('seasonInput') ? document.getElementById('seasonInput').value : '1';
+        var e = document.getElementById('episodeInput') ? document.getElementById('episodeInput').value : '1';
+        playerUrl = 'https://www.2embed.cc/embedtv/' + currentId + '&s=' + s + '&e=' + e;
+    }
 
-      pWrap.innerHTML = `
-        <div style="width:100%; max-width:980px; margin:0 auto; padding:10px;">
-          <iframe src="${playerUrl}" 
-                  style="width:100%; height:500px; border:none;" 
-                  allowfullscreen="true"
-                  allow="autoplay; encrypted-media">
-          </iframe>
-        </div>
-      `;
-      
-      pSec.scrollIntoView({behavior: 'smooth'});
-    };
-  }
+    pWrap.innerHTML = `
+      <div style="width:100%; max-width:980px; margin:0 auto; padding:10px;">
+        <iframe src="${playerUrl}" 
+                style="width:100%; height:500px; border:none;" 
+                allowfullscreen="true"
+                allow="autoplay; encrypted-media">
+        </iframe>
+      </div>
+    `;
+    
+    pSec.scrollIntoView({behavior: 'smooth'});
+  };
+} // Эта скобка закрывает главную функцию openDetail, её нельзя трогать!
 
-  function goBack() {
-    var c = document.getElementById('ifrC');
-    if (c) c.innerHTML = ''; 
-    document.getElementById('playerSection').style.display = 'none';
-    document.getElementById('detailPage').style.display = 'none';
-    document.getElementById('mainPage').style.display = 'block';
-    window.scrollTo(0,0);
-  }
+function goBack() {
+  var c = document.getElementById('ifrC');
+  if (c) c.innerHTML = ''; 
+  document.getElementById('playerSection').style.display = 'none';
+  document.getElementById('detailPage').style.display = 'none';
+  document.getElementById('mainPage').style.display = 'block';
+  window.scrollTo(0,0);
+}
 
 // MOBILE MENU
 function toggleMobileMenu() {
